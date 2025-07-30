@@ -104,7 +104,7 @@
       tracked <- tracked[tracked != "upload"]
       
       #check for new files
-      curr_track <- sapply(tracked, get_file_loc, dir=dir)
+      curr_track <- sapply(tracked, read.boxtracker, dir=dir, return="file_path")
       large_files <- setdiff(large_files,curr_track)
     }
     
