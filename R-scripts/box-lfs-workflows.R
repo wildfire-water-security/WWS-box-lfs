@@ -65,7 +65,7 @@
    stopifnot(dir.exists(dir))
    
    #check if lfs is needed 
-   if(check_box_lfs(dir)){
+   if(check_blfs(dir)){
      #try to direct right to link
        trackers <- list.files(file.path(dir, "box-lfs"), pattern = ".boxtracker")
        link <- sapply(trackers,read.boxtracker, dir=dir, return="box_link")

@@ -129,7 +129,7 @@
   }
 
 ## check if box lfs is being used on repo (returns T/F)
-  check_box_lfs <- function(dir){
+  check_blfs <- function(dir){
     if(is.null(dir)){dir <- getwd()}
     stopifnot(dir.exists(dir))
     
