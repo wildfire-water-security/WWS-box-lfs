@@ -8,7 +8,7 @@
     if(return == "all"){
       data <- tracker
     }else{
-      data <- tracker[return]
+      data <- as.character(tracker[return])
     }
     return(data)
   }
@@ -127,7 +127,7 @@
     location <- tracker$file_path
     
     #copy file to correct location 
-    file.copy(file.path(downloads, basename(dir), file), file.path(dir,location))
+    file.copy(file.path(downloads, basename(dir), file), file.path(dir,location), overwrite = TRUE)
   }
 
 ## check if box lfs is being used on repo (returns T/F)
@@ -138,23 +138,34 @@
     return(return)
   }
 
-## update file tracked by blfs (check for differences return TRUE if it needs to be updated)
+## update file tracked by blfs (check for differences return TRUE if it needs to be updated) [going from local to repo/box]
   update_blfs <- function(file, dir=NULL){
     dir <- dir_check(dir)
-    
+
     #get file info
     tracker_name <- paste0(tools::file_path_sans_ext(basename(file)), ".boxtracker")
     
-    old_tracker <- read.boxtracker(tracker_name, dir)
-    new_tracker <- get.boxtracker(file, dir)
+    boxtracker <- read.boxtracker(tracker_name, dir)
+    file_tracker <- get.boxtracker(file, dir)
 
-    diff_check <- !all.equal(old_tracker, new_tracker) #check if new file is different than tracked one, T means different
-    
-    #if so, updated tracked and move to upload for easy upload
-    if(diff_check){
-      file.copy(file.path(dir, file), file.path(dir, "box-lfs/upload/", basename(file)))
-      write.boxtracker(file, dir) 
-      return(file)
+    #check status of file, does it need to be downloaded or uploaded?
+    box_mtime <- as.POSIXct(boxtracker$last_modified)
+    file_mtime <- as.POSIXct(file_tracker$last_modified)
+    if(box_mtime < file_mtime){
+      #file has been changed since last upload to box, need to upload 
+        #copy to upload folder for easy upload
+        file.copy(file.path(dir, file), file.path(dir, "box-lfs/upload/", basename(file)), overwrite = TRUE)
+        
+        #update boxtracker
+        write.boxtracker(file, dir) 
+        
+        return("upload")
+    }else if(box_mtime > file_mtime){
+      #boxtracker shows new version is on box, need to download
+      return("download")
+    }else{
+      #file is the same in local and on box (according to boxtracker)
+      #don't return file, nothing needed 
     }
     
   }
@@ -209,10 +220,10 @@
     if(length(link) > 0){
       message(paste0("there are large files in this repository stored on box that need to be downloaded. Please download files, likely located here:\n",
                      paste(link, collapse="\n"),
-                     "\nthey will be automatically moved to the correct locations from your downloads folder")))
+                     "\nthey will be automatically moved to the correct locations from your downloads folder"))
       
     }else{
       message(paste0("Please download files from Box here:\n'Wildfire_Water_Security/02_Nodes/your node/Projects/", 
-                     basename(dir), "/box-lfs", "'", "\nthey will be automatically moved to the correct locations from your downloads folder")))}
+                     basename(dir), "/box-lfs", "'", "\nthey will be automatically moved to the correct locations from your downloads folder"))}
     
   }
