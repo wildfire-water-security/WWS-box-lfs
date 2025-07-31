@@ -1,3 +1,8 @@
+## Helper functions used to manage files for the box-large file storage system 
+    #works similar to native lfs but clunkier because box, but helps store large files on box, while linking as easily
+    #as possible to a cloned repository from github.
+
+
 import os
 import shutil
 from pathlib import Path
