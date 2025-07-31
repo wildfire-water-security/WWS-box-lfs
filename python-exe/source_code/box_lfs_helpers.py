@@ -266,8 +266,6 @@ def update_blfs(file, dir=None):
         write_boxtracker(file, dir)
 
         return file
-    else:
-        return None 
 
 #add box file location to tracker 
 def add_box_loc(link, dir=None):

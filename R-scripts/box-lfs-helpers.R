@@ -155,7 +155,7 @@
       file.copy(file.path(dir, file), file.path(dir, "box-lfs/upload/", basename(file)))
       write.boxtracker(file, dir) 
       return(file)
-    }else{return(NA)}
+    }
     
   }
   
