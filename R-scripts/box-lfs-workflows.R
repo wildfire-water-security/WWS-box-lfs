@@ -4,11 +4,13 @@
   #set up existing repo 
   #clone repo
 
+#TODO: check for modified files not just new files 
+source("R-scripts/box-lfs-helpers.R")
+
 ## setting up a new repo (existing)
  new_repo_blfs <- function(dir=NULL, size=10){
    #guess on dir if not supplied
-   if(is.null(dir)){dir <- getwd()}
-   stopifnot(dir.exists(dir))
+   dir <- dir_check(dir)
    
    #set up file structure
    init_blfs(dir)
@@ -19,69 +21,52 @@
    
    warning("the following files will no longer be tracked by git:\n", paste(file_names, collapse="\n"))
    
-   message(paste0("Please upload files from '", basename(dir), 
-                  "/box-lfs/upload' to Box here:\n'Wildfire_Water_Security/02_Nodes/01_Empirical/06_Projects-large-file-backup/", basename(dir), "'"))
+   upld_message(dir)
    
    #attach box link to the files
    link <- readline("what is the box link to the folder where the data is now backed up? ")
    add_box_loc(link, dir)
  }
  
-## pushing repo (potential new files that need to be tracked)
+## pushing repo (potential new/modified files that need to be tracked) run BEFORE pushing
  push_repo_blfs <- function(dir=NULL, size=10){
    #guess on dir if not supplied
-   if(is.null(dir)){dir <- getwd()}
-   stopifnot(dir.exists(dir))
+   dir <- dir_check(dir)
    
-   #identify large files and track 
-   files <- check_files_blfs(dir, size=size, new=TRUE)
+   #identify large files (new and existing)
+   lg_files <- check_files_blfs(dir, size=size)
+   new_files <- check_files_blfs(dir, size=size, new=TRUE)
    
-   #if there are new files to track [or modifed]
-   if(length(files) > 0){
-     file_names <- unname(sapply(files, track_blfs, dir))
+   #check if any of tracked files are modified 
+   tk_files <- setdiff(lg_files, new_files)
+   print_upload_message <- FALSE #does message about uploading files need to be printed?
      
-     warning("the following files will no longer be tracked by git:\n", paste(file_names, collapse="\n"))
-     
-     #get folder link to go directly 
-     trackers <- list.files(file.path(dir, "box-lfs"), pattern = ".boxtracker")
-     link <- sapply(trackers,read.boxtracker, dir=dir, return="box_link")
-     link <- link[!is.na(link)]
-     
-     if(length(link) > 0){
-       message(paste0("Please upload files from '", basename(dir), 
-                      "/box-lfs/upload' to Box here:\n", link[1]))
+     #see if any existing files need to re-uploaded 
+      if(length(tk_files) > 0){
+        updated <- unlist(sapply(tk_files, update_blfs, dir=dir))
+        print_upload_message <- ifelse(length(updated) > 0, TRUE, FALSE)
+        }
+   
+     #if there are new files to track [or modifed]
+     if(length(new_files) > 0){
+       file_names <- unname(sapply(new_files, track_blfs, dir))
        
-     }else{
-       message(paste0("Please upload files from '", basename(dir), 
-                      "/box-lfs/upload' to Box here:\n'Wildfire_Water_Security/02_Nodes/01_Empirical/06_Projects-large-file-backup/", 
-                      basename(dir), "'"))
-       
-     }}}
+       warning("the following files will no longer be tracked by git:\n", paste(file_names, collapse="\n"))
+       print_upload_message <- TRUE
+     }
+   
+   #print upload message 
+   if(print_upload_message){
+     upld_message(dir)}
+   }
    
 ## cloning a repo with box-lfs 
  clone_repo_blfs <- function(dir=NULL, download=NULL){
-   #guess on dir if not supplied
-   if(is.null(dir)){dir <- getwd()}
-   stopifnot(dir.exists(dir))
+   dir <- dir_check(dir)
    
    #check if lfs is needed 
    if(check_blfs(dir)){
-     #try to direct right to link
-       trackers <- list.files(file.path(dir, "box-lfs"), pattern = ".boxtracker")
-       link <- sapply(trackers,read.boxtracker, dir=dir, return="box_link")
-       link <- link[!is.na(link)]
-     
-      #tell user to download data
-       if(length(link) > 0){
-         message(paste0("there are large files in this repository stored on box, please download files, likely located here:\n",
-                        paste(link, collapse="\n"),
-                        "\nand place here:\n",
-                        file.path(dir, "box-lfs/upload")))
-         
-       }else{
-         message(paste0("Please upload files from '", basename(dir), 
-                        "/box-lfs/upload' to Box here:\n'Wildfire_Water_Security/02_Nodes/01_Empirical/06_Projects-large-file-backup/", 
-                        basename(dir), "'"))}
+       dwld_message(dir)
        
        uploaded <- readline("hit any key once files have been downloaded to continue setting up the repo")
        
@@ -108,9 +93,7 @@
 
 ## pull a repo with box-lfs (someone may have added box files that need to updated)
  pull_repo_blfs <- function(dir=NULL, download=NULL){
-   #guess on dir if not supplied
-   if(is.null(dir)){dir <- getwd()}
-   stopifnot(dir.exists(dir))
+   dir <- dir_check(dir)
    
    #check if file need to be updated
    trackers <- list.files(file.path(dir, "box-lfs"), pattern = ".boxtracker")
@@ -119,22 +102,7 @@
    updated <- updated[!is.na(updated)]
    
    if(length(updated) >0){
-     #try to direct right to link
-     trackers <- list.files(file.path(dir, "box-lfs"), pattern = ".boxtracker")
-     link <- sapply(trackers,read.boxtracker, dir=dir, return="box_link")
-     link <- link[!is.na(link)]
-     
-     #tell user to download data
-     if(length(link) > 0){
-       message(paste0("there are large files in this repository stored on box that need to be updated, please download files, likely located here:\n",
-                      paste(link, collapse="\n"),
-                      "\nand place here:\n",
-                      file.path(dir, "box-lfs/upload")))
-       
-     }else{
-       message(paste0("Please upload files from '", basename(dir), 
-                      "/box-lfs/upload' to Box here:\n'Wildfire_Water_Security/02_Nodes/01_Empirical/06_Projects-large-file-backup/", 
-                      basename(dir), "'"))}
+     dwld_message(dir)
      
      uploaded <- readline("hit any key once files have been downloaded to continue updating files")
      

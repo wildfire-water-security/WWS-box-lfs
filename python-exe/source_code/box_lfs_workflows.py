@@ -6,6 +6,7 @@ import os
 import sys
 from pathlib import Path
 import pandas as pd
+import numpy as np
 
 
 # Replace with the path to the folder containing your helper script (remove later??)
@@ -61,33 +62,59 @@ def push_repo_blfs(dir=None, size=10):
     if not dir.exists():
         raise FileNotFoundError(f"Directory does not exist: {dir}")
     
-    # Identify new large files to track
-    files = box_lfs_helpers.check_files_blfs(dir, size=size, new=True)
-    
-    if files:  # if list is not empty
-        file_names = [box_lfs_helpers.track_blfs(file, dir) for file in files]
+    # identify large files (new and existing)
+    lg_files = box_lfs_helpers.check_files_blfs(dir, size=size)
+    new_files = box_lfs_helpers.check_files_blfs(dir, size=size, new=True)
+
+    # check if any of the tracked files are modified
+    tk_files = list(set(lg_files) - set(new_files))
+    print_upload_message = False
+
+    # see if any existing files need to be re-uploaded
+    if tk_files:
+        updated = []
+        for f in tk_files:
+            result = box_lfs_helpers.update_blfs(f, dir=dir)
+            if isinstance(result, list):
+                updated.extend(result)
+            elif result:
+                updated.append(result)
+        if updated:
+            print_upload_message = True
+
+    # if there are new files to track
+    if new_files:
+        file_names = []
+        for f in new_files:
+            result = box_lfs_helpers.track_blfs(f, dir=dir)
+            if result:
+                file_names.append(result)
         
-        print("WARNING: The following files will no longer be tracked by git:\n" + "\n".join(file_names))
-        
-        # Get list of tracker files
-        trackers = list((dir / "box-lfs").glob("*.boxtracker"))
-        
-        # Read box_link from each tracker
+        if file_names:
+            print("\nWARNING: the following files will no longer be tracked by git:\n")
+            for name in file_names:
+                print(name)
+            print_upload_message = True
+
+    # print upload message
+    if print_upload_message:
+        tracker_dir = dir / "box-lfs"
+        trackers = list(tracker_dir.glob("*.boxtracker"))
+
+    #try to pull link from trackers
         links = []
         for tracker in trackers:
-            df = box_lfs_helpers.read_boxtracker(tracker.name, dir=dir, return_column="box_link")
-            if not df.empty:
-                val = df.iloc[0]
-                if pd.notna(val):
-                    links.append(val)
-        
+            tracker_name = tracker.name
+            val = box_lfs_helpers.read_boxtracker(tracker_name, dir=dir, return_column="box_link")
+            if isinstance(val, str):
+                links.append(val)
+
+        folder_name = dir.name
         if links:
-            print(f"Please upload files from '{dir.name}/box-lfs/upload' to Box here:\n{links[0]}")
+            print(f"\nPlease upload files from '{folder_name}/box-lfs/upload' to Box here:\n{links[0]}")
         else:
-            print(
-                f"Please upload files from '{dir.name}/box-lfs/upload' to Box here:\n"
-                f"'Wildfire_Water_Security/02_Nodes/01_Empirical/06_Projects-large-file-backup/{dir.name}'"
-            ) 
+            print(f"\nPlease upload files from '{folder_name}/box-lfs/upload' to Box here:\n"
+                  f"'Wildfire_Water_Security/02_Nodes/your node/Projects/{folder_name}/box-lfs'")
 
 ##test function does what we expect
 dir = "C:/Users/wampleka/Documents/Projects/testing-lfs"

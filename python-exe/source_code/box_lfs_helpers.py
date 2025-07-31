@@ -9,13 +9,20 @@ import pandas as pd
 import numpy as np
 from datetime import datetime
 
-#read a boxtracker
-def read_boxtracker(tracker, dir=None, return_column="all"):
-    #if dir not specified try to guess from wd
+#guess directory and make sure it exists (prevents writing this every time)
+def dir_check(dir):
     if dir is None:
         dir = Path.cwd()
     else:
         dir = Path(dir)
+
+    if not dir.exists():
+        raise FileNotFoundError(f"Directory does not exist: {dir}")
+    return(dir)
+
+#read a boxtracker
+def read_boxtracker(tracker, dir=None, return_column="all"):
+    dir = dir_check(dir)
     tracker = Path(tracker)
 
     #ensure directory exists, if not give error
@@ -42,14 +49,7 @@ def read_boxtracker(tracker, dir=None, return_column="all"):
 
 #get info for boxtracker based on a file
 def get_boxtracker(file, dir=None): 
-    if dir is None:
-        dir = Path.cwd()
-    else:
-        dir = Path(dir)
-
-    if not dir.is_dir():
-        raise ValueError(f"Directory '{dir}' does not exist.")
-
+    dir = dir_check(dir)
     file_path = dir / file
 
     if not file_path.exists():
@@ -73,13 +73,7 @@ def get_boxtracker(file, dir=None):
 
 #write boxtracker file to box-lfs
 def write_boxtracker(file, dir=None):
-    if dir is None:
-        dir = Path.cwd()
-    else:
-        dir = Path(dir)
-
-    if not dir.is_dir():
-        raise ValueError(f"Directory '{dir}' does not exist.")
+    dir = dir_check(dir)
 
     file_path = dir / file
     if not file_path.exists():
@@ -99,13 +93,7 @@ def write_boxtracker(file, dir=None):
 
 #add a single file to box lfs
 def track_blfs(file, dir=None):
-    if dir is None:
-        dir = Path.cwd()
-    else:
-        dir = Path(dir)
-
-    if not dir.is_dir():
-        raise ValueError(f"Directory '{dir}' does not exist.")
+    dir = dir_check(dir)
 
     file_path = dir / file
     if not file_path.exists():
@@ -136,14 +124,7 @@ def track_blfs(file, dir=None):
 
 #set up box lfs 
 def init_blfs(dir=None):
-    # Use current working directory if none is provided
-    if dir is None:
-        dir = Path.cwd()
-    else:
-        dir = Path(dir)
-
-    if not dir.is_dir():
-        raise ValueError(f"Directory '{dir}' does not exist.")
+    dir = dir_check(dir)
 
     # Step 1: Create folder structure
     (dir / "box-lfs").mkdir(parents=True, exist_ok=True)
@@ -161,13 +142,7 @@ def init_blfs(dir=None):
 
 #check for files that should be tracked 
 def check_files_blfs(dir=None, size=10, new=False):
-    if dir is None:
-        dir = Path.cwd()
-    else:
-        dir = Path(dir)
-
-    if not dir.is_dir():
-        raise ValueError(f"Directory '{dir}' does not exist.")
+    dir = dir_check(dir)
 
     # Step 1: Get all files recursively
     all_files = [f for f in dir.rglob("*") if f.is_file()]
@@ -198,14 +173,9 @@ def move_file_blfs(file, dir=None, download=None):
     else: 
         download = Path(download)
 
-    if dir is None:
-        dir = Path.cwd()
-    else:
-        dir = Path(dir)
+    dir = dir_check(dir)
 
     # Safety checks
-    if not dir.is_dir():
-        raise FileNotFoundError(f"Directory does not exist: {dir}")
     if not download.is_dir():
         raise FileNotFoundError(f"Download folder does not exist: {download}")
     
@@ -224,25 +194,13 @@ def move_file_blfs(file, dir=None, download=None):
 
 #check if box lfs is being used on repo (returns T/F)
 def check_blfs(dir=None):
-    if dir is None:
-        dir = Path.cwd()
-    else:
-        dir = Path(dir)
+   dir =  dir_check(dir)
 
-    if not dir.exists():
-        raise FileNotFoundError(f"Directory does not exist: {dir}")
-
-    return (dir / "box-lfs").exists() 
+   return (dir / "box-lfs").exists() 
 
 #update file tracked by blfs (check for differences return TRUE if it needs to be updated) 
 def update_blfs(file, dir=None):
-    if dir is None:
-        dir = Path.cwd()
-    else:
-        dir = Path(dir)
-
-    if not dir.exists():
-        raise FileNotFoundError(f"Directory does not exist: {dir}")
+    dir = dir_check(dir)
 
     # Build tracker filename
     tracker_name = file.stem + ".boxtracker" if isinstance(file, Path) else Path(file).stem + ".boxtracker"
@@ -269,13 +227,7 @@ def update_blfs(file, dir=None):
 
 #add box file location to tracker 
 def add_box_loc(link, dir=None):
-    if dir is None:
-        dir = Path.cwd()
-    else:
-        dir = Path(dir)
-
-    if not dir.exists():
-        raise FileNotFoundError(f"Directory does not exist: {dir}")
+    dir = dir_check(dir)
 
     box_lfs_dir = dir / "box-lfs"
     if not box_lfs_dir.exists():
@@ -290,3 +242,65 @@ def add_box_loc(link, dir=None):
 
         # Write back to CSV without row names and without quotes
         tracker_df.to_csv(tracker_file, index=False, quoting=3)  # quoting=3 => csv.QUOTE_NONE
+
+#message for uploading data 
+def upld_message(dir):
+    dir = Path(dir)
+    tracker_dir = dir / "box-lfs"
+
+    if not tracker_dir.is_dir():
+        print(f"Warning: No 'box-lfs' directory found in {dir}")
+        return
+
+    # Find all .boxtracker files in the tracker directory
+    trackers = list(tracker_dir.glob("*.boxtracker"))
+
+    # Extract links
+    links = []
+    for tracker in trackers:
+        result = read_boxtracker(tracker.name, dir=dir, return_column="box_link")
+        if isinstance(result, str) and result.strip():
+            links.append(result)
+    
+    base = dir.name
+
+    if links:
+        print(f"Please upload files from '{base}/box-lfs/upload' to Box here:\n{links[0]}")
+    else:
+        print(f"Please upload files from '{base}/box-lfs/upload' to Box here:\n"
+              f"'Wildfire_Water_Security/02_Nodes/your node/Projects/{base}/box-lfs'")
+        
+#message for downloading data 
+def dwld_message(dir):
+    dir = Path(dir)
+    tracker_dir = dir / "box-lfs"
+
+    if not tracker_dir.is_dir():
+        print(f"Warning: No 'box-lfs' directory found in {dir}")
+        return
+
+    # Find all .boxtracker files in the tracker directory
+    trackers = list(tracker_dir.glob("*.boxtracker"))
+
+    # Extract links
+    links = []
+    for tracker in trackers:
+        result = read_boxtracker(tracker.name, dir=dir, return_column="box_link")
+        if isinstance(result, str) and result.strip():
+            links.append(result)
+    
+    base = dir.name
+    upload_path = tracker_dir / "upload"
+
+
+    if links:
+        print(
+                f"There are large files in this repository stored on Box that need to be downloaded.\n"
+                f"Please download files, likely located here:\n"
+                f"{chr(10).join(links)}\n"
+                f"And place them here:\n{upload_path}")
+    else:
+         print(
+            f"Please download files from Box here:\n"
+            f"'Wildfire_Water_Security/02_Nodes/your node/Projects/{base}/box-lfs'\n"
+            f"And place them here:\n{upload_path}")
