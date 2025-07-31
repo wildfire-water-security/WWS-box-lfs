@@ -7,7 +7,7 @@ import sys
 from pathlib import Path
 import pandas as pd
 import numpy as np
-
+import zipfile
 
 # Replace with the path to the folder containing your helper script (remove later??)
 helpers_dir = Path(r"C:\Users\wampleka\Documents\Projects\WWS-box-lfs\python-exe\source_code").resolve()
@@ -18,15 +18,11 @@ if str(helpers_dir) not in sys.path:
 
 import box_lfs_helpers
 
+
+
 #start tracking new repo with box-lfs
 def new_repo_blfs(dir=None, size=10):
-    if dir is None:
-        dir = Path.cwd()
-    else:
-        dir = Path(dir)
-    
-    if not dir.exists():
-        raise FileNotFoundError(f"Directory does not exist: {dir}")
+    box_lfs_helpers.dir_check(dir)
     
     # Set up file structure
     box_lfs_helpers.init_blfs(dir)
@@ -39,9 +35,8 @@ def new_repo_blfs(dir=None, size=10):
     print("WARNING: The following files will no longer be tracked by git:\n" + "\n".join(file_names))
     
     # Message about uploading files
-    print(f"Please upload files from '{dir.name}/box-lfs/upload' to Box here:\n"
-          f"'Wildfire_Water_Security/02_Nodes/01_Empirical/06_Projects-large-file-backup/{dir.name}'")
-    
+    box_lfs_helpers.upld_message(dir)
+
     # Ask user for Box link
     link = input("What is the box link to the folder where the data is now backed up? ")
     
@@ -54,13 +49,7 @@ new_repo_blfs(dir=dir)
 
 #check files after a push 
 def push_repo_blfs(dir=None, size=10):
-    if dir is None:
-        dir = Path.cwd()
-    else:
-        dir = Path(dir)
-    
-    if not dir.exists():
-        raise FileNotFoundError(f"Directory does not exist: {dir}")
+    box_lfs_helpers.dir_check(dir)
     
     # identify large files (new and existing)
     lg_files = box_lfs_helpers.check_files_blfs(dir, size=size)
@@ -98,24 +87,64 @@ def push_repo_blfs(dir=None, size=10):
 
     # print upload message
     if print_upload_message:
-        tracker_dir = dir / "box-lfs"
-        trackers = list(tracker_dir.glob("*.boxtracker"))
-
-    #try to pull link from trackers
-        links = []
-        for tracker in trackers:
-            tracker_name = tracker.name
-            val = box_lfs_helpers.read_boxtracker(tracker_name, dir=dir, return_column="box_link")
-            if isinstance(val, str):
-                links.append(val)
-
-        folder_name = dir.name
-        if links:
-            print(f"\nPlease upload files from '{folder_name}/box-lfs/upload' to Box here:\n{links[0]}")
-        else:
-            print(f"\nPlease upload files from '{folder_name}/box-lfs/upload' to Box here:\n"
-                  f"'Wildfire_Water_Security/02_Nodes/your node/Projects/{folder_name}/box-lfs'")
+        box_lfs_helpers.upld_message(dir)
 
 ##test function does what we expect
 dir = "C:/Users/wampleka/Documents/Projects/testing-lfs"
 push_repo_blfs(dir=dir)
+
+#get files after a clone 
+def clone_repo_blfs(dir=None, download=None):
+    dir =  box_lfs_helpers.dir_check(dir)
+    repo_name = dir.name
+
+    # Check if LFS is needed
+    if  box_lfs_helpers.check_blfs(dir):
+        box_lfs_helpers.dwld_message(dir)
+        input("Hit any key once files have been downloaded to continue setting up the repo...")
+
+        # Set download path
+        if download is None:
+            download = Path.home() / "Downloads"
+        else:
+            download = Path(download)
+
+        # Find the newest matching zip file
+        zip_files = sorted(
+            download.glob("box-lfs*.zip"),
+            key=lambda f: f.stat().st_mtime,
+            reverse=True
+        )
+
+        if not zip_files:
+            print(f"No zip file found in {download} for {repo_name}")
+            return
+        
+
+        #give user to correct wrong guessed zip
+        file = zip_files[0]
+        guess = download / file
+        replace = input(f"Zip file for downloaded data appears to be: {guess}\n" 
+                        "Press enter to use this file or provide a different file path: ").strip()
+       
+        if replace: 
+            replace = Path(replace)
+            if replace.exists():
+                file = replace 
+            else: 
+                raise FileNotFoundError("The specified file does not exist.")
+        else: 
+            file = file
+
+        # Unzip it into Downloads folder
+        with zipfile.ZipFile(file, 'r') as zip_ref:
+            zip_ref.extractall(download)
+
+        # Get unzipped folder contents
+        extracted_folder = download / file.stem
+        
+        files = list(extracted_folder.iterdir())
+
+        # Move files to box-lfs directory
+        for file in files:
+             box_lfs_helpers.move_file_blfs(file.name, dir=dir, download=download)

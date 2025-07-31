@@ -74,19 +74,25 @@ source("R-scripts/box-lfs-helpers.R")
        if(is.null(download)){download <- file.path(fs::path_home(), "Downloads")}
        
        #may have multiple copies, get the newest
-       file <- list.files(downloads, pattern=paste0("^",basename(repo), "( \\(\\d+\\))?\\.zip$"))
-       file_info <- file.info(file.path(downloads, file))
+       file <- list.files(download, pattern=paste0("^","box-lfs", ".*\\.zip$"))
+       file_info <- file.info(file.path(download, file))
        file <- file[which(file_info$mtime == max(file_info$mtime))]
+       
+       #give user to correct wrong guessed zip
+       replace <- readline(paste0("Zip file for downloaded data appears to be: ", file.path(download, file), 
+                           "\nPress enter to use this file or provide a different file path."))
+       
+       file <- ifelse(replace == "", replace, file)
        
        #unzip
        utils::unzip(file.path(downloads, file),
-                    exdir = downloads)
+                    exdir = download)
        
        #get file that need to be moved
-       files <- list.files(file.path(downloads, basename(repo)))
+       files <- list.files(file.path(download, basename(repo)))
        
        #move files to correct location
-       place <- sapply(files, move_box_lfs, dir=dir, download=download)
+       place <- sapply(files, move_file_blfs, dir=dir, download=download)
      
    }
  }

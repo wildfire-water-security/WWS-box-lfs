@@ -35,6 +35,12 @@
     
     tracker <- get.boxtracker(file, dir)
     
+    # Get link if it exists in previous version
+    if(file.exists(file.path(dir, "box-lfs", tracker_name))){
+      link <- read.boxtracker(tracker, dir=dir, return="box_link")
+      tracker$box_link <- link
+    }
+    
     utils::write.csv(tracker, file.path(dir,"box-lfs", tracker_name), row.names = FALSE, 
                      quote=FALSE)
     
@@ -203,12 +209,10 @@
     if(length(link) > 0){
       message(paste0("there are large files in this repository stored on box that need to be downloaded. Please download files, likely located here:\n",
                      paste(link, collapse="\n"),
-                     "\nand place here:\n",
-                     file.path(dir, "box-lfs/upload")))
+                     "\nthey will be automatically moved to the correct locations from your downloads folder")))
       
     }else{
       message(paste0("Please download files from Box here:\n'Wildfire_Water_Security/02_Nodes/your node/Projects/", 
-                     basename(dir), "/box-lfs", "'", "\nand place here:\n",
-                     file.path(dir, "box-lfs/upload")))}
+                     basename(dir), "/box-lfs", "'", "\nthey will be automatically moved to the correct locations from your downloads folder")))}
     
   }

@@ -85,8 +85,13 @@ def write_boxtracker(file, dir=None):
     # Get tracker DataFrame
     tracker = get_boxtracker(file, dir)
 
-    # Write to CSV (no row names, no quotes)
+    # Get link if it exists in previous version 
     output_path = dir / "box-lfs" / tracker_name
+    if output_path.exists():
+        link = read_boxtracker(tracker, dir=dir, return_type="box_link")
+        tracker["box_link"] = link
+
+    # Write to CSV (no row names, no quotes)
     output_path.parent.mkdir(parents=True, exist_ok=True)  # make sure folder exists
 
     tracker.to_csv(output_path, index=False, quoting=3)  # quoting=3 is csv.QUOTE_NONE
@@ -181,11 +186,10 @@ def move_file_blfs(file, dir=None, download=None):
     
     # Get tracker info
     name = Path(file).stem  # removes file extension
-    tracker_path = dir / "box-lfs" / f"{name}.boxtracker"
-    tracker_df = pd.read_csv(tracker_path)
+    tracker = f"{name}.boxtracker"
 
     # Get destination relative path from tracker
-    location = tracker_df["file_path"].iloc[0]
+    location = read_boxtracker(tracker, dir=dir, return_column="file_path")
     dest_path = dir / location
 
     # Copy the file
@@ -290,17 +294,15 @@ def dwld_message(dir):
             links.append(result)
     
     base = dir.name
-    upload_path = tracker_dir / "upload"
-
 
     if links:
         print(
                 f"There are large files in this repository stored on Box that need to be downloaded.\n"
                 f"Please download files, likely located here:\n"
                 f"{chr(10).join(links)}\n"
-                f"And place them here:\n{upload_path}")
+                f"they will be automatically moved to the correct locations from your downloads folder")
     else:
          print(
             f"Please download files from Box here:\n"
             f"'Wildfire_Water_Security/02_Nodes/your node/Projects/{base}/box-lfs'\n"
-            f"And place them here:\n{upload_path}")
+            f"they will be automatically moved to the correct locations from your downloads folder")
