@@ -36,7 +36,7 @@
    #identify large files and track 
    files <- check_files_blfs(dir, size=size, new=TRUE)
    
-   #if there are new files to track
+   #if there are new files to track [or modifed]
    if(length(files) > 0){
      file_names <- unname(sapply(files, track_blfs, dir))
      

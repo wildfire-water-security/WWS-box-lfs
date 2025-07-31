@@ -2,7 +2,6 @@
     #works similar to native lfs but clunkier because box, but helps store large files on box, while linking as easily
     #as possible to a cloned repository from github.
 
-
 import os
 import shutil
 from pathlib import Path
@@ -41,12 +40,6 @@ def read_boxtracker(tracker, dir=None, return_column="all"):
     
     return data 
 
-##test function does what we expect
-dir = "C:/Users/wampleka/Documents/Projects/testing-lfs"
-tracker = "B07B08.boxtracker"
-output = read_boxtracker(tracker, dir=dir)
-print(output)
-
 #get info for boxtracker based on a file
 def get_boxtracker(file, dir=None): 
     if dir is None:
@@ -78,11 +71,6 @@ def get_boxtracker(file, dir=None):
 
     return tracker 
 
-##test function does what we expect
-file = "Site_selected_20250521/B07B08.kmz" 
-dir = "C:/Users/wampleka/Documents/Projects/testing-lfs"
-output = get_boxtracker(file=file, dir=dir)
-
 #write boxtracker file to box-lfs
 def write_boxtracker(file, dir=None):
     if dir is None:
@@ -108,11 +96,6 @@ def write_boxtracker(file, dir=None):
     output_path.parent.mkdir(parents=True, exist_ok=True)  # make sure folder exists
 
     tracker.to_csv(output_path, index=False, quoting=3)  # quoting=3 is csv.QUOTE_NONE
-
-##test function does what we expect
-file = "Site_selected_20250521/B07B08.kmz" 
-dir = "C:/Users/wampleka/Documents/Projects/testing-lfs"
-output = write_boxtracker(file=file, dir=dir)
 
 #add a single file to box lfs
 def track_blfs(file, dir=None):
@@ -151,11 +134,6 @@ def track_blfs(file, dir=None):
     # Step 4: return file name
     return file  
 
-##test function does what we expect
-file = "Site_selected_20250521/B07B08.kmz" 
-dir = "C:/Users/wampleka/Documents/Projects/testing-lfs"
-output = track_blfs(file=file, dir=dir)
-
 #set up box lfs 
 def init_blfs(dir=None):
     # Use current working directory if none is provided
@@ -180,10 +158,6 @@ def init_blfs(dir=None):
     if "box-lfs/upload" not in [line.strip() for line in ignore_lines]:
         with gitignore_path.open("a") as f:
             f.write("\nbox-lfs/upload")
-
-##test function does what we expect
-dir = "C:/Users/wampleka/Documents/Projects/testing-lfs"
-output = init_blfs(file=file, dir=dir)
 
 #check for files that should be tracked 
 def check_files_blfs(dir=None, size=10, new=False):
@@ -215,10 +189,6 @@ def check_files_blfs(dir=None, size=10, new=False):
         large_files = list(set(large_files) - set(current_tracked))
 
     return large_files 
-
-##test function does what we expect
-dir = "C:/Users/wampleka/Documents/Projects/testing-lfs"
-output = check_files_blfs(dir=dir)
 
 #copy files from download to correct repo spots 
 def move_file_blfs(file, dir=None, download=None):
@@ -252,11 +222,6 @@ def move_file_blfs(file, dir=None, download=None):
     src_file = download / dir.name / Path(file).name
     shutil.copy2(src_file, dest_path)
 
-##test function does what we expect
-dir = "C:/Users/wampleka/Documents/Projects/testing-lfs"
-file = "B01B04.kmz"
-output = move_file_blfs(file=file, dir=dir)
-
 #check if box lfs is being used on repo (returns T/F)
 def check_blfs(dir=None):
     if dir is None:
@@ -268,10 +233,6 @@ def check_blfs(dir=None):
         raise FileNotFoundError(f"Directory does not exist: {dir}")
 
     return (dir / "box-lfs").exists() 
-
-##test function does what we expect
-dir = "C:/Users/wampleka/Documents/Projects/testing-lfs"
-output = check_blfs(dir=dir)
 
 #update file tracked by blfs (check for differences return TRUE if it needs to be updated) 
 def update_blfs(file, dir=None):
@@ -308,11 +269,6 @@ def update_blfs(file, dir=None):
     else:
         return None 
 
-##test function does what we expect
-file = "Site_selected_20250521/B07B08.kmz" 
-dir = "C:/Users/wampleka/Documents/Projects/testing-lfs"
-output = update_blfs(file=file, dir=dir)
-
 #add box file location to tracker 
 def add_box_loc(link, dir=None):
     if dir is None:
@@ -336,8 +292,3 @@ def add_box_loc(link, dir=None):
 
         # Write back to CSV without row names and without quotes
         tracker_df.to_csv(tracker_file, index=False, quoting=3)  # quoting=3 => csv.QUOTE_NONE
-
-##test function does what we expect
-link = "https://oregonstate.app.box.com/folder/332912853178" 
-dir = "C:/Users/wampleka/Documents/Projects/testing-lfs"
-output = add_box_loc(link=link, dir=dir)
