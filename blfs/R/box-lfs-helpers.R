@@ -1,10 +1,35 @@
 
-## get file location or other data from tracker
+#' Get file location or other data from boxtracker
+#'
+#' The .boxtracker files stores the relative location of the file, the box link, and file info (size, dates last modified and changed).
+#' This function is used to easily read and extract data from those files.
+#'
+#' @param tracker the name of the file with the .boxtracker extension
+#' @param dir the file path to the file directory
+#' @param return the column to return. options are: file_path, box_link, size_MB, last_modified, last_changed
+#'
+#' @returns
+#' if \code{return} is "all" will return a data.frame, otherwise will return a vector of length one with the column value
+#'
+#' @export
+#'
+#' @examples
+#' read.boxtracker("large-file1", dir="data-raw")
+#' read.boxtracker("large-file1", dir="data-raw", return = "size_MB")
+#'
   read.boxtracker <- function(tracker,dir=NULL, return="all"){
+    stopifnot(length(return) == 1)
     dir <- dir_check(dir)
-    
+
+    #add extension if forgotten
+    if(!grepl(".boxtracker$", tracker)){
+      tracker <- paste0(tracker, ".boxtracker")
+    }
+
+    #read file
     tracker <- utils::read.csv(file.path(dir, "box-lfs", tracker),sep = ",")
-    
+
+    #return data
     if(return == "all"){
       data <- tracker
     }else{
@@ -16,124 +41,124 @@
 ## get and format info for tracker file (but don't write to file)
   get.boxtracker <- function(file, dir=NULL){
     dir <- dir_check(dir)
-    
+
     tracker_name <- paste0(tools::file_path_sans_ext(basename(file)), ".boxtracker")
-    
+
     #get info on file
     info <- file.info(file.path(dir, file))
-    
-    tracker <- data.frame(file_path=file, box_link = NA, size_MB =  info$size*10^-6, 
+
+    tracker <- data.frame(file_path=file, box_link = NA, size_MB =  info$size*10^-6,
                           last_modified = strftime(info$mtime, "%Y-%m-%d %H:%M:%S"),
                           last_changed = strftime(info$ctime, "%Y-%m-%d %H:%M:%S"))
     return(tracker)
   }
-  
+
 ## function to write tracker file
   write.boxtracker <- function(file, dir=NULL){
     dir <- dir_check(dir)
     tracker_name <- paste0(tools::file_path_sans_ext(basename(file)), ".boxtracker")
-    
+
     tracker <- get.boxtracker(file, dir)
-    
+
     # Get link if it exists in previous version
     if(file.exists(file.path(dir, "box-lfs", tracker_name))){
       link <- read.boxtracker(tracker, dir=dir, return="box_link")
       tracker$box_link <- link
     }
-    
-    utils::write.csv(tracker, file.path(dir,"box-lfs", tracker_name), row.names = FALSE, 
+
+    utils::write.csv(tracker, file.path(dir,"box-lfs", tracker_name), row.names = FALSE,
                      quote=FALSE)
-    
+
   }
 
-## function to add a single file to box lfs 
+## function to add a single file to box lfs
   track_blfs <- function(file, dir=NULL){
     dir <- dir_check(dir)
-    
-    #create tracking file 
+
+    #create tracking file
       write.boxtracker(file, dir)
-    
-    #add to .gitignore 
+
+    #add to .gitignore
       ignore <- file.path(dir, ".gitignore")
-      if(!file.exists(ignore)){file.create(ignore)} #create .gitignore if it doesn't exist 
-      
-      #check if already in gitignore 
+      if(!file.exists(ignore)){file.create(ignore)} #create .gitignore if it doesn't exist
+
+      #check if already in gitignore
       added <- any(grepl(paste0(file, "$"), readLines(ignore, warn=FALSE)))
       if(!added){cat(paste0("\n", file), file=ignore, append=T)} #only add if not already there
-      
-    #move to upload folder for upload 
+
+    #move to upload folder for upload
       file.copy(file.path(dir, file), file.path(dir, "box-lfs/upload/", basename(file)))
-      
-    #return file name for warning message 
+
+    #return file name for warning message
       return(file)
   }
-  
-## function to set up box lfs 
+
+## function to set up box lfs
   init_blfs <- function(dir=NULL){
     #guess on dir if not supplied
     dir <- dir_check(dir)
-      
-    #create file stucture 
-      dir.create(file.path(dir, "box-lfs"), showWarnings = FALSE) 
+
+    #create file stucture
+      dir.create(file.path(dir, "box-lfs"), showWarnings = FALSE)
       dir.create(file.path(dir, "box-lfs/upload"), showWarnings = FALSE)
-      
+
     #set up .gitignore with upload folder
       ignore <- file.path(dir, ".gitignore")
-      if(!file.exists(ignore)){file.create(ignore)} #create .gitignore if it doesn't exist 
-      
-      #check if already in gitignore 
+      if(!file.exists(ignore)){file.create(ignore)} #create .gitignore if it doesn't exist
+
+      #check if already in gitignore
       added <- any(grepl("^box-lfs/upload$", readLines(ignore, warn=FALSE)))
       if(!added){cat("\nbox-lfs/upload", file=ignore, append = T)} #only add if not already there
-      
+
   }
 
-## check for large files that should be tracked 
+## check for large files that should be tracked
   check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
     dir <- dir_check(dir)
-    
-    #flag files that should be stored on box 
+
+    #flag files that should be stored on box
     files <- list.files(dir, full.names=F, recursive = T)
     sizes <- file.size(file.path(dir, files)) / 10^6 #in MB
-    large_files <- files[sizes > size] 
-    
-    #remove files living in box-lfs/upload 
+    large_files <- files[sizes > size]
+
+    #remove files living in box-lfs/upload
     large_files <- large_files[!grepl("^box-lfs/upload/", large_files)]
-    
+
     #built in to only get new large files
     if(new & dir.exists(file.path(dir, "box-lfs"))){
       #get all tracked files
       tracked <- list.files(file.path(dir, "box-lfs"))
       tracked <- tracked[tracked != "upload"]
-      
+
       #check for new files
       curr_track <- sapply(tracked, read.boxtracker, dir=dir, return="file_path")
       large_files <- setdiff(large_files,curr_track)
     }
-    
+
     return(large_files)
   }
-  
-## copy files from download to correct repo spots 
+
+## copy files from download to correct repo spots
   move_file_blfs <- function(file, dir=NULL, download=NULL){
     if(is.null(download)){download <- file.path(fs::path_home(), "Downloads")}
     if(is.null(dir)){dir <- getwd()}
-    
+
     stopifnot(dir.exists(dir), dir.exists(download))
-    
-    #get tracker to know where to put it 
+
+    #get tracker to know where to put it
     name <- tools::file_path_sans_ext(basename(file))
     tracker <- utils::read.csv(file.path(dir, "box-lfs", paste0(name, ".boxtracker")),sep = ",")
-    
+
     location <- tracker$file_path
-    
-    #copy file to correct location 
+
+    #copy file to correct location
     file.copy(file.path(downloads, basename(dir), file), file.path(dir,location), overwrite = TRUE)
   }
 
 ## check if box lfs is being used on repo (returns T/F)
   check_blfs <- function(dir){
     dir <- dir_check(dir)
-    
+
     return <- dir.exists(file.path(dir, "box-lfs"))
     return(return)
   }
@@ -144,7 +169,7 @@
 
     #get file info
     tracker_name <- paste0(tools::file_path_sans_ext(basename(file)), ".boxtracker")
-    
+
     boxtracker <- read.boxtracker(tracker_name, dir)
     file_tracker <- get.boxtracker(file, dir)
 
@@ -152,78 +177,78 @@
     box_mtime <- as.POSIXct(boxtracker$last_modified)
     file_mtime <- as.POSIXct(file_tracker$last_modified)
     if(box_mtime < file_mtime){
-      #file has been changed since last upload to box, need to upload 
+      #file has been changed since last upload to box, need to upload
         #copy to upload folder for easy upload
         file.copy(file.path(dir, file), file.path(dir, "box-lfs/upload/", basename(file)), overwrite = TRUE)
-        
+
         #update boxtracker
-        write.boxtracker(file, dir) 
-        
+        write.boxtracker(file, dir)
+
         return("upload")
     }else if(box_mtime > file_mtime){
       #boxtracker shows new version is on box, need to download
       return("download")
     }else{
       #file is the same in local and on box (according to boxtracker)
-      #don't return file, nothing needed 
+      #don't return file, nothing needed
     }
-    
+
   }
-  
-## add box file location to tracker 
+
+## add box file location to tracker
   add_box_loc <- function(link, dir=NULL){
     dir <- dir_check(dir)
-    
+
     for(x in list.files(file.path(dir, "box-lfs"), pattern="boxtracker")){
       tracker <- read.boxtracker(x, dir)
       tracker$box_link <- link
-      
-      utils::write.csv(tracker, file.path(dir,"box-lfs", x), row.names = FALSE, 
+
+      utils::write.csv(tracker, file.path(dir,"box-lfs", x), row.names = FALSE,
                        quote=FALSE)
     }
   }
-  
-## guess directory and make sure it exists 
+
+## guess directory and make sure it exists
   dir_check <- function(dir){
     #guess on dir if not supplied
     if(is.null(dir)){dir <- getwd()}
     stopifnot(dir.exists(dir))
     return(dir)
   }
-  
-## message about uploading data 
+
+## message about uploading data
   upld_message <- function(dir){
-    #get folder link to go directly 
+    #get folder link to go directly
     trackers <- list.files(file.path(dir, "box-lfs"), pattern = ".boxtracker")
     link <- unlist(sapply(trackers,read.boxtracker, dir=dir, return="box_link"))
     link <- link[!is.na(link)]
-    
+
     if(length(link) > 0){
-      message(paste0("Please upload files from '", basename(dir), 
+      message(paste0("Please upload files from '", basename(dir),
                      "/box-lfs/upload' to Box here:\n", link[1]))
-      
+
     }else{
-      message(paste0("Please upload files from '", basename(dir), 
-                     "/box-lfs/upload' to Box here:\n'Wildfire_Water_Security/02_Nodes/your node/Projects/", 
+      message(paste0("Please upload files from '", basename(dir),
+                     "/box-lfs/upload' to Box here:\n'Wildfire_Water_Security/02_Nodes/your node/Projects/",
                      basename(dir), "/box-lfs", "'"))
-      
+
     }
   }
-  
-## message about downloading data 
+
+## message about downloading data
   dwld_message <- function(dir){
     #try to direct right to link
     trackers <- list.files(file.path(dir, "box-lfs"), pattern = ".boxtracker")
     link <- unlist(sapply(trackers,read.boxtracker, dir=dir, return="box_link"))
     link <- link[!is.na(link)]
-    
+
     if(length(link) > 0){
       message(paste0("there are large files in this repository stored on box that need to be downloaded. Please download files, likely located here:\n",
                      paste(link, collapse="\n"),
                      "\nthey will be automatically moved to the correct locations from your downloads folder"))
-      
+
     }else{
-      message(paste0("Please download files from Box here:\n'Wildfire_Water_Security/02_Nodes/your node/Projects/", 
+      message(paste0("Please download files from Box here:\n'Wildfire_Water_Security/02_Nodes/your node/Projects/",
                      basename(dir), "/box-lfs", "'", "\nthey will be automatically moved to the correct locations from your downloads folder"))}
-    
+
   }

@@ -148,3 +148,5 @@ def clone_repo_blfs(dir=None, download=None):
         # Move files to box-lfs directory
         for file in files:
              box_lfs_helpers.move_file_blfs(file.name, dir=dir, download=download)
+
+#pulling changes for repo (run this code after to see if any files should be updated)
