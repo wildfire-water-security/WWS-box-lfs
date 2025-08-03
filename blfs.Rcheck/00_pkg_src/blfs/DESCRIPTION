@@ -14,12 +14,12 @@ Description: More about what it does (maybe more than one line).
     Continuation lines should be indented.
 License: AGPL (>= 3)
 Encoding: UTF-8
-LazyData: true
-Suggests: 
-    testthat (>= 3.0.0)
+Suggests: testthat (>= 3.0.0)
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2
-Imports: 
-    fs,
-    tools,
-    utils
+Imports: fs, tools, utils
+NeedsCompilation: no
+Packaged: 2025-08-03 18:28:00 UTC; wampleka
+Author: Katie Wampler [aut, cre] (ORCID:
+    <https://orcid.org/0000-0002-5584-7554>)
+Maintainer: Katie Wampler <katie.wampler@oregonstate.edu>
