@@ -23,7 +23,7 @@
 #' @export
 #'
 #' @examples
-#' tmp <- tempdir()
+#' tmp <- withr::local_tempdir()
 #' new_repo_blfs(tmp)
 new_repo_blfs <- function(dir=NULL, size=10){
   #guess on dir if not supplied

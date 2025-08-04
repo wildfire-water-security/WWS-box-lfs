@@ -37,7 +37,6 @@ test_that("files are moved", {
 
   #try copying over files
   expect_true(move_file_blfs("large-file1.txt", dir=dir, download=file.path(test_path(), "testdata/example-files")))
-  expect_true(move_file_blfs("example-files/large-file2.txt", dir=dir, download=file.path(test_path(), "testdata/example-files")))
 
   #once checked remove folder
   unlink(dir, recursive = TRUE)

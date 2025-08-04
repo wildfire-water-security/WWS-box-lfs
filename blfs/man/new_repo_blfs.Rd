@@ -31,6 +31,6 @@ it's version. Any files larger than the specified size (default is 10 MB) will b
 to Box and supply the Box link to those files.
 }
 \examples{
-tmp <- tempdir()
+tmp <- withr::local_tempdir()
 new_repo_blfs(tmp)
 }

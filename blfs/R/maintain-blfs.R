@@ -69,8 +69,15 @@ move_file_blfs <- function(file, dir=NULL, download=NULL){
   name <- tools::file_path_sans_ext(basename(file))
   location <- read.boxtracker(paste0(name, ".boxtracker"), dir=dir, return="file_path")
 
+  destination_dir <- dirname(file.path(dir,location))
+
+  # Create the directory if it doesn't exist, including parent directories
+  if (!dir.exists(destination_dir)) {
+    dir.create(destination_dir, recursive = TRUE, showWarnings = FALSE)
+  }
+
   #copy file to correct location
-  file.copy(file.path(download, basename(file)), file.path(dir,location), overwrite = TRUE)
+  file.copy(file.path(download, file), file.path(dir,location), overwrite = TRUE)
 }
 
 ## update file tracked by blfs (check for differences return TRUE if it needs to be updated) [going from local to repo/box]

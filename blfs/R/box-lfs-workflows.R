@@ -4,6 +4,9 @@
   #set up existing repo
   #clone repo
 
+
+#what if file have the same name??
+
 #TODO: check for modified files not just new files
 #source("R-scripts/box-lfs-helpers.R")
 
