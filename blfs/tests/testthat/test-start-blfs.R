@@ -13,11 +13,11 @@ test_that("start up box works", {
   expect_true(file.exists(file.path(dir, ".gitignore")))
 
   #move a file in to track
-  dir.create(file.path(dir, "subfolder"))
-  move <- file.copy(file.path(test_path(), "testdata/subfolder/large-file1.txt"), file.path(dir, "subfolder"))
+  dir.create(file.path(dir, "example-files"))
+  move <- file.copy(file.path(test_path(), "testdata/example-files/large-file1.txt"), file.path(dir, "example-files"))
 
   #start tracking
-  name <- track_blfs(file= "subfolder/large-file1.txt", dir=dir)
+  name <- track_blfs(file= "example-files/large-file1.txt", dir=dir)
 
   #ensure tracker created and added to gitignore and copied to upload
   expect_true(file.exists(file.path(dir, "box-lfs/large-file1.boxtracker")))
@@ -26,7 +26,7 @@ test_that("start up box works", {
 
   expect_warning(ignore <- read.table(file.path(dir, ".gitignore")))
   expect_equal(ignore[1,1], "box-lfs/upload")
-  expect_equal(ignore[2,1], "subfolder/large-file1.txt")
+  expect_equal(ignore[2,1], "example-files/large-file1.txt")
 
   #once checked remove folder
   unlink(dir, recursive = TRUE)

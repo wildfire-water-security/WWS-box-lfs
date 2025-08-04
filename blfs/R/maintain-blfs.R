@@ -26,6 +26,8 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
 
   #remove files living in box-lfs/upload
   large_files <- large_files[!grepl("^box-lfs/upload/", large_files)]
+  large_files <- large_files[!grepl("boxtracker$", large_files)]
+
 
   #built in to only get new large files
   if(new & dir.exists(file.path(dir, "box-lfs"))){
