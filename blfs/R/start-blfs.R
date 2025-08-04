@@ -10,9 +10,8 @@
 #' @returns Creates a box-lfs in the directory, with a upload folder nested inside.
 #' Also creates a .gitignore file it it doesn't already exists and adds the upload folder to it.
 #' @export
-#'
 #' @examples
-#' init_blfs("ext-data")
+#' init_blfs(fs::path_package("extdata", package = "blfs"))
 init_blfs <- function(dir=NULL){
   #guess on dir if not supplied
   dir <- dir_check(dir)
@@ -42,9 +41,8 @@ init_blfs <- function(dir=NULL){
 #'
 #' @returns the name of the file being tracked to use in a warning message
 #' @export
-#'
 #' @examples
-#' track_blfs("subfolder/large-file1.txt", dir="ext-data")
+#' track_blfs("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
 track_blfs <- function(file, dir=NULL){
   dir <- dir_check(dir)
 

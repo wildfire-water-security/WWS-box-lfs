@@ -3,19 +3,18 @@
 #' @param dir the file path to the file directory
 #' @param size the minimum file size in megabytes to track
 #' @param new logical, if TRUE will only return untracked files, if FALSE will return all files above the size limit
-#'
-#' @returns A vector of relative file paths to the large files
 #' @export
+#' @returns A vector of relative file paths to the large files
 #'
 #' @examples
 #' #testing files are quite small and don't show up
-#' check_files_blfs(dir="ext-data")
+#' check_files_blfs(fs::path_package("extdata", package = "blfs"))
 #'
 #' #but they do if we change the size
-#' check_files_blfs(dir="ext-data", size=0.0002)
+#' check_files_blfs(fs::path_package("extdata", package = "blfs"), size=0.0002)
 #'
 #' #they're already tracked, so if we set new to TRUE we don't see them
-#' check_files_blfs(dir="ext-data", size=0.0002, new=TRUE)
+#' check_files_blfs(fs::path_package("extdata", package = "blfs"), size=0.0002, new=TRUE)
 
 check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
   dir <- dir_check(dir)
@@ -48,16 +47,16 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
 #' @param file the file to track, does not need to have relative path
 #' @param dir the file path to the file directory
 #' @param download the file path to the download directory
-#'
+#' @export
 #' @note
 #' If download is not supplied function assumes it is \code{file.path(fs::path_home(), "Downloads")}
 #' @returns
 #' Copies files from the download folder to the project directory in the correct subfolder location based on the .boxtracker file.
-#' @export
 #'
 #' @examples
 #' #returns false because file doesn't exist in downloads folder
-#' move_file_blfs("large-file1.txt", dir="ext-data")
+#' move_file_blfs("large-file1.txt", fs::path_package("extdata", package = "blfs"))
+#'
 move_file_blfs <- function(file, dir=NULL, download=NULL){
   if(is.null(download)){download <- file.path(fs::path_home(), "Downloads")}
   if(is.null(dir)){dir <- getwd()}
@@ -85,9 +84,8 @@ move_file_blfs <- function(file, dir=NULL, download=NULL){
 #' - If the file shows a newer file, it returns "upload"
 #' - If the boxtracker and file are up to date with each other it will return nothing
 #' @export
-#'
 #' @examples
-#' update_blfs("subfolder/large-file1.txt", dir="ext-data")
+#' update_blfs("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
 update_blfs <- function(file, dir=NULL){
   dir <- dir_check(dir)
 

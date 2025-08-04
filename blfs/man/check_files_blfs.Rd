@@ -21,11 +21,11 @@ Identify large files that should be tracked with box-lfs
 }
 \examples{
 #testing files are quite small and don't show up
-check_files_blfs(dir="ext-data")
+check_files_blfs(fs::path_package("extdata", package = "blfs"))
 
 #but they do if we change the size
-check_files_blfs(dir="ext-data", size=0.0002)
+check_files_blfs(fs::path_package("extdata", package = "blfs"), size=0.0002)
 
 #they're already tracked, so if we set new to TRUE we don't see them
-check_files_blfs(dir="ext-data", size=0.0002, new=TRUE)
+check_files_blfs(fs::path_package("extdata", package = "blfs"), size=0.0002, new=TRUE)
 }

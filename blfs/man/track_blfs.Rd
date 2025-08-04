@@ -18,5 +18,5 @@ the name of the file being tracked to use in a warning message
 Creates a .boxtracker file with the file information, adds the file to .gitignore, and copy to upload folder so it's easy to but on Box.
 }
 \examples{
-track_blfs("subfolder/large-file1.txt", dir="ext-data")
+track_blfs("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
 }

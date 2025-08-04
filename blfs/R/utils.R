@@ -5,12 +5,12 @@
 #'
 #' @param link the link to the Box directory housing the stored files
 #' @param dir the file path to the file directory
-#'
-#' @returns Modifies all the .boxtracker files to include the supplied link
 #' @export
+#' @returns Modifies all the .boxtracker files to include the supplied link
 #'
 #' @examples
-#' add_box_loc("https://oregonstate.box.com/s/h9g8q6n8lj3u2bwhaalepb0lc28te4n5", dir="ext-data")
+#' add_box_loc("https://oregonstate.box.com/s/h9g8q6n8lj3u2bwhaalepb0lc28te4n5",
+#' fs::path_package("extdata", package = "blfs"))
 add_box_loc <- function(link, dir=NULL){
   dir <- dir_check(dir)
 
@@ -33,7 +33,7 @@ add_box_loc <- function(link, dir=NULL){
 #' @export
 #'
 #' @examples
-#' dir_check()
+#' dir_check(fs::path_package("extdata", package = "blfs"))
 dir_check <- function(dir=NULL){
   #guess on dir if not supplied
   if(is.null(dir)){dir <- getwd()}
@@ -48,10 +48,9 @@ dir_check <- function(dir=NULL){
 #'
 #' @returns A value of TRUE if box-lfs is being used or FALSE if it is not
 #' @export
-#'
 #' @examples
-#' check_blfs("ext-data")
-check_blfs <- function(dir){
+#' check_blfs(fs::path_package("extdata", package = "blfs"))
+check_blfs <- function(dir=NULL){
   dir <- dir_check(dir)
 
   return <- dir.exists(file.path(dir, "box-lfs"))
@@ -68,10 +67,11 @@ check_blfs <- function(dir){
 #'
 #' @returns A message prompting user to upload data
 #' @export
-#'
 #' @examples
-#' upld_message("ext-data")
-upld_message <- function(dir){
+#' upld_message(fs::path_package("extdata", package = "blfs"))
+upld_message <- function(dir=NULL){
+  dir <- dir_check(dir)
+
   #get folder link to go directly
   trackers <- list.files(file.path(dir, "box-lfs"), pattern = ".boxtracker")
   link <- unlist(sapply(trackers,read.boxtracker, dir=dir, return="box_link"))
@@ -98,10 +98,11 @@ upld_message <- function(dir){
 #'
 #' @returns A message prompting user to download data
 #' @export
-#'
 #' @examples
-#' dwld_message("data-raw")
-dwld_message <- function(dir){
+#' dwld_message(fs::path_package("extdata", package = "blfs"))
+dwld_message <- function(dir=NULL){
+  dir <- dir_check(dir)
+
   #try to direct right to link
   trackers <- list.files(file.path(dir, "box-lfs"), pattern = ".boxtracker")
   link <- unlist(sapply(trackers,read.boxtracker, dir=dir, return="box_link"))

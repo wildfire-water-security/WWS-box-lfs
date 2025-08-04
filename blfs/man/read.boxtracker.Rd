@@ -24,7 +24,7 @@ The .boxtracker files stores the relative location of the file, the box link, an
 This function is used to easily read and extract data from those files.
 }
 \examples{
-read.boxtracker("large-file1", dir="ext-data")
-read.boxtracker("large-file1", dir="ext-data", return = "size_MB")
+read.boxtracker("large-file1", fs::path_package("extdata", package = "blfs"))
+read.boxtracker("large-file1", fs::path_package("extdata", package = "blfs"), return = "size_MB")
 
 }

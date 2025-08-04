@@ -18,5 +18,5 @@ Saves a boxtracker file to dir/box-lfs with the form file.boxtracker. See \link[
 Creates the boxtracker file with a .boxtracker extension to track a file with blfs
 }
 \examples{
-write.boxtracker("subfolder/large-file1.txt", dir="ext-data")
+write.boxtracker("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
 }

@@ -19,5 +19,6 @@ Allows the efficent addition of a link to the Box directory to the .boxtracker f
 will add the link to all .boxtracker files within the directory, so ensure the link supplied is the folder housing all the tracked files.
 }
 \examples{
-add_box_loc("https://oregonstate.box.com/s/h9g8q6n8lj3u2bwhaalepb0lc28te4n5", dir="ext-data")
+add_box_loc("https://oregonstate.box.com/s/h9g8q6n8lj3u2bwhaalepb0lc28te4n5",
+fs::path_package("extdata", package = "blfs"))
 }

@@ -16,5 +16,5 @@ the file path to the working directory
 If directory is not supplied, it will default to the current working directory determined with \link[base]{getwd}
 }
 \examples{
-dir_check()
+dir_check(fs::path_package("extdata", package = "blfs"))
 }

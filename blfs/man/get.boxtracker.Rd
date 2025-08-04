@@ -25,5 +25,5 @@ a data.frame with 1 row and 5 columns:
 Pulls and formats the data from a file for the boxtracker file, but does not write to the file (see \link[blfs]{write.boxtracker})
 }
 \examples{
-get.boxtracker("subfolder/large-file1.txt", dir="ext-data")
+get.boxtracker("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
 }

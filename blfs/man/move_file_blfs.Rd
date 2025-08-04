@@ -24,5 +24,6 @@ If download is not supplied function assumes it is \code{file.path(fs::path_home
 }
 \examples{
 #returns false because file doesn't exist in downloads folder
-move_file_blfs("large-file1.txt", dir="ext-data")
+move_file_blfs("large-file1.txt", fs::path_package("extdata", package = "blfs"))
+
 }

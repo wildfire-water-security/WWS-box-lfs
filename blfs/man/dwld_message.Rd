@@ -4,7 +4,7 @@
 \alias{dwld_message}
 \title{Print message prompting user to download files}
 \usage{
-dwld_message(dir)
+dwld_message(dir = NULL)
 }
 \arguments{
 \item{dir}{the file path to the file directory}
@@ -17,5 +17,5 @@ Due to security limitations, we can't currently automatically download files fro
 download the files to Box, providing the location to get the files on Box.
 }
 \examples{
-dwld_message("data-raw")
+dwld_message(fs::path_package("extdata", package = "blfs"))
 }

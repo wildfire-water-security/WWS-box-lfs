@@ -22,5 +22,5 @@ update_blfs(file, dir = NULL)
 Checks for differences in the time modified between the boxtracker and the file.
 }
 \examples{
-update_blfs("subfolder/large-file1.txt", dir="ext-data")
+update_blfs("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
 }

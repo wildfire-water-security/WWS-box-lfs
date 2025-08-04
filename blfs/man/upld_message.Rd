@@ -4,7 +4,7 @@
 \alias{upld_message}
 \title{Print message prompting user to upload files}
 \usage{
-upld_message(dir)
+upld_message(dir = NULL)
 }
 \arguments{
 \item{dir}{the file path to the file directory}
@@ -17,5 +17,5 @@ Due to security limitations, we can't currently automatically upload files to Bo
 upload the files to Box, providing the location of the files on the local computer and the location to place the files on Box.
 }
 \examples{
-upld_message("ext-data")
+upld_message(fs::path_package("extdata", package = "blfs"))
 }

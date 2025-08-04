@@ -18,5 +18,5 @@ Creates the file structure for tracking large files with box. Adds the upload fo
 If used on a folder that already has the file stucture set up it will run without errors.
 }
 \examples{
-init_blfs("ext-data")
+init_blfs(fs::path_package("extdata", package = "blfs"))
 }

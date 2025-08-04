@@ -4,7 +4,7 @@
 \alias{check_blfs}
 \title{Check if box-lfs is being used on the project directory}
 \usage{
-check_blfs(dir)
+check_blfs(dir = NULL)
 }
 \arguments{
 \item{dir}{the file path to the file directory}
@@ -16,5 +16,5 @@ A value of TRUE if box-lfs is being used or FALSE if it is not
 Check if box-lfs is being used on the project directory
 }
 \examples{
-check_blfs("ext-data")
+check_blfs(fs::path_package("extdata", package = "blfs"))
 }

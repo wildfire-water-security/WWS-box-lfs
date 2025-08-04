@@ -10,12 +10,10 @@
 #' @returns
 #' - if \code{return} is "all" will return a data.frame
 #' - otherwise will return a vector of length one with the column value
-#'
 #' @export
-#'
 #' @examples
-#' read.boxtracker("large-file1", dir="ext-data")
-#' read.boxtracker("large-file1", dir="ext-data", return = "size_MB")
+#' read.boxtracker("large-file1", fs::path_package("extdata", package = "blfs"))
+#' read.boxtracker("large-file1", fs::path_package("extdata", package = "blfs"), return = "size_MB")
 #'
 read.boxtracker <- function(tracker,dir=NULL, return="all"){
   stopifnot(length(return) == 1)
@@ -53,9 +51,8 @@ read.boxtracker <- function(tracker,dir=NULL, return="all"){
 #' - last_modified: the date and time the file was last modified
 #' - last_changed: the date and time the file was last changed
 #' @export
-#'
 #' @examples
-#' get.boxtracker("subfolder/large-file1.txt", dir="ext-data")
+#' get.boxtracker("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
 get.boxtracker <- function(file, dir=NULL){
   dir <- dir_check(dir)
 
@@ -77,9 +74,8 @@ get.boxtracker <- function(file, dir=NULL){
 #' @md
 #' @returns Saves a boxtracker file to dir/box-lfs with the form file.boxtracker. See \link[blfs]{get.boxtracker} for details on the file structure.
 #' @export
-#'
 #' @examples
-#' write.boxtracker("subfolder/large-file1.txt", dir="ext-data")
+#' write.boxtracker("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
 write.boxtracker <- function(file, dir=NULL){
   dir <- dir_check(dir)
   tracker_name <- paste0(tools::file_path_sans_ext(basename(file)), ".boxtracker")
