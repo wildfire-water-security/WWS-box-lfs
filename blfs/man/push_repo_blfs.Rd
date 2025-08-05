@@ -15,6 +15,9 @@ push_repo_blfs(dir = NULL, size = 10)
 Identifies any new or modified files, updates the .boxtracker file and prompts user to upload to Box
 }
 \description{
+Run BEFORE pushing to GitHub.
+}
+\details{
 If you try to push files larger than 100 MB to GitHub you will receive an error. This function will identify files
 above the size threshold. If they are already tracked, they will be checked for updates. If there are new files they
 will be tracked and the user prompted to upload to Box.

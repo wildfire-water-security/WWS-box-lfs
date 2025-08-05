@@ -121,7 +121,8 @@ update_blfs <- function(file, dir=NULL){
     return("download")
   }else{
     #file is the same in local and on box (according to boxtracker)
-    #don't return file, nothing needed
+    #don't return file, return NA so we know that file is fine
+    return(NA)
   }
 
 }

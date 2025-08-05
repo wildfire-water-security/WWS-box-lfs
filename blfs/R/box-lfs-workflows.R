@@ -7,50 +7,6 @@
 
 #what if file have the same name??
 
-#TODO: check for modified files not just new files
-#source("R-scripts/box-lfs-helpers.R")
-
-## setting up a new repo (existing)
-
-
-
-## cloning a repo with box-lfs
- clone_repo_blfs <- function(dir=NULL, download=NULL){
-   dir <- dir_check(dir)
-
-   #check if lfs is needed
-   if(check_blfs(dir)){
-       dwld_message(dir)
-
-       uploaded <- readline("hit any key once files have been downloaded to continue setting up the repo")
-
-       #unzip from downloads folder and put in the right spot
-       if(is.null(download)){download <- file.path(fs::path_home(), "Downloads")}
-
-       #may have multiple copies, get the newest
-       file <- list.files(download, pattern=paste0("^","box-lfs", ".*\\.zip$"))
-       file_info <- file.info(file.path(download, file))
-       file <- file[which(file_info$mtime == max(file_info$mtime))]
-
-       #give user to correct wrong guessed zip
-       replace <- readline(paste0("Zip file for downloaded data appears to be: ", file.path(download, file),
-                           "\nPress enter to use this file or provide a different file path."))
-
-       file <- ifelse(replace == "", replace, file)
-
-       #unzip
-       utils::unzip(file.path(downloads, file),
-                    exdir = download)
-
-       #get file that need to be moved
-       files <- list.files(file.path(download, basename(repo)))
-
-       #move files to correct location
-       place <- sapply(files, move_file_blfs, dir=dir, download=download)
-
-   }
- }
-
 ## pull a repo with box-lfs (someone may have added box files that need to updated)
  pull_repo_blfs <- function(dir=NULL, download=NULL){
    dir <- dir_check(dir)

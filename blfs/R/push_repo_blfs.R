@@ -1,5 +1,6 @@
-## pushing repo (potential new/modified files that need to be tracked) run BEFORE pushing
 #' Check for large files before pushing a Git repository
+#'
+#' Run BEFORE pushing to GitHub.
 #'
 #' If you try to push files larger than 100 MB to GitHub you will receive an error. This function will identify files
 #' above the size threshold. If they are already tracked, they will be checked for updates. If there are new files they
