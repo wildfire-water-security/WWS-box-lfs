@@ -6,9 +6,12 @@
 #' If used on a folder that already has the file stucture set up it will run without errors.
 #'
 #' @param dir the file path to the file directory
-#'
-#' @returns Creates a box-lfs in the directory, with a upload folder nested inside.
-#' Also creates a .gitignore file it it doesn't already exists and adds the upload folder to it.
+#' @md
+#' @returns
+#' Creates a box-lfs in the directory, with:
+#' - a upload folder nested inside.
+#' - a .gitignore file (if it doesn't already exist) and adds the upload folder to it
+#' - a file called path-hash.csv which links the tracker names to the file paths
 #' @export
 #' @examples
 #' init_blfs(fs::path_package("extdata", package = "blfs"))
@@ -19,6 +22,9 @@ init_blfs <- function(dir=NULL){
   #create file stucture
   dir.create(file.path(dir, "box-lfs"), showWarnings = FALSE)
   dir.create(file.path(dir, "box-lfs/upload"), showWarnings = FALSE)
+
+  #create csv to track the hash vs file paths
+  write.csv(data.frame(path="", hash=""), file.path(dir, "box-lfs/path-hash.csv"), quote = FALSE, row.names=FALSE)
 
   #set up .gitignore with upload folder
   ignore <- file.path(dir, ".gitignore")

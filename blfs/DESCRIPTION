@@ -20,9 +20,9 @@ Suggests:
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2
 Imports: 
+    digest,
     fs,
     rlang,
     tools,
     utils,
     withr
-   

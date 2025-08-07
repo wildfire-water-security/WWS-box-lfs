@@ -2,6 +2,7 @@
 "_PACKAGE"
 
 ## usethis namespace: start
+#' @importFrom digest digest
 #' @importFrom fs path_home
 #' @importFrom rlang is_interactive
 #' @importFrom tools file_path_sans_ext

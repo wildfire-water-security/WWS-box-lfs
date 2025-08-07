@@ -118,3 +118,44 @@ dwld_message <- function(dir=NULL){
                    basename(dir), "/box-lfs", "'", "\nthey will be automatically moved to the correct locations from your downloads folder"))}
 
 }
+
+#' Creates a unique file name for each boxtracker
+#'
+#' Uses the \link[digest]{digest} function to generate a unique serialized hash code for each file being tracked.
+#'
+#' @param file the file to be tracked
+#'
+#' @returns the tracker name as a unique hash based on the file name with the extension ".boxtracker"
+#' @export
+#'
+#' @examples
+#' get_tracker_name("test-file1.txt")
+#' get_tracker_name("another-folder/another_file.txt")
+get_tracker_name <- function(file){
+  clean_path <- fs::path_norm(file)
+  hash <- digest::digest(clean_path)
+  tracker_name <- paste0(digest::digest(hash), ".boxtracker")
+  return(tracker_name)
+}
+
+#' Get the file path associated with a boxtracker
+#'
+#' @param tracker the name of the file with the .boxtracker extension (should be a hash)
+#'
+#' @returns the file path associated with a hash based .boxtracker file.
+#' @export
+#'
+#' @examples
+#' get_file_name("1678f723cb201eb3f9996c01a481dd0e.boxtracker",
+#' dir=fs::path_package("extdata", package = "blfs"))
+get_file_name <- function(dir=NULL, tracker){
+  dir <- dir_check(dir)
+
+  #read path-hash
+  link <- read.csv(file.path(dir, "box-lfs/path-hash.csv"))
+
+  #find file name that matches tracker
+  file <- link$path[link$hash == tracker]
+
+  return(file)
+}

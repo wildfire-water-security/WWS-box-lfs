@@ -3,7 +3,7 @@
 #' The .boxtracker files stores the relative location of the file, the box link, and file info (size, dates last modified and changed).
 #' This function is used to easily read and extract data from those files.
 #'
-#' @param tracker the name of the file with the .boxtracker extension
+#' @param tracker the name of the file with the .boxtracker extension (should be a hash)
 #' @param dir the file path to the file directory
 #' @param return the column to return. options are: file_path, box_link, size_MB, last_modified, last_changed
 #' @md
@@ -12,8 +12,8 @@
 #' - otherwise will return a vector of length one with the column value
 #' @export
 #' @examples
-#' read.boxtracker("large-file1", fs::path_package("extdata", package = "blfs"))
-#' read.boxtracker("large-file1", fs::path_package("extdata", package = "blfs"), return = "size_MB")
+#' read.boxtracker("1678f723cb201eb3f9996c01a481dd0e", fs::path_package("extdata", package = "blfs"))
+#' read.boxtracker("1678f723cb201eb3f9996c01a481dd0e", fs::path_package("extdata", package = "blfs"), return = "size_MB")
 #'
 read.boxtracker <- function(tracker,dir=NULL, return="all"){
   stopifnot(length(return) == 1)
@@ -67,7 +67,8 @@ get.boxtracker <- function(file, dir=NULL){
 
 #' Write boxtracker file
 #'
-#' Creates the boxtracker file with a .boxtracker extension to track a file with blfs
+#' Creates the boxtracker file with a .boxtracker extension to track a file with blfs. If the file is being created for the first time,
+#' it will create a new line in the path-hash.csv file which links the hash names to the file paths.
 #'
 #' @param file the relative path to the file to track
 #' @param dir the file path to the file directory
@@ -78,14 +79,17 @@ get.boxtracker <- function(file, dir=NULL){
 #' write.boxtracker("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
 write.boxtracker <- function(file, dir=NULL){
   dir <- dir_check(dir)
-  tracker_name <- paste0(tools::file_path_sans_ext(basename(file)), ".boxtracker")
+
+  tracker_name <- get_tracker_name(file)
 
   tracker <- get.boxtracker(file, dir)
 
-  # Get link if it exists in previous version
+  # Get link if it exists in previous version, if not write to tracker file
   if(file.exists(file.path(dir, "box-lfs", tracker_name))){
     link <- read.boxtracker(tracker_name, dir=dir, return="box_link")
     tracker$box_link <- link
+  }else{
+    cat(paste0("\n", paste(file, tracker_name, sep = ",")), file=file.path(dir, "box-lfs/path-hash.csv"), append=TRUE)
   }
 
   utils::write.csv(tracker, file.path(dir,"box-lfs", tracker_name), row.names = FALSE,

@@ -1,14 +1,17 @@
 test_that("link gets added", {
-  dir <- file.path(test_path(), "testdata")
+  #create temp dir to modify files cleanly
+  tmp <- withr::local_tempdir()
+  data_path <- c(file.path(test_path(), "testdata/box-lfs"))
+
+  #copy files to repo
+  file.copy(data_path, tmp, recursive = TRUE)
 
   random_link <- paste0("https://oregonstate.box.com/s/h", paste(sample(1:10000, size=4), collapse=""))
-  add_box_loc(random_link, dir=dir)
+  add_box_loc(random_link, dir=tmp)
 
-  tracker <- read.boxtracker("large-file1", dir=dir)
+  tracker <- read.boxtracker("4fa7622e82d068a0a994eafb564e4f5d", dir=tmp)
   expect_equal(tracker$box_link, random_link)
 
-  #set link back to original for other tests
-  add_box_loc("https://oregonstate.box.com/s/h9g8q6n8lj3u2bwhaalepb0lc28te4n5", dir=dir)
   })
 
 test_that("directory check works", {
@@ -31,4 +34,15 @@ test_that("check blfs works",{
   expect_true(check_blfs(dir))
   expect_false(check_blfs(test_path()))
 
+})
+
+test_that("hashes work", {
+  hash1 <- get_tracker_name("test1")
+  hash2 <- get_tracker_name("test1")
+
+  expect_equal(hash1, hash2)
+
+  hash1 <- get_tracker_name("test1")
+  hash2 <- get_tracker_name("test2")
+  expect_false(hash1 == hash2)
 })

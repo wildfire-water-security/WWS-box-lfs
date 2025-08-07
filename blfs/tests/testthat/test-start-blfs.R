@@ -1,35 +1,32 @@
 test_that("start up box works", {
-  #create directory to init in
-  dir <- file.path(test_path(), "testdata", "test-folder")
-  dir.create(dir)
+  #create temp repo
+  tmp <- withr::local_tempdir()
 
   #initialize
-  init_blfs(dir)
+  init_blfs(tmp)
 
   #check files and folders
-  expect_true(dir.exists(file.path(dir, "box-lfs")))
-  expect_true(dir.exists(file.path(dir, "box-lfs/upload")))
-
-  expect_true(file.exists(file.path(dir, ".gitignore")))
+  expect_true(dir.exists(file.path(tmp, "box-lfs")))
+  expect_true(dir.exists(file.path(tmp, "box-lfs/upload")))
+  expect_true(file.exists(file.path(tmp, "box-lfs/path-hash.csv")))
+  expect_true(file.exists(file.path(tmp, ".gitignore")))
 
   #move a file in to track
-  dir.create(file.path(dir, "example-files"))
-  move <- file.copy(file.path(test_path(), "testdata/example-files/large-file1.txt"), file.path(dir, "example-files"))
+  data_path <- file.path(test_path(), "testdata/example-files")
+  file.copy(data_path, tmp, recursive = TRUE)
 
   #start tracking
-  name <- track_blfs(file= "example-files/large-file1.txt", dir=dir)
+  name <- track_blfs(file= "example-files/large-file1.txt", dir=tmp)
 
   #ensure tracker created and added to gitignore and copied to upload
-  expect_true(file.exists(file.path(dir, "box-lfs/large-file1.boxtracker")))
-  expect_true(file.exists(file.path(dir, "box-lfs/upload/large-file1.txt")))
+  expect_true(file.exists(file.path(tmp, "box-lfs/1678f723cb201eb3f9996c01a481dd0e.boxtracker")))
+  expect_true(file.exists(file.path(tmp, "box-lfs/upload/large-file1.txt")))
 
 
-  expect_warning(ignore <- read.table(file.path(dir, ".gitignore")))
+  expect_warning(ignore <- read.table(file.path(tmp, ".gitignore")))
   expect_equal(ignore[1,1], "box-lfs/upload")
   expect_equal(ignore[2,1], "example-files/large-file1.txt")
 
-  #once checked remove folder
-  unlink(dir, recursive = TRUE)
 })
 
 

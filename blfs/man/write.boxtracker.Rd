@@ -15,7 +15,8 @@ write.boxtracker(file, dir = NULL)
 Saves a boxtracker file to dir/box-lfs with the form file.boxtracker. See \link[blfs]{get.boxtracker} for details on the file structure.
 }
 \description{
-Creates the boxtracker file with a .boxtracker extension to track a file with blfs
+Creates the boxtracker file with a .boxtracker extension to track a file with blfs. If the file is being created for the first time,
+it will create a new line in the path-hash.csv file which links the hash names to the file paths.
 }
 \examples{
 write.boxtracker("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))

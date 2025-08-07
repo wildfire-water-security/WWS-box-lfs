@@ -10,8 +10,12 @@ init_blfs(dir = NULL)
 \item{dir}{the file path to the file directory}
 }
 \value{
-Creates a box-lfs in the directory, with a upload folder nested inside.
-Also creates a .gitignore file it it doesn't already exists and adds the upload folder to it.
+Creates a box-lfs in the directory, with:
+\itemize{
+\item a upload folder nested inside.
+\item a .gitignore file (if it doesn't already exist) and adds the upload folder to it
+\item a file called path-hash.csv which links the tracker names to the file paths
+}
 }
 \description{
 Creates the file structure for tracking large files with box. Adds the upload folder to .gitignore.
