@@ -30,6 +30,7 @@ push_repo_blfs <- function(dir=NULL, size=10){
   #see if any existing files need to re-uploaded
   if(length(tk_files) > 0){
     updated <- unlist(sapply(tk_files, update_blfs, dir=dir))
+    updated <- updated[!is.na(updated)]
     print_upload_message <- ifelse(length(updated) > 0, TRUE, FALSE)
   }
 

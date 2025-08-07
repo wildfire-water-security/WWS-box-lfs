@@ -17,7 +17,7 @@
 #' @export
 #' @md
 #' @examples
-#' tmp <- withr::local_tempdir()
+#' tmp <- tempdir()
 #'
 #' #move just sample repo files in
 #' file.copy(fs::path_package("extdata/", package = "blfs"), tmp, recursive=TRUE)

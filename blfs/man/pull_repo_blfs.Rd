@@ -27,10 +27,10 @@ may need to update those files. This function will check the status of the track
 repository and determine if there are any files that uploaded or downloaded to maintain the current version.
 }
 \examples{
-tmp <- withr::local_tempdir()
+tmp <- tempdir()
 
-#move just tracker files in, similar to cloning a repo from github
-file.copy(fs::path_package("extdata/box-lfs", package = "blfs"), tmp, recursive=TRUE)
+#move just sample repo files in
+file.copy(fs::path_package("extdata/", package = "blfs"), tmp, recursive=TRUE)
 download <- fs::path_package("extdata", package = "blfs") #example zip is here
 
 pull_repo_blfs(dir=tmp, download=download)
