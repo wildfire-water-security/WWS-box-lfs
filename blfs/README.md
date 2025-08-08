@@ -1,11 +1,9 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 
-# blfs
+# Box Large File Storage
 
 <!-- badges: start -->
-
-[![R-CMD-check](https://github.com/wildfire-water-security/WWS-box-lfs/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/wildfire-water-security/WWS-box-lfs/actions/workflows/R-CMD-check.yaml)
 
 <!-- badges: end -->
 
@@ -33,43 +31,84 @@ user-friendly as possible.
 
 ## Installation
 
-You can install the development version of blfs from
-[GitHub](https://github.com/) with:
+You can install `blfs` from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("remotes")
 remotes::install_github("wildfire-water-security/WWS-box-lfs", subdir="blfs")
-```
-
-## Example
-
-This is a basic example which shows you how to solve a common problem:
-
-``` r
+#> Using GitHub PAT from the git credential store.
+#> Downloading GitHub repo wildfire-water-security/WWS-box-lfs@HEAD
+#> 
+#> ── R CMD build ─────────────────────────────────────────────────────────────────
+#>          checking for file 'C:\Users\wampleka\AppData\Local\Temp\RtmpSkoIgl\remotesa3005d82c55\wildfire-water-security-WWS-box-lfs-5b046be\blfs/DESCRIPTION' ...  ✔  checking for file 'C:\Users\wampleka\AppData\Local\Temp\RtmpSkoIgl\remotesa3005d82c55\wildfire-water-security-WWS-box-lfs-5b046be\blfs/DESCRIPTION'
+#>       ─  preparing 'blfs':
+#>    checking DESCRIPTION meta-information ...     checking DESCRIPTION meta-information ...   ✔  checking DESCRIPTION meta-information
+#>       ─  checking for LF line-endings in source and make files and shell scripts
+#>       ─  checking for empty or unneeded directories
+#>      Omitted 'LazyData' from DESCRIPTION
+#>       ─  building 'blfs_0.1.0.tar.gz'
+#>      
+#> 
+#> Installing package into 'C:/Users/wampleka/AppData/Local/Temp/RtmpchXGsM/temp_libpathac18ed6191'
+#> (as 'lib' is unspecified)
 library(blfs)
-## basic example code
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
+## How to Use box-lfs
+
+The functions in this package are designed to accompany git commands
+(ie. init, clone, pull, push) to perform the necessary steps to keep the
+Box files synced.
+
+### Creating a new git repository
+
+If you have an existing directory that you would like to turn into a git
+repository stored on GitHub, you’ll first want to run `new_repo_blfs`
+which will create the necessary file structure for box-lfs and start
+tracking any large files. The argument `size` determines the minimum
+file size to track. The default is 10 MB. For this example we’ll use
+0.0002 MB because our example “large” files are much smaller than 20 MB.
 
 ``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+#setting up clean stucture for running example 
+    #create temp dir so files don't get cluttered
+      tmp <- withr::local_tempdir(pattern = "example-repo-")
+  
+    #copy files to repo (example files that live in repo we want to track)
+    data_path <- file.path(fs::path_package("extdata", package = "blfs"), "example-files")
+    copy <- file.copy(data_path, tmp, recursive = TRUE)
+
+#start using box-lfs
+  new_repo_blfs(dir = tmp, size = 0.0002)
+#> Warning in new_repo_blfs(dir = tmp, size = 2e-04): the following files will no longer be tracked by git:
+#> Please upload files from 'example-repo-a300198e3a5a/box-lfs/upload' to Box here:
+#> 'Wildfire_Water_Security/02_Nodes/your node/Projects/example-repo-a300198e3a5a/box-lfs'
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this.
+We get several outputs from running this function:
 
-You can also embed plots, for example:
+1.  **We get a warning that large-file1.txt and large-file2.txt will no
+    longer be tracked by git.**
 
-<img src="man/figures/README-pressure-1.png" width="100%" />
+- That’s because we’re now going to be tracking them with the pointer
+  file and Box. This is just to make sure the user knows that they now
+  need to use this package to maintain version history instead of git.
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub and CRAN.
+2.  **We get a message to upload files.**
+
+- The message tells the user to look in the project directory for files
+  in project/box-lfs/upload. The function copies the files that will be
+  tracked here, so the user can upload them to Box.
+- The message also tells the user where to put these files on Box. These
+  files should live within the projects folder of the appropriate node
+  folder.
+- Specifically, inside the project folders, if it doesn’t already exist,
+  create a folder with your project name (in this case it’s the name of
+  the temporary folder we created, example-repo-\*). Then create a
+  folder called **box-lfs**. The tracked files should be uploaded here.
+
+If you run the the code interactively, the function will prompt you for
+the box link to the folder where you uploaded your tracked files to.
+Providing this link (ie.
+<https://oregonstate.app.box.com/folder/334380637898>) will update the
+tracker files so we know where to find the file on Box.
