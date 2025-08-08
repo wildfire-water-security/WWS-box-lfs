@@ -13,6 +13,10 @@ jobs:
   R-CMD-check:
     runs-on: ${{ matrix.config.os }}
 
+    defaults:
+      run: 
+        working-directory: blfs
+
     name: ${{ matrix.config.os }} (${{ matrix.config.r }})
 
     strategy:
