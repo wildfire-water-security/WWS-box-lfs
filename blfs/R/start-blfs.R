@@ -52,21 +52,25 @@ init_blfs <- function(dir=NULL){
 track_blfs <- function(file, dir=NULL){
   dir <- dir_check(dir)
 
-  #create tracking file
-  write.boxtracker(file, dir)
+  #ignore path-hash.csv
+  if(!grepl("path-hash.csv", file)){
+    #create tracking file
+    write.boxtracker(file, dir)
 
-  #add to .gitignore
-  ignore <- file.path(dir, ".gitignore")
-  if(!file.exists(ignore)){file.create(ignore)} #create .gitignore if it doesn't exist
+    #add to .gitignore
+    ignore <- file.path(dir, ".gitignore")
+    if(!file.exists(ignore)){file.create(ignore)} #create .gitignore if it doesn't exist
 
-  #check if already in gitignore
-  added <- any(grepl(paste0(file, "$"), readLines(ignore, warn=FALSE)))
-  if(!added){cat(paste0("\n", file), file=ignore, append=T)} #only add if not already there
+    #check if already in gitignore
+    added <- any(grepl(paste0(file, "$"), readLines(ignore, warn=FALSE)))
+    if(!added){cat(paste0("\n", file), file=ignore, append=T)} #only add if not already there
 
-  #move to upload folder for upload
-  file.copy(file.path(dir, file), file.path(dir, "box-lfs/upload/", basename(file)))
+    #move to upload folder for upload, use hash name
+    file.copy(file.path(dir, file), file.path(dir, "box-lfs/upload/", get_tracker_name(file, ext=TRUE)), overwrite = TRUE)
 
-  #return file name for warning message
-  return(file)
+    #return file name for warning message
+    return(file)
+  }
+
 }
 

@@ -4,10 +4,10 @@
 \alias{move_file_blfs}
 \title{Moved downloaded files to the correct file path in the project}
 \usage{
-move_file_blfs(file, dir = NULL, download = NULL)
+move_file_blfs(hash_file, dir = NULL, download = NULL)
 }
 \arguments{
-\item{file}{the file to track, does not need to have relative path}
+\item{hash_file}{the file to track, should match the same hash name as the tracker associated with the file}
 
 \item{dir}{the file path to the file directory}
 
@@ -24,6 +24,7 @@ If download is not supplied function assumes it is \code{file.path(fs::path_home
 }
 \examples{
 #returns false because file doesn't exist in downloads folder
-move_file_blfs("large-file1.txt", fs::path_package("extdata", package = "blfs"))
+move_file_blfs("1678f723cb201eb3f9996c01a481dd0e.txt",
+fs::path_package("extdata", package = "blfs"))
 
 }

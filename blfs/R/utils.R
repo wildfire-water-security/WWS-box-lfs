@@ -124,6 +124,7 @@ dwld_message <- function(dir=NULL){
 #' Uses the \link[digest]{digest} function to generate a unique serialized hash code for each file being tracked.
 #'
 #' @param file the file to be tracked
+#' @param ext if TRUE, keeps the original file extension, if FALSE uses .boxtracker
 #'
 #' @returns the tracker name as a unique hash based on the file name with the extension ".boxtracker"
 #' @export
@@ -131,16 +132,23 @@ dwld_message <- function(dir=NULL){
 #' @examples
 #' get_tracker_name("test-file1.txt")
 #' get_tracker_name("another-folder/another_file.txt")
-get_tracker_name <- function(file){
+get_tracker_name <- function(file, ext=FALSE){
   clean_path <- fs::path_norm(file)
   hash <- digest::digest(clean_path)
-  tracker_name <- paste0(digest::digest(hash), ".boxtracker")
+  if(ext){
+    tracker_name <- paste0(digest::digest(hash), ".", tools::file_ext(file))
+
+  }else{
+    tracker_name <- paste0(digest::digest(hash), ".boxtracker")
+
+  }
   return(tracker_name)
 }
 
 #' Get the file path associated with a boxtracker
 #'
 #' @param tracker the name of the file with the .boxtracker extension (should be a hash)
+#' @param dir the file path to the file directory
 #'
 #' @returns the file path associated with a hash based .boxtracker file.
 #' @export

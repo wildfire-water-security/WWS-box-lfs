@@ -16,7 +16,7 @@ test_that("adding a new file works", {
 
     #see if it gets flagged
     expect_message(expect_warning(push_repo_blfs(tmp, size=0.00002), regexp="large-file3"))
-    expect_true(file.exists(file.path(tmp, "box-lfs/large-file3.boxtracker")))
+    expect_true(file.exists(file.path(tmp, "box-lfs/7338d121d05a8a1a27dac34bd7c56fc0.boxtracker")))
 })
 
 test_that("modifying a files works", {
@@ -34,10 +34,11 @@ test_that("modifying a files works", {
 
   #modify file
   #change date on boxtracker
-  tracker <- read.boxtracker("large-file2.boxtracker", dir=tmp)
+  name <- get_tracker_name("example-files/large-file2.txt")
+  tracker <- read.boxtracker(name, dir=tmp)
   tracker$last_modified <- Sys.time() - 6000
-  write.csv(tracker, file.path(tmp, "box-lfs/large-file2.boxtracker"), row.names=FALSE, quote=FALSE)
+  write.csv(tracker, file.path(tmp, "box-lfs", get_tracker_name("example-files/large-file2.txt")), row.names=FALSE, quote=FALSE)
 
   #see if it gets flagged
-  expect_message(push_repo_blfs(tmp, size=0.00002), regexp="box-lfs/upload")
+  expect_message(push_repo_blfs(tmp, size=0.0002), regexp="box-lfs/upload")
 })

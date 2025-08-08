@@ -12,7 +12,10 @@ test_that("repo gets set up", {
   #run looking for example files
   expect_warning(new_repo_blfs(dir = tmp, size=0.0002), regexp="example-files")
   expect_equal(list.files(tmp), c("box-lfs", "example-files"))
-  expect_equal(list.files(file.path(tmp, "box-lfs")), c("large-file1.boxtracker", "large-file2.boxtracker", "upload"))
-  expect_equal(list.files(file.path(tmp, "box-lfs/upload")), c("large-file1.txt", "large-file2.txt"))
+  expect_equal(list.files(file.path(tmp, "box-lfs")), c("1678f723cb201eb3f9996c01a481dd0e.boxtracker",
+                                                        "4fa7622e82d068a0a994eafb564e4f5d.boxtracker",
+                                                        "path-hash.csv", "upload"))
+  expect_equal(list.files(file.path(tmp, "box-lfs/upload")), c("1678f723cb201eb3f9996c01a481dd0e.txt",
+                                                               "4fa7622e82d068a0a994eafb564e4f5d.txt"))
 
 })

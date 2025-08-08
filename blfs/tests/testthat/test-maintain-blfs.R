@@ -33,11 +33,8 @@ test_that("files are moved", {
   data_path <- c(file.path(test_path(), "testdata/box-lfs"))
   file.copy(data_path, tmp, recursive = TRUE)
 
-  #create file structure for files
-  file.copy(file.path(test_path(), "testdata/box-lfs"), tmp, recursive = TRUE)
-
   #try copying over files
-  expect_true(move_file_blfs("large-file1.txt", dir=tmp, download=file.path(test_path(), "testdata/example-files")))
+  expect_true(move_file_blfs("1678f723cb201eb3f9996c01a481dd0e.txt", dir=tmp, download=file.path(test_path(), "testdata/box-lfs/upload")))
 
 })
 
@@ -56,18 +53,20 @@ test_that("files are flagged when updated", {
 
   #check if need to be updated
     #change date on boxtracker
-    tracker <- read.boxtracker("large-file2.boxtracker", dir=tmp)
+    name <- get_tracker_name("example-files/large-file2.txt")
+    tracker <- read.boxtracker(name, dir=tmp)
     tracker$last_modified <- Sys.time() - 6000
-    write.csv(tracker, file.path(tmp, "box-lfs/large-file2.boxtracker"), row.names=FALSE, quote=FALSE)
+    write.csv(tracker, file.path(tmp, "box-lfs", get_tracker_name("example-files/large-file2.txt")), row.names=FALSE, quote=FALSE)
 
     #update file (if we run twice it will return null on second because now boxtracker is updated)
     expect_equal(update_blfs("example-files/large-file2.txt", tmp), "upload") #now need to upload
     expect_equal(update_blfs("example-files/large-file2.txt", tmp), NA) #boxtracker is resynced
 
   #change date on boxtracker
-  tracker <- read.boxtracker("large-file2.boxtracker", dir=tmp)
-  tracker$last_modified <- Sys.time() + 6000
-  write.csv(tracker, file.path(tmp, "box-lfs/large-file2.boxtracker"), row.names=FALSE, quote=FALSE)
-  expect_equal(update_blfs("example-files/large-file2.txt", tmp), "download") #now need to download
+    name <- get_tracker_name("example-files/large-file2.txt")
+    tracker <- read.boxtracker(name, dir=tmp)
+    tracker$last_modified <- Sys.time() + 6000
+    write.csv(tracker, file.path(tmp, "box-lfs", get_tracker_name("example-files/large-file2.txt")), row.names=FALSE, quote=FALSE)
+    expect_equal(update_blfs("example-files/large-file2.txt", tmp), "download") #now need to download
 
 })

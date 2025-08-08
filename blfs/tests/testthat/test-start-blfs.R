@@ -20,7 +20,7 @@ test_that("start up box works", {
 
   #ensure tracker created and added to gitignore and copied to upload
   expect_true(file.exists(file.path(tmp, "box-lfs/1678f723cb201eb3f9996c01a481dd0e.boxtracker")))
-  expect_true(file.exists(file.path(tmp, "box-lfs/upload/large-file1.txt")))
+  expect_true(file.exists(file.path(tmp, "box-lfs/upload/1678f723cb201eb3f9996c01a481dd0e.txt")))
 
 
   expect_warning(ignore <- read.table(file.path(tmp, ".gitignore")))

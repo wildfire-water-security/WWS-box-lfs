@@ -7,6 +7,8 @@
 get_file_name(dir = NULL, tracker)
 }
 \arguments{
+\item{dir}{the file path to the file directory}
+
 \item{tracker}{the name of the file with the .boxtracker extension (should be a hash)}
 }
 \value{

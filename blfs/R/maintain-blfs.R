@@ -32,7 +32,7 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
   #built in to only get new large files
   if(new & dir.exists(file.path(dir, "box-lfs"))){
     #get all tracked files
-    tracked <- list.files(file.path(dir, "box-lfs"))
+    tracked <- list.files(file.path(dir, "box-lfs"), pattern = "boxtracker")
     tracked <- tracked[tracked != "upload"]
 
     #check for new files
@@ -46,7 +46,7 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
 ## copy files from download to correct repo spots
 #' Moved downloaded files to the correct file path in the project
 #'
-#' @param file the file to track, does not need to have relative path
+#' @param hash_file the file to track, should match the same hash name as the tracker associated with the file
 #' @param dir the file path to the file directory
 #' @param download the file path to the download directory
 #' @export
@@ -57,17 +57,18 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
 #'
 #' @examples
 #' #returns false because file doesn't exist in downloads folder
-#' move_file_blfs("large-file1.txt", fs::path_package("extdata", package = "blfs"))
+#' move_file_blfs("1678f723cb201eb3f9996c01a481dd0e.txt",
+#' fs::path_package("extdata", package = "blfs"))
 #'
-move_file_blfs <- function(file, dir=NULL, download=NULL){
+move_file_blfs <- function(hash_file, dir=NULL, download=NULL){
   if(is.null(download)){download <- file.path(fs::path_home(), "Downloads")}
   if(is.null(dir)){dir <- getwd()}
 
   stopifnot(dir.exists(dir), dir.exists(download))
 
   #get tracker to know where to put it
-  name <- tools::file_path_sans_ext(basename(file))
-  location <- read.boxtracker(paste0(name, ".boxtracker"), dir=dir, return="file_path")
+  tracker_name <- tools::file_path_sans_ext(basename(hash_file))
+  location <- read.boxtracker(tracker_name, dir=dir, return="file_path")
 
   destination_dir <- dirname(file.path(dir,location))
 
@@ -77,7 +78,7 @@ move_file_blfs <- function(file, dir=NULL, download=NULL){
   }
 
   #copy file to correct location
-  file.copy(file.path(download, file), file.path(dir,location), overwrite = TRUE)
+  file.copy(file.path(download, hash_file), file.path(dir,location), overwrite = TRUE)
 }
 
 ## update file tracked by blfs (check for differences return TRUE if it needs to be updated) [going from local to repo/box]
@@ -99,7 +100,7 @@ update_blfs <- function(file, dir=NULL){
   dir <- dir_check(dir)
 
   #get file info
-  tracker_name <- paste0(tools::file_path_sans_ext(basename(file)), ".boxtracker")
+  tracker_name <- get_tracker_name(file)
 
   boxtracker <- read.boxtracker(tracker_name, dir)
   file_tracker <- get.boxtracker(file, dir)
@@ -110,7 +111,7 @@ update_blfs <- function(file, dir=NULL){
   if(box_mtime < file_mtime){
     #file has been changed since last upload to box, need to upload
     #copy to upload folder for easy upload
-    file.copy(file.path(dir, file), file.path(dir, "box-lfs/upload/", basename(file)), overwrite = TRUE)
+    file.copy(file.path(dir, file), file.path(dir, "box-lfs/upload/", get_tracker_name(file, ext=TRUE)), overwrite = TRUE)
 
     #update boxtracker
     write.boxtracker(file, dir)

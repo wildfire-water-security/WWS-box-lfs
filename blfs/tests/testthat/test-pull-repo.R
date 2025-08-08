@@ -35,9 +35,10 @@ test_that("updated files are prompted to upload", {
   expect_no_message(pull_repo_blfs(tmp))
 
   #test pull, with an updated local file -> prompts upload
-  tracker <- read.boxtracker("large-file2.boxtracker", dir=tmp)
+  name <- get_tracker_name("example-files/large-file2.txt")
+  tracker <- read.boxtracker(name, dir=tmp)
   tracker$last_modified <- Sys.time() - 6000
-  write.csv(tracker, file.path(tmp, "box-lfs/large-file2.boxtracker"), row.names=FALSE, quote=FALSE)
+  write.csv(tracker, file.path(tmp, "box-lfs", get_tracker_name("example-files/large-file2.txt")), row.names=FALSE, quote=FALSE)
   expect_message(pull_repo_blfs(tmp),  regexp= "Please upload files")
 
 })
@@ -58,9 +59,11 @@ test_that("new files are box are downloaded", {
 
 
   #test pull, with an updated box file (boxtracker shows newer)
-  tracker <- read.boxtracker("large-file2.boxtracker", dir=tmp)
+  name <- get_tracker_name("example-files/large-file2.txt")
+  tracker <- read.boxtracker(name, dir=tmp)
   tracker$last_modified <- Sys.time() + 6000
-  write.csv(tracker, file.path(tmp, "box-lfs/large-file2.boxtracker"), row.names=FALSE, quote=FALSE)
+  write.csv(tracker, file.path(tmp, "box-lfs", get_tracker_name("example-files/large-file2.txt")), row.names=FALSE, quote=FALSE)
+
   expect_message(pull_repo_blfs(tmp, download=tmp),  regexp= "there are large files in this repository")
 
 

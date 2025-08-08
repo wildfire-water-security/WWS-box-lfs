@@ -4,10 +4,12 @@
 \alias{get_tracker_name}
 \title{Creates a unique file name for each boxtracker}
 \usage{
-get_tracker_name(file)
+get_tracker_name(file, ext = FALSE)
 }
 \arguments{
 \item{file}{the file to be tracked}
+
+\item{ext}{if TRUE, keeps the original file extension, if FALSE uses .boxtracker}
 }
 \value{
 the tracker name as a unique hash based on the file name with the extension ".boxtracker"

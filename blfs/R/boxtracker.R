@@ -12,8 +12,10 @@
 #' - otherwise will return a vector of length one with the column value
 #' @export
 #' @examples
-#' read.boxtracker("1678f723cb201eb3f9996c01a481dd0e", fs::path_package("extdata", package = "blfs"))
-#' read.boxtracker("1678f723cb201eb3f9996c01a481dd0e", fs::path_package("extdata", package = "blfs"), return = "size_MB")
+#' read.boxtracker("1678f723cb201eb3f9996c01a481dd0e",
+#' fs::path_package("extdata", package = "blfs"))
+#' read.boxtracker("1678f723cb201eb3f9996c01a481dd0e",
+#' fs::path_package("extdata", package = "blfs"), return = "size_MB")
 #'
 read.boxtracker <- function(tracker,dir=NULL, return="all"){
   stopifnot(length(return) == 1)
