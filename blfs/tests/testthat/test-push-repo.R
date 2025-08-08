@@ -1,11 +1,12 @@
 test_that("adding a new file works", {
   #create repo
     tmp <- withr::local_tempdir()
-    data_path <- c(file.path(test_path(), "testdata/example-files"), file.path(test_path(), "testdata/box-lfs"),
-                   file.path(test_path(), "testdata/.gitignore"))
+    data_path <- c(file.path(test_path(), "testdata/example-files"), file.path(test_path(), "testdata/box-lfs"))
 
     #copy files to repo
     file.copy(data_path, tmp, recursive = TRUE)
+    file.copy(file.path(test_path(), "testdata/test.gitignore"), file.path(tmp, ".gitignore"))
+
 
     #check push repo (the first time we do see the files are "modified")
     expect_message(push_repo_blfs(tmp, size=0.0002), regexp="Please upload files from")
@@ -22,11 +23,11 @@ test_that("adding a new file works", {
 test_that("modifying a files works", {
   #create repo
   tmp <- withr::local_tempdir()
-  data_path <- c(file.path(test_path(), "testdata/example-files"), file.path(test_path(), "testdata/box-lfs"),
-                 file.path(test_path(), "testdata/.gitignore"))
+  data_path <- c(file.path(test_path(), "testdata/example-files"), file.path(test_path(), "testdata/box-lfs"))
 
   #copy files to repo
   file.copy(data_path, tmp, recursive = TRUE)
+  file.copy(file.path(test_path(), "testdata/test.gitignore"), file.path(tmp, ".gitignore"))
 
   #check push repo (the first time we do see the files are "modified")
   expect_message(push_repo_blfs(tmp, size=0.0002), regexp="Please upload files from")
