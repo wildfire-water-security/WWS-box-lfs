@@ -176,7 +176,7 @@ get_file_name <- function(dir=NULL, tracker){
 #'
 #' @examples
 #' readme_msg()
-readme_msg <- function(readme){
+readme_msg <- function(){
   msg <- c("\n## Box LFS\n",
            "This repository is using Box large file storage (LFS) to maintain large files.",
            "Please see <https://github.com/wildfire-water-security/WWS-box-lfs/tree/main/blfs> for instructions on how to get the tracked files.\n")

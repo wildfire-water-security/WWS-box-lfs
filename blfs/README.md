@@ -29,6 +29,10 @@ between GitHub, the local repository, and Box isn’t possible. However,
 this package provides tools to make the process as streamlined and
 user-friendly as possible.
 
+The functions in this package are designed to accompany git commands
+(ie. init, clone, pull, push) to perform the necessary steps to keep the
+Box files synced.
+
 ## Installation
 
 You can install `blfs` from [GitHub](https://github.com/) with:
@@ -39,13 +43,7 @@ remotes::install_github("wildfire-water-security/WWS-box-lfs", subdir="blfs")
 library(blfs)
 ```
 
-## How to Use Box LFS
-
-The functions in this package are designed to accompany git commands
-(ie. init, clone, pull, push) to perform the necessary steps to keep the
-Box files synced.
-
-### Creating a new git repository
+## Creating a new git repository
 
 If you have an existing directory you’d like to turn into a Git
 repository stored on GitHub, start by running `new_repo_blfs()`. This
@@ -56,13 +54,10 @@ Here’s what the file structure of this directory looks like **before**
 we run `new_repo_blfs()`. We can see two files in a sub-directory
 (example-files).
 
-``` r
-fs::dir_tree(new_dir)
-#> C:\Users\wampleka\AppData\Local\Temp\Rtmp0Crcar\example-repo-be106e174518
-#> └── example-files
-#>     ├── large-file1.txt
-#>     └── large-file2.txt
-```
+    #> ~/new_dir
+    #> └── example-files
+    #>     ├── large-file1.txt
+    #>     └── large-file2.txt
 
 The `size` argument sets the minimum file size (in MB) for a file to be
 tracked as “large”; the default is 10 MB. In this example, we’ll use a
@@ -77,20 +72,18 @@ much smaller than 10 MB.
 Here’s what the file structure of this directory looks like **after** we
 run `new_repo_blfs()`:
 
-``` r
-fs::dir_tree(new_dir)
-#> C:\Users\wampleka\AppData\Local\Temp\Rtmp0Crcar\example-repo-be106e174518
-#> ├── box-lfs
-#> │   ├── 1678f723cb201eb3f9996c01a481dd0e.boxtracker
-#> │   ├── 4fa7622e82d068a0a994eafb564e4f5d.boxtracker
-#> │   ├── path-hash.csv
-#> │   └── upload
-#> │       ├── 1678f723cb201eb3f9996c01a481dd0e.txt
-#> │       └── 4fa7622e82d068a0a994eafb564e4f5d.txt
-#> └── example-files
-#>     ├── large-file1.txt
-#>     └── large-file2.txt
-```
+    #> ~/new_dir
+    #> ├── box-lfs
+    #> │   ├── 1678f723cb201eb3f9996c01a481dd0e.boxtracker
+    #> │   ├── 4fa7622e82d068a0a994eafb564e4f5d.boxtracker
+    #> │   ├── path-hash.csv
+    #> │   └── upload
+    #> │       ├── 1678f723cb201eb3f9996c01a481dd0e.txt
+    #> │       └── 4fa7622e82d068a0a994eafb564e4f5d.txt
+    #> ├── example-files
+    #> │   ├── large-file1.txt
+    #> │   └── large-file2.txt
+    #> └── README.md
 
 Notice we now have a box-lfs folder which now has tracker files
 (`.boxtracker`) and files ready to upload in the upload folder. You may
@@ -99,7 +92,7 @@ instead of the nice text names. These are called **hashes** and are used
 to uniquely identify each file to prevent overwriting files with the
 same name that are in different folders or have different extensions.
 
-#### Outputs from `new_repo_blfs`
+### Outputs from `new_repo_blfs`
 
 Running `new_repo_blfs` produces several informative outputs:
 
@@ -146,7 +139,7 @@ Running `new_repo_blfs` produces several informative outputs:
     This link will be stored in the tracker file, allowing the package
     to locate and fetch files as needed in the future.
 
-### Cloning a GitHub repository using Box LFS
+## Cloning a GitHub repository using Box LFS
 
 If you clone a GitHub repository that’s using Box LFS to track it’s
 large files, you’ll need to download those files manually from Box and
@@ -168,14 +161,11 @@ Once we know Box LFS is being used we can run `clone_repo_blfs()`. But
 first lets have a look at what the cloned directory looks like
 **before** we run `clone_repo_blfs()`:
 
-``` r
-fs::dir_tree(clone_dir)
-#> C:\Users\wampleka\AppData\Local\Temp\Rtmp0Crcar\example-repo-be10459a4df7
-#> └── box-lfs
-#>     ├── 1678f723cb201eb3f9996c01a481dd0e.boxtracker
-#>     ├── 4fa7622e82d068a0a994eafb564e4f5d.boxtracker
-#>     └── path-hash.csv
-```
+    #> ~/clone_dir
+    #> └── box-lfs
+    #>     ├── 1678f723cb201eb3f9996c01a481dd0e.boxtracker
+    #>     ├── 4fa7622e82d068a0a994eafb564e4f5d.boxtracker
+    #>     └── path-hash.csv
 
 You can see we only have the box-lfs folder with our `.boxtracker` files
 and a `.csv` which links the hash names to file paths. Now lets run
@@ -188,23 +178,20 @@ clone_repo_blfs(dir=clone_dir, download=dwd)
 Now we can look at what the cloned directory looks like **after** we run
 `clone_repo_blfs()`:
 
-``` r
-fs::dir_tree(clone_dir)
-#> C:\Users\wampleka\AppData\Local\Temp\Rtmp0Crcar\example-repo-be10459a4df7
-#> ├── box-lfs
-#> │   ├── 1678f723cb201eb3f9996c01a481dd0e.boxtracker
-#> │   ├── 4fa7622e82d068a0a994eafb564e4f5d.boxtracker
-#> │   └── path-hash.csv
-#> └── example-files
-#>     ├── large-file1.txt
-#>     └── large-file2.txt
-```
+    #> ~/clone_dir
+    #> ├── box-lfs
+    #> │   ├── 1678f723cb201eb3f9996c01a481dd0e.boxtracker
+    #> │   ├── 4fa7622e82d068a0a994eafb564e4f5d.boxtracker
+    #> │   └── path-hash.csv
+    #> └── example-files
+    #>     ├── large-file1.txt
+    #>     └── large-file2.txt
 
 Now we have a new folder: example-files which has the tracked files. So
 the function successfully grabbed the files from the `.zip` file and put
 them in the correct file location.
 
-#### Outputs from `clone_repo_blfs`
+### Outputs from `clone_repo_blfs`
 
 Running `clone_repo_blfs` produces several informative outputs:
 
@@ -236,7 +223,7 @@ Running `clone_repo_blfs` produces several informative outputs:
 
 3.  **Prompt: check download file path**
 
-        #> Zip file for downloaded data appears to be: C:\Users\wampleka\AppData\Local\Temp\Rtmp0Crcar\example-repo-be107e34f08/box-lfs-zip.zip
+        #> Zip file for downloaded data appears to be: ~/Downloads/box-lfs-zip.zip
         #> Press enter to use this file or provide a different file path.
 
     This prompt tells the user where the script thinks the downloaded

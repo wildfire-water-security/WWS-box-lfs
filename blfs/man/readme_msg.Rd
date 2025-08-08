@@ -4,7 +4,7 @@
 \alias{readme_msg}
 \title{Helper to write message about Box LFS to README.md}
 \usage{
-readme_msg(readme)
+readme_msg()
 }
 \value{
 Lines to add to the readme file informing user that Box LFS is being used
