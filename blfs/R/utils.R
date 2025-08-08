@@ -109,7 +109,7 @@ dwld_message <- function(dir=NULL){
   link <- link[!is.na(link)]
 
   if(length(link) > 0){
-    message(paste0("there are large files in this repository stored on box that need to be downloaded. Please download files, likely located here:\n",
+    message(paste0("Please download files from Box here:\n",
                    paste(unique(link), collapse="\n"),
                    "\nthey will be automatically moved to the correct locations from your downloads folder"))
 
