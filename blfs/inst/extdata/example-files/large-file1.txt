@@ -1,0 +1,5 @@
+file to test the functionality of the blfs package in R. 
+
+The package is used to interfact between local repositories, git/Github, and Box to manage sharing of large (>10 MB) files across projects. 
+
+Testing
