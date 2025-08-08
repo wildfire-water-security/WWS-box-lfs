@@ -10,8 +10,11 @@ Authors@R: c(
       role = c("aut", "cre")
     )
   )
-Description: More about what it does (maybe more than one line).
-    Continuation lines should be indented.
+Description: Provides tools to manage large files in GitHub repositories by storing 
+  them externally on Box. Uses Git LFS-style pointer files to track large files without 
+  exceeding GitHub storage limits. Designed for projects with institutional Box storage, 
+  such as the Wildfire and Water Security project, to streamline file tracking while 
+  maintaining Git version control.
 License: AGPL (>= 3)
 Encoding: UTF-8
 LazyData: true
