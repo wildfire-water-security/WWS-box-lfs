@@ -2,7 +2,7 @@
 % Please edit documentation in R/clone-repo.R
 \name{clone_repo_blfs}
 \alias{clone_repo_blfs}
-\title{Get files after cloning a repo that uses box-lfs}
+\title{Get files after cloning a repo that uses Box LFS}
 \usage{
 clone_repo_blfs(dir = NULL, download = NULL)
 }
@@ -15,7 +15,7 @@ clone_repo_blfs(dir = NULL, download = NULL)
 Prompts user to download the files from Box and then places them in the correct location in the \code{dir} folder
 }
 \description{
-If you want to clone a Github repository that uses box-lfs, you'll need to manually download the tracked files from Box so
+If you want to clone a Github repository that uses Box LFS, you'll need to manually download the tracked files from Box so
 you have them in your repository. This code will prompt you to download the Box files, then place them in the correct files
 in your repository using the .boxtracker files.
 }

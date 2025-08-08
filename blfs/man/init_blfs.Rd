@@ -2,7 +2,7 @@
 % Please edit documentation in R/start-blfs.R
 \name{init_blfs}
 \alias{init_blfs}
-\title{Set up the structure for box-lfs}
+\title{Set up the structure for Box LFS}
 \usage{
 init_blfs(dir = NULL)
 }
@@ -10,7 +10,7 @@ init_blfs(dir = NULL)
 \item{dir}{the file path to the file directory}
 }
 \value{
-Creates a box-lfs in the directory, with:
+Creates a box-lfs folder in the directory, with:
 \itemize{
 \item a upload folder nested inside.
 \item a .gitignore file (if it doesn't already exist) and adds the upload folder to it

@@ -27,6 +27,7 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
   #remove files living in box-lfs/upload
   large_files <- large_files[!grepl("^box-lfs/upload/", large_files)]
   large_files <- large_files[!grepl("boxtracker$", large_files)]
+  large_files <- large_files[!grepl("README.md$", large_files)]
 
 
   #built in to only get new large files

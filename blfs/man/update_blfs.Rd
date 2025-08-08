@@ -2,7 +2,7 @@
 % Please edit documentation in R/maintain-blfs.R
 \name{update_blfs}
 \alias{update_blfs}
-\title{Update files that are tracked by box-lfs}
+\title{Update files that are tracked by Box LFS}
 \usage{
 update_blfs(file, dir = NULL)
 }

@@ -167,3 +167,18 @@ get_file_name <- function(dir=NULL, tracker){
 
   return(file)
 }
+
+#' Helper to write message about Box LFS to README.md
+#'
+#' @returns
+#' Lines to add to the readme file informing user that Box LFS is being used
+#' @export
+#'
+#' @examples
+#' readme_msg()
+readme_msg <- function(readme){
+  msg <- c("\n## Box LFS\n",
+           "This repository is using Box large file storage (LFS) to maintain large files.",
+           "Please see <https://github.com/wildfire-water-security/WWS-box-lfs/tree/main/blfs> for instructions on how to get the tracked files.\n")
+  return(paste(msg, collapse="\n"))
+}

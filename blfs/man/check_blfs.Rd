@@ -2,7 +2,7 @@
 % Please edit documentation in R/utils.R
 \name{check_blfs}
 \alias{check_blfs}
-\title{Check if box-lfs is being used on the project directory}
+\title{Check if Box LFS is being used on the project directory}
 \usage{
 check_blfs(dir = NULL)
 }
@@ -10,10 +10,10 @@ check_blfs(dir = NULL)
 \item{dir}{the file path to the file directory}
 }
 \value{
-A value of TRUE if box-lfs is being used or FALSE if it is not
+A value of TRUE if Box LFS is being used or FALSE if it is not
 }
 \description{
-Check if box-lfs is being used on the project directory
+Check if Box LFS is being used on the project directory
 }
 \examples{
 check_blfs(fs::path_package("extdata", package = "blfs"))

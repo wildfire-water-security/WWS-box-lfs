@@ -2,7 +2,7 @@
 % Please edit documentation in R/maintain-blfs.R
 \name{check_files_blfs}
 \alias{check_files_blfs}
-\title{Identify large files that should be tracked with box-lfs}
+\title{Identify large files that should be tracked with Box LFS}
 \usage{
 check_files_blfs(dir = NULL, size = 10, new = FALSE)
 }
@@ -17,7 +17,7 @@ check_files_blfs(dir = NULL, size = 10, new = FALSE)
 A vector of relative file paths to the large files
 }
 \description{
-Identify large files that should be tracked with box-lfs
+Identify large files that should be tracked with Box LFS
 }
 \examples{
 #testing files are quite small and don't show up

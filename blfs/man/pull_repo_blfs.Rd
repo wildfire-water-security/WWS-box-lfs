@@ -2,7 +2,7 @@
 % Please edit documentation in R/pull-repo.R
 \name{pull_repo_blfs}
 \alias{pull_repo_blfs}
-\title{Check for updated files when pulling a GitHub repository}
+\title{Check for updated Box LFS files when pulling a GitHub repository}
 \usage{
 pull_repo_blfs(dir = NULL, download = NULL)
 }
@@ -22,7 +22,7 @@ Checks for:
 Run AFTER pulling files from GitHub.
 }
 \details{
-When you pull the updates from a GitHub repository that has large files tracked with box-lfs you also
+When you pull the updates from a GitHub repository that has large files tracked with Box LFS you also
 may need to update those files. This function will check the status of the tracked files in your local
 repository and determine if there are any files that uploaded or downloaded to maintain the current version.
 }

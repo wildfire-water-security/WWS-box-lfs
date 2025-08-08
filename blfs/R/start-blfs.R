@@ -33,6 +33,9 @@ init_blfs <- function(dir=NULL){
   added <- any(grepl("^box-lfs/upload$", readLines(ignore, warn=FALSE)))
   if(!added){cat("\nbox-lfs/upload", file=ignore, append = T)} #only add if not already there
 
+  #add to readme
+  readme <- file.path(dir, "README.md")
+  cat(readme_msg(), file=readme, append=TRUE)
 }
 
 

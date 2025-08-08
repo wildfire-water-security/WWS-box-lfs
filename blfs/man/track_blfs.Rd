@@ -2,7 +2,7 @@
 % Please edit documentation in R/start-blfs.R
 \name{track_blfs}
 \alias{track_blfs}
-\title{Start tracking a file with box-lfs}
+\title{Start tracking a file with Box LFS}
 \usage{
 track_blfs(file, dir = NULL)
 }

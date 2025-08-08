@@ -2,7 +2,7 @@
 % Please edit documentation in R/new-repo.R
 \name{new_repo_blfs}
 \alias{new_repo_blfs}
-\title{Start using box-lfs on a new project}
+\title{Start using Box LFS on a new project}
 \usage{
 new_repo_blfs(dir = NULL, size = 10)
 }
@@ -26,7 +26,7 @@ Use if you have an existing directory that you want to start tracking with git a
 file structure, identify files that should be tracked, and prompt user to upload those files to Box.
 }
 \details{
-Box-lfs works similar to git lfs where large files are tracked using a tracking file (.boxtracker) which keeps track of the file location and
+Box LFS works similar to git lfs where large files are tracked using a tracking file (.boxtracker) which keeps track of the file location and
 it's version. Any files larger than the specified size (default is 10 MB) will be added to .gitignore and the user will be prompted to upload those files
 to Box and supply the Box link to those files.
 }
