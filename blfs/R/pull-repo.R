@@ -1,8 +1,8 @@
-#' Check for updated files when pulling a GitHub repository
+#' Check for updated Box LFS files when pulling a GitHub repository
 #'
 #' Run AFTER pulling files from GitHub.
 #'
-#' When you pull the updates from a GitHub repository that has large files tracked with box-lfs you also
+#' When you pull the updates from a GitHub repository that has large files tracked with Box LFS you also
 #' may need to update those files. This function will check the status of the tracked files in your local
 #' repository and determine if there are any files that uploaded or downloaded to maintain the current version.
 #'

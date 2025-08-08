@@ -1,4 +1,4 @@
-#' Identify large files that should be tracked with box-lfs
+#' Identify large files that should be tracked with Box LFS
 #'
 #' @param dir the file path to the file directory
 #' @param size the minimum file size in megabytes to track
@@ -82,7 +82,7 @@ move_file_blfs <- function(hash_file, dir=NULL, download=NULL){
 }
 
 ## update file tracked by blfs (check for differences return TRUE if it needs to be updated) [going from local to repo/box]
-#' Update files that are tracked by box-lfs
+#' Update files that are tracked by Box LFS
 #'
 #' Checks for differences in the time modified between the boxtracker and the file.
 #'

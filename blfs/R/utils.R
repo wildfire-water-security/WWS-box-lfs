@@ -42,11 +42,11 @@ dir_check <- function(dir=NULL){
 }
 
 
-#' Check if box-lfs is being used on the project directory
+#' Check if Box LFS is being used on the project directory
 #'
 #' @param dir the file path to the file directory
 #'
-#' @returns A value of TRUE if box-lfs is being used or FALSE if it is not
+#' @returns A value of TRUE if Box LFS is being used or FALSE if it is not
 #' @export
 #' @examples
 #' check_blfs(fs::path_package("extdata", package = "blfs"))

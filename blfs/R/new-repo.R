@@ -1,10 +1,10 @@
-#' Start using box-lfs on a new project
+#' Start using Box LFS on a new project
 #'
 #' Use if you have an existing directory that you want to start tracking with git and put on GitHub. It will set up the
 #' file structure, identify files that should be tracked, and prompt user to upload those files to Box.
 #'
 #' @details
-#' Box-lfs works similar to git lfs where large files are tracked using a tracking file (.boxtracker) which keeps track of the file location and
+#' Box LFS works similar to git lfs where large files are tracked using a tracking file (.boxtracker) which keeps track of the file location and
 #' it's version. Any files larger than the specified size (default is 10 MB) will be added to .gitignore and the user will be prompted to upload those files
 #' to Box and supply the Box link to those files.
 #'

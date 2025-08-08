@@ -1,6 +1,5 @@
 
-## function to set up box lfs
-#' Set up the structure for box-lfs
+#' Set up the structure for Box LFS
 #'
 #' Creates the file structure for tracking large files with box. Adds the upload folder to .gitignore.
 #' If used on a folder that already has the file stucture set up it will run without errors.
@@ -8,7 +7,7 @@
 #' @param dir the file path to the file directory
 #' @md
 #' @returns
-#' Creates a box-lfs in the directory, with:
+#' Creates a box-lfs folder in the directory, with:
 #' - a upload folder nested inside.
 #' - a .gitignore file (if it doesn't already exist) and adds the upload folder to it
 #' - a file called path-hash.csv which links the tracker names to the file paths
@@ -38,7 +37,7 @@ init_blfs <- function(dir=NULL){
 
 
 
-#' Start tracking a file with box-lfs
+#' Start tracking a file with Box LFS
 #'
 #' Creates a .boxtracker file with the file information, adds the file to .gitignore, and copy to upload folder so it's easy to but on Box.
 #'
