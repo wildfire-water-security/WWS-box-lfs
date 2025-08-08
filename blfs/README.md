@@ -230,3 +230,95 @@ If it says `TRUE`, the repo uses Box LFS.
 right locations.**
 
 ------------------------------------------------------------------------
+
+## Pushing a GitHub repository using Box LFS
+
+**Before** you push changes to a repository that uses Box LFS, you need
+to:
+
+1.  Check if any **tracked files** have been updated.
+
+2.  See if there are **new large files** that should be tracked.
+
+You can do both with:
+
+``` r
+push_repo_blfs(dir=clone_dir, size=0.0001)
+```
+
+- `dir` is your local repository folder.
+- `size` is the minimum file size (in MB) that counts as a “large” file.
+  Default is **10 MB**.
+- Here we use a smaller number so our example files are included.
+
+### What you’ll see when you run `push_repo_blfs()`:
+
+1.  **Message telling you to upload files to Box**
+
+    You’ll only see this message if there are **new or updated files**
+    that need to be uploaded to Box. If there are no changes, the
+    function will finish without printing anything.
+
+        #> Please upload files from 'example-repo-abc123/box-lfs/upload' to Box here:
+        #> 'Wildfire_Water_Security/02_Nodes/your node/Projects/example-repo-abc123/box-lfs'
+
+    **Do this next:**
+
+    - Go to the correct folder in Box for your project.
+    - Inside that project’s folder, go to the `box-lfs` folder.
+    - Upload everything from your **local** `upload` folder into Box.
+
+------------------------------------------------------------------------
+
+## Pulling a GitHub repository using Box LFS
+
+**After** you pull changes from a GitHub repository that uses Box LFS,
+you need to:
+
+1.  Check if any **tracked files** have been updated on Box.
+
+2.  Check if any local tracked files should be pushed before downloading
+    the updated files.
+
+You can do both with:
+
+``` r
+pull_repo_blfs(dir=clone_dir, download=dwd)
+```
+
+- `dir` is your local repository folder.
+- `download` is the folder with the downloaded `.zip` file.
+
+### What you’ll see when you run `pull_repo_blfs()`:
+
+1.  **Message telling you to upload files to Box**
+
+    You’ll only see this message if there are **new or updated files**
+    that need to be **uploaded** to Box. We run this check to make sure
+    that any local changes to the tracked files are
+
+        #> Please upload files from 'example-repo-abc123/box-lfs/upload' to Box here:
+        #> 'Wildfire_Water_Security/02_Nodes/your node/Projects/example-repo-abc123/box-lfs'
+
+    **Do this next:**
+
+    - Go to the correct folder in Box for your project.
+
+    - Inside that project’s folder, go to the `box-lfs` folder.
+
+    - Upload everything from your **local** `upload` folder into Box.
+
+2.  **Message telling you where to get the files from Box**
+
+    You’ll only see this message if there are **new or updated files**
+    that need to be **downloaded** from Box.
+
+        #> Please download files from Box here:
+        #> 'Wildfire_Water_Security/02_Nodes/your node/Projects/example-repo-abc123/box-lfs'
+        #> they will be automatically moved to the correct locations from your downloads folder
+
+    **Do this next:**
+
+    - Go to the provided Box link or Box path.
+
+    - Download the folder (Box will give it to you as a .zip file).
