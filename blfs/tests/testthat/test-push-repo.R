@@ -1,6 +1,8 @@
 test_that("adding a new file works", {
   #create repo
     tmp <- withr::local_tempdir()
+    git2r::init(tmp)
+
     data_path <- c(file.path(test_path(), "testdata/example-files"), file.path(test_path(), "testdata/box-lfs"))
 
     #copy files to repo
@@ -23,6 +25,8 @@ test_that("adding a new file works", {
 test_that("modifying a files works", {
   #create repo
   tmp <- withr::local_tempdir()
+  git2r::init(tmp)
+
   data_path <- c(file.path(test_path(), "testdata/example-files"), file.path(test_path(), "testdata/box-lfs"))
 
   #copy files to repo

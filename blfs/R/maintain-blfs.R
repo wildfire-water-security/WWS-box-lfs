@@ -109,6 +109,10 @@ update_blfs <- function(file, dir=NULL){
   file_mtime <- as.POSIXct(file_tracker$last_modified)
   if(box_mtime < file_mtime){
     #file has been changed since last upload to box, need to upload
+
+    #create upload folder if needed
+    dir.create("box-lfs/upload", showWarnings = FALSE)
+
     #copy to upload folder for easy upload
     file.copy(file.path(dir, file), file.path(dir, "box-lfs/upload/", get_tracker_name(file, ext=TRUE)), overwrite = TRUE)
 

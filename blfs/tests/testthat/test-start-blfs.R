@@ -1,6 +1,7 @@
 test_that("start up box works", {
   #create temp repo
   tmp <- withr::local_tempdir()
+  git2r::init(tmp)
 
   #initialize
   init_blfs(tmp)

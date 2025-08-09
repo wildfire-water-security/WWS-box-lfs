@@ -3,6 +3,7 @@ test_that("files are identified", {
   tmp <- withr::local_tempdir()
 
   #initialize
+  git2r::init(tmp)
   init_blfs(tmp)
 
   #copy files to repo
@@ -27,6 +28,7 @@ test_that("files are moved", {
   tmp <- withr::local_tempdir()
 
   #initialize
+  git2r::init(tmp)
   init_blfs(tmp)
 
   #copy tracker files to repo
@@ -44,6 +46,7 @@ test_that("files are flagged when updated", {
   tmp <- withr::local_tempdir()
 
   #initialize
+  git2r::init(tmp)
   init_blfs(tmp)
 
   #move files and start tracking

@@ -25,6 +25,7 @@ RoxygenNote: 7.3.2
 Imports: 
     digest,
     fs,
+    git2r,
     rlang,
     tools,
     utils,

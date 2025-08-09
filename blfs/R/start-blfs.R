@@ -71,6 +71,7 @@ track_blfs <- function(file, dir=NULL){
     if(!added){cat(paste0("\n", file), file=ignore, append=T)} #only add if not already there
 
     #move to upload folder for upload, use hash name
+    dir.create("box-lfs/upload", showWarnings = FALSE)     #create upload folder if needed
     file.copy(file.path(dir, file), file.path(dir, "box-lfs/upload/", get_tracker_name(file, ext=TRUE)), overwrite = TRUE)
 
     #return file name for warning message
