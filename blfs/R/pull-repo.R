@@ -74,12 +74,15 @@ pull_repo_blfs <- function(dir=NULL, download=NULL){
     utils::unzip(file.path(download, file),
                  exdir = temp_dir)
 
-    #get file that need to be moved
-    files <- list.files(file.path(temp_dir), recursive = TRUE)
+    #get files that need to be moved (only copy changed files)
+    hashes <- sub("\\.boxtracker$", "", down)
+    hashes <- hashes[!is.na(hashes)]
+
+    zip_files <- list.files(file.path(temp_dir), recursive = TRUE)
+    copy_files <- zip_files[grepl(paste0("^(", paste(hashes, collapse = "|"), ")"), basename(zip_files))]
 
     #move files to correct location
-    place <- sapply(files, move_file_blfs, dir=dir, download=file.path(temp_dir))
-
+    place <- sapply(copy_files, move_file_blfs, dir=dir, download=file.path(temp_dir))
 
   }
 
