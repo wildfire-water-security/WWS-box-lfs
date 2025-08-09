@@ -24,13 +24,9 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
   sizes <- file.size(file.path(dir, files)) / 10^6 #in MB
   large_files <- files[sizes > size]
 
-  #remove files living in box-lfs/upload
-  large_files <- large_files[!grepl("^box-lfs/upload/", large_files)]
-  large_files <- large_files[!grepl("boxtracker$", large_files)]
-  large_files <- large_files[!grepl("README.md$", large_files)]
-  large_files <- large_files[!grepl(".Rproj$", large_files)]
-
-
+  #remove files we know we don't want to track with boxlfs (mainly for examples, these likely won't be above 10 MB)
+  rm <- c("^box-lfs/upload/", "box-lfs/path-hash.csv", "boxtracker$", "README.md$", "Rproj$")
+  large_files <- large_files[!grepl(paste(rm,collapse="|"),large_files)]
 
   #built in to only get new large files
   if(new & dir.exists(file.path(dir, "box-lfs"))){
