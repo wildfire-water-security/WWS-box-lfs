@@ -28,6 +28,8 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
   large_files <- large_files[!grepl("^box-lfs/upload/", large_files)]
   large_files <- large_files[!grepl("boxtracker$", large_files)]
   large_files <- large_files[!grepl("README.md$", large_files)]
+  large_files <- large_files[!grepl(".Rproj$", large_files)]
+
 
 
   #built in to only get new large files
