@@ -63,6 +63,9 @@ track_blfs <- function(file, dir=NULL){
     ignore <- file.path(dir, ".gitignore")
     if(!file.exists(ignore)){file.create(ignore)} #create .gitignore if it doesn't exist
 
+    #remove from git tracking
+    git2r::index_remove_bypath(dir, file)
+
     #check if already in gitignore
     added <- any(grepl(paste0(file, "$"), readLines(ignore, warn=FALSE)))
     if(!added){cat(paste0("\n", file), file=ignore, append=T)} #only add if not already there
