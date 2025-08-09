@@ -105,29 +105,38 @@ update_blfs <- function(file, dir=NULL){
   file_tracker <- get.boxtracker(file, dir)
 
   #check status of file, does it need to be downloaded or uploaded?
-  box_mtime <- as.POSIXct(boxtracker$last_modified)
-  file_mtime <- as.POSIXct(file_tracker$last_modified)
-  if(box_mtime < file_mtime){
-    #file has been changed since last upload to box, need to upload
+  box_size <- boxtracker$size_MB
+  file_size <- file_tracker$size_MB
 
-    #create upload folder if needed
-    dir.create("box-lfs/upload", showWarnings = FALSE)
+  #first checks to see if the size is different, if yes then see's if it should be uploaded or downloaded
+  if(file_size != box_size){
+    box_mtime <- as.POSIXct(boxtracker$last_modified)
+    file_mtime <- as.POSIXct(file_tracker$last_modified)
+    if(box_mtime < file_mtime){
+      #file has been changed since last upload to box, need to upload
 
-    #copy to upload folder for easy upload
-    file.copy(file.path(dir, file), file.path(dir, "box-lfs/upload/", get_tracker_name(file, ext=TRUE)), overwrite = TRUE)
+      #create upload folder if needed
+      dir.create("box-lfs/upload", showWarnings = FALSE)
 
-    #update boxtracker
-    write.boxtracker(file, dir)
+      #copy to upload folder for easy upload
+      file.copy(file.path(dir, file), file.path(dir, "box-lfs/upload/", get_tracker_name(file, ext=TRUE)), overwrite = TRUE)
 
-    return("upload")
-  }else if(box_mtime > file_mtime){
-    #boxtracker shows new version is on box, need to download
-    return("download")
+      #update boxtracker
+      write.boxtracker(file, dir)
+
+      return("upload")
+    }else if(box_mtime > file_mtime){
+      #boxtracker shows new version is on box, need to download
+      return("download")
+    }else{
+      #file is the same in local and on box (according to boxtracker)
+      #don't return file, return NA so we know that file is fine
+      return(NA)
+    }
   }else{
-    #file is the same in local and on box (according to boxtracker)
-    #don't return file, return NA so we know that file is fine
     return(NA)
   }
+
 
 }
 
