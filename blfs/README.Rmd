@@ -54,7 +54,36 @@ Install the package from [GitHub](https://github.com/):
 # install.packages("remotes")
 remotes::install_github("wildfire-water-security/WWS-box-lfs", subdir="blfs")
 library(blfs)
+library(git2r)
 ```
+
+## Best Practices
+
+In any Git project, it’s good practice to:
+
+-   **Pull changes** from GitHub *before* you start work each day.
+
+-   **Push your changes** to GitHub when you’re done for the day or after making a big change.
+
+With **Box LFS**, this is even more important.
+
+-   Box LFS doesn’t track every little change inside a large file; it only stores the **new version** each time you update it.
+
+-   If you don’t keep up with changes other people make, you can run into something called a **merge conflict**.
+
+A merge conflict happens when:
+
+-   You commit changes to a tracked file locally (but don’t push them to GitHub yet).
+
+-   Meanwhile, someone else changes that *same* file in their copy and pushes it to GitHub.
+
+-   When you finally try to push your changes, GitHub says:
+
+    > “These two versions of the file don’t match — I can’t decide which one is correct.”
+
+In Box LFS projects, this usually means the `.boxtracker` files for that large file are different between your commit and theirs.
+
+The safest way to avoid this? **Pull first, push often.**
 
 ------------------------------------------------------------------------
 
@@ -65,11 +94,13 @@ library(blfs)
     #create temp dir so files don't get cluttered
       #make a fake new dir with large files 
       new_dir <- withr::local_tempdir(pattern = "example-repo-")
+      init(new_dir)
       data_path <- file.path(fs::path_package("extdata", package = "blfs"), "example-files")
       file.copy(data_path, new_dir, recursive = TRUE)
       
       #make a fake cloned dir with tracked files 
       clone_dir <- withr::local_tempdir(pattern = "example-repo-") 
+      init(clone_dir)
       data_path <- file.path(fs::path_package("extdata", package = "blfs"), "box-lfs")
       file.copy(data_path, clone_dir, recursive = TRUE)
       file.copy(file.path(fs::path_package("extdata", package = "blfs"), "test.gitignore"), file.path(clone_dir, ".gitignore"))
@@ -273,9 +304,9 @@ cat(tree_output, sep = "\n")
 
 **Before** you push changes to a repository that uses Box LFS, you need to:
 
-1.   Check if any **tracked files** have been updated.
+1.  Check if any **tracked files** have been updated.
 
-2.   See if there are **new large files** that should be tracked.
+2.  See if there are **new large files** that should be tracked.
 
 You can do both with:
 
@@ -285,7 +316,7 @@ push_repo_blfs(dir=clone_dir, size=0.0001)
 
 -   `dir` is your local repository folder.
 -   `size` is the minimum file size (in MB) that counts as a “large” file. Default is **10 MB**.
--    Here we use a smaller number so our example files are included.
+-   Here we use a smaller number so our example files are included.
 
 ### What you'll see when you run `push_repo_blfs()`:
 
@@ -303,17 +334,17 @@ push_repo_blfs(dir=clone_dir, size=0.0001)
 
     -   Go to the correct folder in Box for your project.
     -   Inside that project’s folder, go to the `box-lfs` folder.
-    -   Upload everything from your **local** `upload` folder into Box. 
-    
+    -   Upload everything from your **local** `upload` folder into Box.
+
 ------------------------------------------------------------------------
 
 ## Pulling a GitHub repository using Box LFS
 
 **After** you pull changes from a GitHub repository that uses Box LFS, you need to:
 
-1.   Check if any **tracked files** have been updated on Box.
+1.  Check if any **tracked files** have been updated on Box.
 
-2.   Check if any local tracked files should be pushed before downloading the updated files.
+2.  Check if any local tracked files should be pushed before downloading the updated files.
 
 You can do both with:
 
@@ -328,7 +359,7 @@ pull_repo_blfs(dir=clone_dir, download=dwd)
 
 1.  **Message telling you to upload files to Box**
 
-    You'll only see this message if there are **new or updated files** that need to be **uploaded** to Box. We run this check to make sure that any local changes to the tracked files are 
+    You'll only see this message if there are **new or updated files** that need to be **uploaded** to Box. We run this check to make sure that any local changes to the tracked files are
 
     ```{r echo=FALSE}
      #making nicer formatted messages and warnings: 
@@ -344,8 +375,8 @@ pull_repo_blfs(dir=clone_dir, download=dwd)
 
     -   Upload everything from your **local** `upload` folder into Box.
 
-2.  **Message telling you where to get the files from Box** 
-    
+2.  **Message telling you where to get the files from Box**
+
     You'll only see this message if there are **new or updated files** that need to be **downloaded** from Box.
 
     ```{r echo=FALSE}
@@ -362,3 +393,40 @@ pull_repo_blfs(dir=clone_dir, download=dwd)
 
     -   Download the folder (Box will give it to you as a .zip file).
 
+------------------------------------------------------------------------
+
+## What to do if you get a merge conflict
+
+If you try to pull or push changes and Git shows something like:
+
+![](images/merge-conflict.png){width="399"}
+
+Don’t worry, it just means your version of the file and the version on GitHub are different, and Git wants you to choose which one to keep.
+
+### Step 1: Decide which version to keep
+
+Open the conflicted file in R or a text editor to look at the two versions. Open up the file in Box to see the most recent version.
+
+Ask yourself:
+
+-   Did **you** upload the latest version of the large file to Box? → Keep your pointer file.
+
+-   Did **someone else** upload a newer version to Box? → Keep their pointer file.
+
+    > **Tip:** If both versions of the large file are important, rename one before uploading to Box so the project can keep both without overwriting. You can then update `path-hash.csv` and its `.boxtracker` file to match.
+
+### Step 2: Edit the file to remove conflict markers
+
+Conflict markers look like this:
+
+```{r echo=FALSE}
+cat("<<<<<<< HEAD\n")
+cat("*your version*\n")
+cat("=======\n")
+cat("*their version*\n")
+cat(">>>>>>> branch-name\n")
+```
+
+-   Delete the lines with `<<<<<<< HEAD`, `=======`, and `>>>>>>> branch-name`.
+
+-   Keep only the version you decided in Step 1.

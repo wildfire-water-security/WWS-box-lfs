@@ -49,7 +49,43 @@ Install the package from [GitHub](https://github.com/):
 # install.packages("remotes")
 remotes::install_github("wildfire-water-security/WWS-box-lfs", subdir="blfs")
 library(blfs)
+library(git2r)
 ```
+
+## Best Practices
+
+In any Git project, it’s good practice to:
+
+- **Pull changes** from GitHub *before* you start work each day.
+
+- **Push your changes** to GitHub when you’re done for the day or after
+  making a big change.
+
+With **Box LFS**, this is even more important.
+
+- Box LFS doesn’t track every little change inside a large file; it only
+  stores the **new version** each time you update it.
+
+- If you don’t keep up with changes other people make, you can run into
+  something called a **merge conflict**.
+
+A merge conflict happens when:
+
+- You commit changes to a tracked file locally (but don’t push them to
+  GitHub yet).
+
+- Meanwhile, someone else changes that *same* file in their copy and
+  pushes it to GitHub.
+
+- When you finally try to push your changes, GitHub says:
+
+  > “These two versions of the file don’t match — I can’t decide which
+  > one is correct.”
+
+In Box LFS projects, this usually means the `.boxtracker` files for that
+large file are different between your commit and theirs.
+
+The safest way to avoid this? **Pull first, push often.**
 
 ------------------------------------------------------------------------
 
@@ -322,3 +358,47 @@ pull_repo_blfs(dir=clone_dir, download=dwd)
     - Go to the provided Box link or Box path.
 
     - Download the folder (Box will give it to you as a .zip file).
+
+------------------------------------------------------------------------
+
+## What to do if you get a merge conflict
+
+If you try to pull or push changes and Git shows something like:
+
+<img src="images/merge-conflict.png" width="399" />
+
+Don’t worry, it just means your version of the file and the version on
+GitHub are different, and Git wants you to choose which one to keep.
+
+### Step 1: Decide which version to keep
+
+Open the conflicted file in R or a text editor to look at the two
+versions. Open up the file in Box to see the most recent version.
+
+Ask yourself:
+
+- Did **you** upload the latest version of the large file to Box? → Keep
+  your pointer file.
+
+- Did **someone else** upload a newer version to Box? → Keep their
+  pointer file.
+
+  > **Tip:** If both versions of the large file are important, rename
+  > one before uploading to Box so the project can keep both without
+  > overwriting. You can then update `path-hash.csv` and its
+  > `.boxtracker` file to match.
+
+### Step 2: Edit the file to remove conflict markers
+
+Conflict markers look like this:
+
+    #> <<<<<<< HEAD
+    #> *your version*
+    #> =======
+    #> *their version*
+    #> >>>>>>> branch-name
+
+- Delete the lines with `<<<<<<< HEAD`, `=======`, and
+  `>>>>>>> branch-name`.
+
+- Keep only the version you decided in Step 1.
