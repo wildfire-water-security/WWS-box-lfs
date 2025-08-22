@@ -98,10 +98,10 @@ upld_message <- function(dir=NULL){
 #' @returns a character giving the project name based on a GitHub repository name
 #' @export
 #' @examples
-#' prj_name("~/Documents/WWS-Node1-TEST-example-repo")
+#' prj_name("~/Documents/WWS-TEST-example-repo")
 
 prj_name <- function(dir){
-  name <- gsub("WWS-Node[1-9]-", "", basename(dir))
+  name <- gsub("WWS-Node[1-9]-|WWS-", "", basename(dir))
   return(name)
 }
 #' Print message prompting user to download files
