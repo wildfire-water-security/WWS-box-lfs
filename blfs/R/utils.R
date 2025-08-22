@@ -84,11 +84,26 @@ upld_message <- function(dir=NULL){
   }else{
     message(paste0("Please upload files from '", basename(dir),
                    "/box-lfs/upload' to Box here:\n'Wildfire_Water_Security/02_Nodes/your node/Projects/",
-                   basename(dir), "/box-lfs", "'"))
+                    prj_name(dir), "/box-lfs", "'"))
 
   }
 }
 
+#' Get project name from a github repository
+#'
+#' Removes the WWS-Node#- from the repo name as it's not needed on Box
+#'
+#' @param dir the file path to the file directory
+#'
+#' @returns a character giving the project name based on a GitHub repository name
+#' @export
+#' @examples
+#' prj_name("~/Documents/WWS-Node1-TEST-example-repo")
+
+prj_name <- function(dir){
+  name <- gsub("WWS-Node[1-9]-", "", basename(dir))
+  return(name)
+}
 #' Print message prompting user to download files
 #'
 #' Due to security limitations, we can't currently automatically download files from Box via R. Thus this function prompts the user to
@@ -115,7 +130,7 @@ dwld_message <- function(dir=NULL){
 
   }else{
     message(paste0("Please download files from Box here:\n'Wildfire_Water_Security/02_Nodes/your node/Projects/",
-                   basename(dir), "/box-lfs", "'", "\nthey will be automatically moved to the correct locations from your downloads folder"))}
+                   prj_name(dir), "/box-lfs", "'", "\nthey will be automatically moved to the correct locations from your downloads folder"))}
 
 }
 
