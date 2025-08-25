@@ -68,8 +68,8 @@ get.boxtracker <- function(file, dir=NULL){
                           last_changed = strftime(info$ctime, "%Y-%m-%d %H:%M:%S"))
   }else{
     tracker <-  data.frame(file_path=file, box_link = NA, size_MB =  0,
-                           last_modified = NA,
-                           last_changed = NA)
+                           last_modified = "1900-01-01",
+                           last_changed = "1900-01-01")
   }
   return(tracker)
 }
