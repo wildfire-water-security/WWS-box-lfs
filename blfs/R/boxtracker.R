@@ -58,12 +58,19 @@ read.boxtracker <- function(tracker,dir=NULL, return="all"){
 get.boxtracker <- function(file, dir=NULL){
   dir <- dir_check(dir)
 
-  #get info on file
-  info <- file.info(file.path(dir, file))
+  #check if file exists
+  if(file.exists(file.path(dir, file))){
+    #get info on file
+    info <- file.info(file.path(dir, file))
 
-  tracker <- data.frame(file_path=file, box_link = NA, size_MB =  info$size*10^-6,
-                        last_modified = strftime(info$mtime, "%Y-%m-%d %H:%M:%S"),
-                        last_changed = strftime(info$ctime, "%Y-%m-%d %H:%M:%S"))
+    tracker <- data.frame(file_path=file, box_link = NA, size_MB =  info$size*10^-6,
+                          last_modified = strftime(info$mtime, "%Y-%m-%d %H:%M:%S"),
+                          last_changed = strftime(info$ctime, "%Y-%m-%d %H:%M:%S"))
+  }else{
+    tracker <-  data.frame(file_path=file, box_link = NA, size_MB =  0,
+                           last_modified = NA,
+                           last_changed = NA)
+  }
   return(tracker)
 }
 
