@@ -15,7 +15,8 @@ test_that("cloning works automatically", {
   add_box_loc(box_tmp, dir=tmp, type="path")
 
   #test cloning repo
-  expect_no_error(clone_repo_blfs(tmp))
+  msg <- capture_messages(clone_repo_blfs(tmp))
+  expect_equal("v Large files have been fetched from Box and put in repository.\n", msg)
 
   #make sure files are there
   expect_equal(list.files(file.path(tmp, "example-files")), c("large-file1.txt", "large-file2.txt"))
@@ -36,7 +37,10 @@ test_that("cloning works manually", {
   with_mocked_bindings(
     get_box_drive = function() FALSE,
     {
-      expect_no_error(expect_message(clone_repo_blfs(tmp, download = tmp)))
+      msg <- capture_messages(clone_repo_blfs(tmp, download = tmp))
+      expect_true(grepl("Please download files from Box", msg[1]))
+      expect_equal(msg[2], "v Large files have been fetched from Box and put in repository.\n")
+
     }
   )
 

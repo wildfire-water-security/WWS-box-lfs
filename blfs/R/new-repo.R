@@ -37,30 +37,37 @@ new_repo_blfs <- function(dir=NULL, size=10, box_dir=NULL){
 
   #identify large files and track
   files <- check_files_blfs(dir, size=size)
-  file_names <- unname(sapply(files, track_blfs, dir))
 
-  cli::cli_alert_info(paste0("the following files will no longer be tracked by git:\n", paste(file_names, collapse="\n")))
+  if(length(files) > 0){
+    file_names <- unname(sapply(files, track_blfs, dir))
 
-  #see if box drive is working
-  box_path <- get_box_drive()
+    cli::cli_alert_info(paste0("the following files will no longer be tracked by git:\n", paste(file_names, collapse="\n")))
 
-  #if no, keep manual method
-  if(box_path == FALSE){
-    upld_message(dir)
+    #see if box drive is working
+    box_path <- get_box_drive()
 
-    #attach box link to the files
-    if(!rlang::is_interactive()){
-      link <- NA
+    #if no, keep manual method
+    if(box_path == FALSE){
+      upld_message(dir)
+
+      #attach box link to the files
+      if(!rlang::is_interactive()){
+        link <- NA
+      }else{
+        link <- readline("what is the Box link to the folder where the data is now backed up? ")
+      }
+
+      add_box_loc(link, dir, type="link")
+
     }else{
-      link <- readline("what is the Box link to the folder where the data is now backed up? ")
+      upload_box_drive(dir=dir, box_dir=box_dir)
     }
 
-    add_box_loc(link, dir, type="link")
+    cli::cli_alert_success("Large files are now backed up in Box.")
 
   }else{
-    upload_box_drive(dir=dir, box_dir=box_dir)
-  }
+    cli::cli_alert_info("No large files found.")
 
-  cli::cli_alert_success("Large files are now backed up in Box.")
+  }
 
 }

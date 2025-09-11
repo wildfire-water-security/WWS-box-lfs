@@ -71,5 +71,8 @@ clone_repo_blfs <- function(dir=NULL, download=NULL){
     #move files to correct location
       place <- sapply(files, move_file_blfs, dir=dir, download=file_loc)
 
-    }
+  }
+
+  cli::cli_alert_success("Large files have been fetched from Box and put in repository.")
+
   }

@@ -7,7 +7,7 @@ test_that("link gets added", {
   file.copy(data_path, tmp, recursive = TRUE)
 
   random_link <- paste0("https://oregonstate.box.com/s/h", paste(sample(1:10000, size=4), collapse=""))
-  add_box_loc(random_link, dir=tmp)
+  add_box_loc(random_link, dir=tmp, type="link")
 
   tracker <- read.boxtracker("4fa7622e82d068a0a994eafb564e4f5d", dir=tmp)
   expect_equal(tracker$box_link, random_link)

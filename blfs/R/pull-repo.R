@@ -31,60 +31,78 @@ pull_repo_blfs <- function(dir=NULL, download=NULL){
   #check if file need to be updated
   trackers <- list.files(file.path(dir, "box-lfs"), pattern = ".boxtracker")
   files <- unlist(sapply(trackers, read.boxtracker, dir=dir, return="file_path"))
-  updated <- unlist(sapply(files, update_blfs, dir=dir))
+  updated <- unlist(sapply(files, update_blfs, dir=dir)) #files to upload are moved to /upload
 
   #see what files need to be uploaded/downloaded
     down <- names(updated[updated == "download"])
     up <- names(updated[updated == "upload"])
 
+  #check if we can run automatically
+    box_path <- get_box_drive()
 
   #upload any files
   if(length(up[!is.na(up)]) > 0){
     #files that need to be uploaded should already have boxtracker updated and moved to upload folder from update_blfs
-    upld_message(dir)
+    if(box_path == FALSE){
+      upld_message(dir)
+    }else{
+      upload_box_drive(dir=dir, box_dir=box_path)
+    }
+
+    cli::cli_alert_success("Large files are now backed up in Box.")
+
   }
 
   #download any files
   if(length(down[!is.na(down)]) >0){
-    dwld_message(dir)
+    if(box_path == FALSE){
+      dwld_message(dir)
 
-    #only do if interactive to prevent errors
-    if(rlang::is_interactive()){
-      uploaded <- readline("hit any key once files have been downloaded to continue setting up the repo")}
+      #only do if interactive to prevent errors
+      if(rlang::is_interactive()){
+        uploaded <- readline("hit any key once files have been downloaded to continue setting up the repo")}
 
-    #get downloads folder, if not specified guess
-    if(is.null(download)){download <- file.path(fs::path_home(), "Downloads")}
+      #get downloads folder, if not specified guess
+      if(is.null(download)){download <- file.path(fs::path_home(), "Downloads")}
 
-    #may have multiple copies, get the newest
-    file <- list.files(download, pattern=paste0("^","box-lfs", ".*\\.zip$"))
-    file_info <- file.info(file.path(download, file))
-    file <- file[which(file_info$mtime == max(file_info$mtime))]
+      #may have multiple copies, get the newest
+      file <- list.files(download, pattern=paste0("^","box-lfs", ".*\\.zip$"))
+      file_info <- file.info(file.path(download, file))
+      file <- file[which(file_info$mtime == max(file_info$mtime))]
 
-    if(rlang::is_interactive()){
-      #give user to correct wrong guessed zip
-      replace <- readline(paste0("Zip file for downloaded data appears to be: ", file.path(download, file),
-                                 "\nPress enter to use this file or provide a different file path."))
+      if(rlang::is_interactive()){
+        #give user to correct wrong guessed zip
+        replace <- readline(paste0("Zip file for downloaded data appears to be: ", file.path(download, file),
+                                   "\nPress enter to use this file or provide a different file path."))
+      }else{
+        replace <- ""}
+
+      file <- ifelse(replace == "", file, replace)
+
+      #unzip to temp dir
+      temp_dir <- withr::local_tempdir()
+      utils::unzip(file.path(download, file),
+                   exdir = temp_dir)
+
+      file_loc <- temp_dir
     }else{
-      replace <- ""}
-
-    file <- ifelse(replace == "", file, replace)
-
-    #unzip to temp dir
-    temp_dir <- withr::local_tempdir()
-    utils::unzip(file.path(download, file),
-                 exdir = temp_dir)
+      file_loc <- get_box_path(dir)
+    }
 
     #get files that need to be moved (only copy changed files)
     hashes <- sub("\\.boxtracker$", "", down)
     hashes <- hashes[!is.na(hashes)]
 
-    zip_files <- list.files(file.path(temp_dir), recursive = TRUE)
+    zip_files <- list.files(file.path(file_loc), recursive = TRUE)
     copy_files <- zip_files[grepl(paste0("^(", paste(hashes, collapse = "|"), ")"), basename(zip_files))]
 
     #move files to correct location
-    place <- sapply(copy_files, move_file_blfs, dir=dir, download=file.path(temp_dir))
+    place <- sapply(copy_files, move_file_blfs, dir=dir, download=file.path(file_loc))
+
+    cli::cli_alert_success("Large files have been fetched from Box and put in repository.")
 
   }
 
+  cli::cli_alert_success("Large files have been synced with Box.")
 
 }

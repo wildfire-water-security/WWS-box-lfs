@@ -38,7 +38,8 @@ push_repo_blfs <- function(dir=NULL, size=10){
   if(length(new_files) > 0){
     file_names <- unname(sapply(new_files, track_blfs, dir))
 
-    warning("the following files will no longer be tracked by git:\n", paste(file_names, collapse="\n"))
+    cli::cli_alert_info(paste0("the following files will no longer be tracked by git:\n", paste(file_names, collapse="\n")))
+
     print_upload_message <- TRUE
   }
 
@@ -57,5 +58,8 @@ push_repo_blfs <- function(dir=NULL, size=10){
       upload_box_drive(dir=dir, box_dir=box_path)
     }
 
-    }
+  }
+
+  cli::cli_alert_success("Large files have been synced with Box.")
+
 }
