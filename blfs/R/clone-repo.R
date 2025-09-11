@@ -24,11 +24,16 @@ clone_repo_blfs <- function(dir=NULL, download=NULL){
 
   #check if lfs is needed
   if(check_blfs(dir)){
-    dwld_message(dir)
 
-    #only do if interactive to prevent errors
-    if(rlang::is_interactive()){
-      uploaded <- readline("hit any key once files have been downloaded to continue setting up the repo")}
+    #see if box drive is working
+    box_path <- get_box_drive()
+
+    if(box_path == FALSE){
+      dwld_message(dir)
+
+      #only do if interactive to prevent errors
+      if(rlang::is_interactive()){
+        uploaded <- readline("hit any key once files have been downloaded to continue setting up the repo")}
 
       #get downloads folder, if not specified guess
       if(is.null(download)){download <- file.path(fs::path_home(), "Downloads")}
@@ -38,12 +43,12 @@ clone_repo_blfs <- function(dir=NULL, download=NULL){
       file_info <- file.info(file.path(download, file))
       file <- file[which(file_info$mtime == max(file_info$mtime))]
 
-    if(rlang::is_interactive()){
-      #give user to correct wrong guessed zip
-      replace <- readline(paste0("Zip file for downloaded data appears to be: ", file.path(download, file),
-                                 "\nPress enter to use this file or provide a different file path."))
+      if(rlang::is_interactive()){
+        #give user to correct wrong guessed zip
+        replace <- readline(paste0("Zip file for downloaded data appears to be: ", file.path(download, file),
+                                   "\nPress enter to use this file or provide a different file path."))
       }else{
-       replace <- ""}
+        replace <- ""}
 
       file <- ifelse(replace == "", file, replace)
 
@@ -52,11 +57,19 @@ clone_repo_blfs <- function(dir=NULL, download=NULL){
       utils::unzip(file.path(download, file),
                    exdir = temp_dir)
 
-      #get file that need to be moved
-      files <- list.files(file.path(temp_dir), recursive = TRUE)
+      #set download path
+      file_loc <- file.path(temp_dir)
+    }else{
+      #get box path and set location of download folder
+      file_loc <- get_box_path(dir)
 
-      #move files to correct location
-      place <- sapply(files, move_file_blfs, dir=dir, download=file.path(temp_dir))
+    }
+
+    #get file that need to be moved
+      files <- list.files(file.path(file_loc), recursive = TRUE)
+
+    #move files to correct location
+      place <- sapply(files, move_file_blfs, dir=dir, download=file_loc)
 
     }
   }

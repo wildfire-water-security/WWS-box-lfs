@@ -49,6 +49,7 @@ read.boxtracker <- function(tracker,dir=NULL, return="all"){
 #' @returns a data.frame with 1 row and 5 columns:
 #' - file_path: the relative path to the file being tracked
 #' - box_link: the web link to the folder containing the file
+#' - box_path: the box drive path to the folder containing the file
 #' - size_MB: the size of the file in megabytes
 #' - last_modified: the date and time the file was last modified
 #' - last_changed: the date and time the file was last changed
@@ -63,11 +64,11 @@ get.boxtracker <- function(file, dir=NULL){
     #get info on file
     info <- file.info(file.path(dir, file))
 
-    tracker <- data.frame(file_path=file, box_link = NA, size_MB =  info$size*10^-6,
+    tracker <- data.frame(file_path=file, box_link = NA, box_path=NA, size_MB =  info$size*10^-6,
                           last_modified = strftime(info$mtime, "%Y-%m-%d %H:%M:%S"),
                           last_changed = strftime(info$ctime, "%Y-%m-%d %H:%M:%S"))
   }else{
-    tracker <-  data.frame(file_path=file, box_link = NA, size_MB =  0,
+    tracker <-  data.frame(file_path=file, box_link = NA, box_path=NA, size_MB =  0,
                            last_modified = "1900-01-01",
                            last_changed = "1900-01-01")
   }
@@ -93,10 +94,12 @@ write.boxtracker <- function(file, dir=NULL){
 
   tracker <- get.boxtracker(file, dir)
 
-  # Get link if it exists in previous version, if not write to tracker file
+  # Get link and path if it exists in previous version, if not write to tracker file
   if(file.exists(file.path(dir, "box-lfs", tracker_name))){
     link <- read.boxtracker(tracker_name, dir=dir, return="box_link")
+    path <- read.boxtracker(tracker_name, dir=dir, return="box_path")
     tracker$box_link <- link
+    tracker$box_path <- path
   }else{
     cat(paste0("\n", paste(file, tracker_name, sep = ",")), file=file.path(dir, "box-lfs/path-hash.csv"), append=TRUE)
   }

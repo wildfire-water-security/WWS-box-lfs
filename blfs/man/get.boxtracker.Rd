@@ -16,6 +16,7 @@ a data.frame with 1 row and 5 columns:
 \itemize{
 \item file_path: the relative path to the file being tracked
 \item box_link: the web link to the folder containing the file
+\item box_path: the box drive path to the folder containing the file
 \item size_MB: the size of the file in megabytes
 \item last_modified: the date and time the file was last modified
 \item last_changed: the date and time the file was last changed

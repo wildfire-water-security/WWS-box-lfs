@@ -44,5 +44,18 @@ push_repo_blfs <- function(dir=NULL, size=10){
 
   #print upload message
   if(print_upload_message){
-    upld_message(dir)}
+    #see if we can copy files automatically
+    box_path <- get_box_drive()
+
+    if(box_path == FALSE){
+      upld_message(dir)
+    }else{
+      #get box_path
+      box_path <- get_box_path(dir)
+
+      #move files from upload to Box
+      upload_box_drive(dir=dir, box_dir=box_path)
+    }
+
+    }
 }

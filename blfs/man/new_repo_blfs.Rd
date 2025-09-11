@@ -4,12 +4,14 @@
 \alias{new_repo_blfs}
 \title{Start using Box LFS on a new project}
 \usage{
-new_repo_blfs(dir = NULL, size = 10)
+new_repo_blfs(dir = NULL, size = 10, box_dir = NULL)
 }
 \arguments{
 \item{dir}{the file path to the file directory}
 
 \item{size}{the minimum file size in megabytes to track}
+
+\item{box_dir}{the file path to the project within Box}
 }
 \value{
 Creates the following files in \code{dir}:

@@ -1,22 +1,32 @@
 #' Add Box file location to the boxtracker file
 #'
-#' Allows the efficent addition of a link to the Box directory to the .boxtracker files to track where a file lives on Box. This function
+#' Allows the efficient addition of a link or file path to the Box directory to the .boxtracker files to track where a file lives on Box. This function
 #' will add the link to all .boxtracker files within the directory, so ensure the link supplied is the folder housing all the tracked files.
 #'
-#' @param link the link to the Box directory housing the stored files
+#' @param link the link or path to the Box directory housing the stored files (either web or drive)
 #' @param dir the file path to the file directory
-#' @export
+#' @param type either "path" for the box_path or "link" fo rthe box_link
 #' @returns Modifies all the .boxtracker files to include the supplied link
-#'
+#' @noRd
 #' @examples
 #' add_box_loc("https://oregonstate.box.com/s/h9g8q6n8lj3u2bwhaalepb0lc28te4n5",
-#' fs::path_package("extdata", package = "blfs"))
-add_box_loc <- function(link, dir=NULL){
+#' fs::path_package("extdata", package = "blfs"), type="link")
+add_box_loc <- function(link, dir=NULL, type="path"){
   dir <- dir_check(dir)
 
   for(x in list.files(file.path(dir, "box-lfs"), pattern="boxtracker")){
     tracker <- read.boxtracker(x, dir)
-    tracker$box_link <- link
+
+    if(type == "path"){
+      #remove head with username, start after Box
+      link <- gsub(boxrdrive::box_drive(), "", fs::fs_path(link))
+      tracker$box_path <- link
+    }
+
+    if(type == "link"){
+      tracker$box_link <- link
+
+    }
 
     utils::write.csv(tracker, file.path(dir,"box-lfs", x), row.names = FALSE,
                      quote=FALSE)
@@ -28,9 +38,8 @@ add_box_loc <- function(link, dir=NULL){
 #' If directory is not supplied, it will default to the current working directory determined with \link[base]{getwd}
 #'
 #' @param dir the file path to the file directory or NULL to use current working directory
-#'
+#' @noRd
 #' @returns the file path to the working directory
-#' @export
 #'
 #' @examples
 #' dir_check(fs::path_package("extdata", package = "blfs"))
@@ -45,9 +54,8 @@ dir_check <- function(dir=NULL){
 #' Check if Box LFS is being used on the project directory
 #'
 #' @param dir the file path to the file directory
-#'
+#' @noRd
 #' @returns A value of TRUE if Box LFS is being used or FALSE if it is not
-#' @export
 #' @examples
 #' check_blfs(fs::path_package("extdata", package = "blfs"))
 check_blfs <- function(dir=NULL){
@@ -64,9 +72,8 @@ check_blfs <- function(dir=NULL){
 #' upload the files to Box, providing the location of the files on the local computer and the location to place the files on Box.
 #'
 #' @param dir the file path to the file directory
-#'
+#' @noRd
 #' @returns A message prompting user to upload data
-#' @export
 #' @examples
 #' upld_message(fs::path_package("extdata", package = "blfs"))
 upld_message <- function(dir=NULL){
@@ -78,14 +85,13 @@ upld_message <- function(dir=NULL){
   link <- link[!is.na(link)]
 
   if(length(link) > 0){
-    message(paste0("Please upload files from '", basename(dir),
-                   "/box-lfs/upload' to Box here:\n", link[1]))
+    cli::cli_alert_info(paste0("Please upload files from '", basename(dir),
+                               "/box-lfs/upload' to Box here:\n", link[1]))
 
   }else{
-    message(paste0("Please upload files from '", basename(dir),
-                   "/box-lfs/upload' to Box here:\n'Wildfire_Water_Security/02_Nodes/your node/Projects/",
-                    prj_name(dir), "/box-lfs", "'"))
-
+    cli::cli_alert_info(paste0("Please upload files from '", basename(dir),
+                               "/box-lfs/upload' to Box here:\n'Wildfire_Water_Security/02_Nodes/your node/Projects/",
+                               prj_name(dir), "/box-lfs", "'"))
   }
 }
 
@@ -94,9 +100,8 @@ upld_message <- function(dir=NULL){
 #' Removes the WWS-Node#- from the repo name as it's not needed on Box
 #'
 #' @param dir the file path to the file directory
-#'
+#' @noRd
 #' @returns a character giving the project name based on a GitHub repository name
-#' @export
 #' @examples
 #' prj_name("~/Documents/WWS-TEST-example-repo")
 
@@ -110,9 +115,8 @@ prj_name <- function(dir){
 #' download the files to Box, providing the location to get the files on Box.
 #'
 #' @param dir the file path to the file directory
-#'
+#' @noRd
 #' @returns A message prompting user to download data
-#' @export
 #' @examples
 #' dwld_message(fs::path_package("extdata", package = "blfs"))
 dwld_message <- function(dir=NULL){
@@ -124,13 +128,14 @@ dwld_message <- function(dir=NULL){
   link <- link[!is.na(link)]
 
   if(length(link) > 0){
-    message(paste0("Please download files from Box here:\n",
-                   paste(unique(link), collapse="\n"),
-                   "\nthey will be automatically moved to the correct locations from your downloads folder"))
+    cli::cli_alert_info(paste0("Please download files from Box here:\n",
+                               paste(unique(link), collapse="\n"),
+                               "\nthey will be automatically moved to the correct locations from your downloads folder"))
 
   }else{
-    message(paste0("Please download files from Box here:\n'Wildfire_Water_Security/02_Nodes/your node/Projects/",
-                   prj_name(dir), "/box-lfs", "'", "\nthey will be automatically moved to the correct locations from your downloads folder"))}
+    cli::cli_alert_info(paste0("Please download files from Box here:\n'Wildfire_Water_Security/02_Nodes/your node/Projects/",
+                               prj_name(dir), "/box-lfs", "'", "\nthey will be automatically moved to the correct locations from your downloads folder"))
+    }
 
 }
 
@@ -140,9 +145,8 @@ dwld_message <- function(dir=NULL){
 #'
 #' @param file the file to be tracked
 #' @param ext if TRUE, keeps the original file extension, if FALSE uses .boxtracker
-#'
+#' @noRd
 #' @returns the tracker name as a unique hash based on the file name with the extension ".boxtracker"
-#' @export
 #'
 #' @examples
 #' get_tracker_name("test-file1.txt")
@@ -166,8 +170,7 @@ get_tracker_name <- function(file, ext=FALSE){
 #' @param dir the file path to the file directory
 #'
 #' @returns the file path associated with a hash based .boxtracker file.
-#' @export
-#'
+#' @noRd
 #' @examples
 #' get_file_name("1678f723cb201eb3f9996c01a481dd0e.boxtracker",
 #' dir=fs::path_package("extdata", package = "blfs"))
@@ -187,8 +190,7 @@ get_file_name <- function(dir=NULL, tracker){
 #'
 #' @returns
 #' Lines to add to the readme file informing user that Box LFS is being used
-#' @export
-#'
+#' @noRd
 #' @examples
 #' readme_msg()
 readme_msg <- function(){
@@ -196,4 +198,48 @@ readme_msg <- function(){
            "This repository is using Box large file storage (LFS) to maintain large files.",
            "Please see <https://github.com/wildfire-water-security/WWS-box-lfs/tree/main/blfs> for instructions on how to get the tracked files.\n")
   return(paste(msg, collapse="\n"))
+}
+
+#' Check if Box Drive is installed
+#'
+#' Uses \link[boxrdrive]{box_drive} to safely either get the path to Box Drive or return
+#' FALSE and provide a warning that files will need to be moved manually
+#'
+#' @returns Either the path to Box Drive or FALSE if Box Drive isn't installed.
+#' @noRd
+#'
+get_box_drive <- function(){
+  box_path <- tryCatch(boxrdrive::box_drive(),
+                       error=function(e){return(FALSE)})
+
+  if(box_path == FALSE){
+    warning("Box Drive not installed, files will need to be manually moved until Box Drive is installed")
+  }
+
+  return(box_path)
+}
+
+
+#' Safely get the Box file path from .boxtracker
+#'
+#' Reads all the .boxtrackers in the directory and returns a single path (or error) for the location
+#' in Box Drive where files are housed.
+#'
+#' @param dir the file path to the file directory
+#'
+#' @returns Box drive path
+#' @noRd
+#'
+get_box_path <- function(dir){
+  #get box path
+  hash <- tools::file_path_sans_ext(list.files(file.path(dir, "box-lfs"), pattern=".boxtracker"))
+  box_path <- unique(sapply(hash, read.boxtracker, dir=dir, return="box_path"))
+  box_path <- box_path[!is.na(box_path)]
+
+  #ensure there's only one
+  if(length(box_path) > 1){
+    stop("More than one Box Path found in .boxtrackers, please check")
+  }
+  return(box_path)
+
 }
