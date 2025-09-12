@@ -1,16 +1,15 @@
 test_that("link gets added", {
   #create temp dir to modify files cleanly
-  tmp <- withr::local_tempdir()
-  data_path <- c(file.path(test_path(), "testdata/box-lfs"))
+    tmp <- create_test_repo(git=FALSE, examples=FALSE, box_lfs=TRUE)
+    withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
 
-  #copy files to repo
-  file.copy(data_path, tmp, recursive = TRUE)
+  #add random link
+    random_link <- paste0("https://oregonstate.box.com/s/h", paste(sample(1:10000, size=4), collapse=""))
+    add_box_loc(random_link, dir=tmp, type="link")
 
-  random_link <- paste0("https://oregonstate.box.com/s/h", paste(sample(1:10000, size=4), collapse=""))
-  add_box_loc(random_link, dir=tmp, type="link")
-
-  tracker <- read.boxtracker("4fa7622e82d068a0a994eafb564e4f5d", dir=tmp)
-  expect_equal(tracker$box_link, random_link)
+  #check for link
+    tracker <- read.boxtracker("4fa7622e82d068a0a994eafb564e4f5d", dir=tmp)
+    expect_equal(tracker$box_link, random_link)
 
   })
 

@@ -1,45 +1,43 @@
 test_that("cloning works automatically", {
-  #create repo without tracked files
-  tmp <- withr::local_tempdir()
-  data_path <- c(file.path(test_path(), "testdata/box-lfs"))
+  #create temp dir to modify files cleanly
+    tmp <- create_test_repo(box_lfs=TRUE, examples = FALSE)
+    withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
 
-  box_tmp <- withr::local_tempdir()
-  box_files <- list.files(file.path(test_path(), "testdata/box-lfs/upload"), full.names = TRUE)
-
-  #copy files to repo
-  file.copy(data_path, tmp, recursive = TRUE)
-  file.copy(file.path(test_path(), "testdata/test.gitignore"), file.path(tmp, ".gitignore"))
-  file.copy(box_files, file.path(box_tmp))
+    box_tmp <- create_test_boxdrive()
+    withr::defer(unlink(box_tmp, recursive = TRUE), envir = parent.frame())
 
   #put in new file path to "box"
-  add_box_loc(box_tmp, dir=tmp, type="path")
+    add_box_loc(box_tmp, dir=tmp, type="path")
 
-  #test cloning repo
-  msg <- capture_messages(clone_repo_blfs(tmp))
-  expect_equal("v Large files have been fetched from Box and put in repository.\n", msg)
+    with_mocked_bindings(
+      get_box_drive = function() box_tmp,
+      {
+        #test cloning repo
+        expect_message(clone_repo_blfs(tmp), "Large files have been fetched from Box and put in repository")
+      })
 
   #make sure files are there
-  expect_equal(list.files(file.path(tmp, "example-files")), c("large-file1.txt", "large-file2.txt"))
+    expect_equal(list.files(file.path(tmp, "example-files")), c("large-file1.txt", "large-file2.txt"))
 
 })
 
 test_that("cloning works manually", {
-  #create repo without tracked files
-  tmp <- withr::local_tempdir()
-  data_path <- c(file.path(test_path(), "testdata/box-lfs"),
-                 file.path(test_path(), "testdata/box-lfs-zip.zip"))
+  #create temp dir to modify files cleanly
+    tmp <- create_test_repo(box_lfs=TRUE, examples = FALSE)
+    withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
 
-  #copy files to repo
-  file.copy(data_path, tmp, recursive = TRUE)
-  file.copy(file.path(test_path(), "testdata/test.gitignore"), file.path(tmp, ".gitignore"))
+    dwd_tmp <- create_test_download()
+    withr::defer(unlink(dwd_tmp, recursive = TRUE), envir = parent.frame())
 
   #test cloning repo
   with_mocked_bindings(
     get_box_drive = function() FALSE,
     {
-      msg <- capture_messages(clone_repo_blfs(tmp, download = tmp))
-      expect_true(grepl("Please download files from Box", msg[1]))
-      expect_equal(msg[2], "v Large files have been fetched from Box and put in repository.\n")
+      #run looking for example files
+      msg_match <- expect_cli_msg(clone_repo_blfs(tmp, download = dwd_tmp),
+                                  msg = c("Please download files from Box",
+                                          "Large files have been fetched from Box and put in repository"))
+      expect_true(msg_match)
 
     }
   )

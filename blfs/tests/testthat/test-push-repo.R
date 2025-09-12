@@ -1,83 +1,74 @@
 test_that("adding a new file works manually", {
-  #create repo
-    tmp <- withr::local_tempdir()
-    git2r::init(tmp)
-
-    data_path <- c(file.path(test_path(), "testdata/example-files"), file.path(test_path(), "testdata/box-lfs"))
-
-    #copy files to repo
-    file.copy(data_path, tmp, recursive = TRUE)
-    file.copy(file.path(test_path(), "testdata/test.gitignore"), file.path(tmp, ".gitignore"))
-
+  #create temp dir to modify files cleanly
+  tmp <- create_test_repo(box_lfs=TRUE)
+  withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
 
     #check push repo (the first time we do see the files are "modified")
     with_mocked_bindings(
       get_box_drive = function() FALSE,
       {
-        msg <- capture_messages(push_repo_blfs(tmp, size=0.0002))
-        expect_true(grepl("i Please upload files from", msg[1]))
-        expect_equal(msg[2], "v Large files have been synced with Box.\n")
+        #run first time, modified files, expect message to upload
+          msg_match <- expect_cli_msg(code=push_repo_blfs(tmp, size=0.0002),
+                                      msg = c("Please upload files from",
+                                              "Large files have been synced with Box."))
+          expect_true(msg_match)
 
-        #expect_message(push_repo_blfs(tmp, size=0.0002), regexp="Please upload files from")
-        #expect_no_message(push_repo_blfs(tmp, size=0.0002))
-        msg <- capture_messages(push_repo_blfs(tmp, size=0.0002))
-        expect_equal(msg, "v Large files have been synced with Box.\n")
+
+        #second time, no new files, expect just message everything is up to date
+          expect_message(push_repo_blfs(tmp, size=0.0002), "Large files have been synced with Box.")
 
         #add a file
-        write.table("testing out adding a new file", file.path(tmp, "example-files/large-file3.txt"))
+          new_file <- "example-files/large-file3.txt"
+          file_txt <- paste0(sample(1:10000, size=1000), collapse = "")
+          write.table(file_txt, file.path(tmp, new_file))
 
         #see if it gets flagged
-        msg <- capture_messages(push_repo_blfs(tmp, size=0.00002))
-        expect_equal(msg[1], "i the following files will no longer be tracked by git:\nexample-files/large-file3.txt\n")
-        expect_true(grepl("i Please upload files from", msg[2]))
-        expect_equal(msg[3], "v Large files have been synced with Box.\n")
+          msg_match <- expect_cli_msg(code=push_repo_blfs(tmp, size=0.0002),
+                                      msg = c("large-file3",
+                                              "Please upload files from",
+                                              "Large files have been synced with Box."))
+          expect_true(msg_match)
 
-        #expect_message(expect_warning(push_repo_blfs(tmp, size=0.00002), regexp="large-file3"))
-        expect_true(file.exists(file.path(tmp, "box-lfs/7338d121d05a8a1a27dac34bd7c56fc0.boxtracker")))
 
-        }
-    )
+        #make sure a box.tracker is written
+          tracker <- get_tracker_name(new_file)
+          expect_true(file.exists(file.path(tmp, "box-lfs", tracker)))
 
+        })
 })
 
 
 test_that("modifying a files works automatically", {
-  #create repo
-  tmp <- withr::local_tempdir()
-  git2r::init(tmp)
+  #create temp dir to modify files cleanly
+    tmp <- create_test_repo(box_lfs=TRUE)
+    withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
 
-  #make box folder
-  box_tmp <- file.path(withr::local_tempdir(), "box-lfs")
-  dir.create(box_tmp)
-
-  data_path <- c(file.path(test_path(), "testdata/example-files"), file.path(test_path(), "testdata/box-lfs"))
-
-  #copy files to repo
-  file.copy(data_path, tmp, recursive = TRUE)
-  file.copy(file.path(test_path(), "testdata/test.gitignore"), file.path(tmp, ".gitignore"))
+    box_tmp <- create_test_boxdrive(files=FALSE)
+    withr::defer(unlink(box_tmp, recursive = TRUE), envir = parent.frame())
 
   #put in new file path to "box"
-  add_box_loc(box_tmp, dir=tmp, type="path")
+    add_box_loc(box_tmp, dir=tmp, type="path")
 
-  #check push repo (the first time we do see the files are "modified")
-  msg <- capture_messages(push_repo_blfs(tmp, size=0.0002))
-  expect_equal(msg, "v Large files have been synced with Box.\n")
+    with_mocked_bindings(
+      get_box_drive = function() box_tmp,
+      {
+        #check push repo (the first time we do see the files are "modified")
+        expect_message(push_repo_blfs(tmp, size=0.0002), "Large files have been synced with Box")
 
-  #modify file
-  #change date on boxtracker
-  name <- get_tracker_name("example-files/large-file2.txt")
-  tracker <- read.boxtracker(name, dir=tmp)
-  tracker$last_modified <- Sys.time() - 6000
-  write.csv(tracker, file.path(tmp, "box-lfs", get_tracker_name("example-files/large-file2.txt")), row.names=FALSE, quote=FALSE)
+        #modify file
+        name <- "example-files/large-file2.txt"
+        create_updated_file(name, tmp)
 
-  old <- file.info(file.path(tmp, "box-lfs/upload/4fa7622e82d068a0a994eafb564e4f5d.txt"))
+        old <- file.info(file.path(tmp, "box-lfs/upload/4fa7622e82d068a0a994eafb564e4f5d.txt"))
 
-  #see if it gets flagged
-  msg <- capture_messages(push_repo_blfs(tmp, size=0.0002))
-  expect_equal(msg, "v Large files have been synced with Box.\n")
+        #see if it gets flagged
+        expect_message(push_repo_blfs(tmp, size=0.0002), "Large files have been synced with Box")
 
-  new <- file.info(file.path(tmp, "box-lfs/upload/4fa7622e82d068a0a994eafb564e4f5d.txt"))
+        new <- file.info(file.path(tmp, "box-lfs/upload/4fa7622e82d068a0a994eafb564e4f5d.txt"))
 
-  expect_true(new$mtime > old$mtime)
+        #check if new file has been added to upload
+        expect_true(new$mtime > old$mtime)
+      })
+
 })
 

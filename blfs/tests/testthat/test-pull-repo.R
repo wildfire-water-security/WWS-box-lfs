@@ -1,85 +1,122 @@
-test_that("runs silently", {
-  #create repo without tracked files
-  tmp <- withr::local_tempdir()
-  data_path <- c(file.path(test_path(), "testdata/box-lfs"),
-                 file.path(test_path(), "testdata/example-files"),
-                 file.path(test_path(), "testdata/box-lfs-zip.zip"))
+test_that("updated files are prompted to upload automatically", {
+  #create temp dir to modify files cleanly
+    tmp <- create_test_repo(box_lfs=TRUE)
+    withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
 
-  #copy files to repo
-  file.copy(data_path, tmp, recursive = TRUE)
-  file.copy(file.path(test_path(), "testdata/test.gitignore"), file.path(tmp, ".gitignore"))
+    box_tmp <- create_test_boxdrive(files=FALSE)
+    withr::defer(unlink(box_tmp, recursive = TRUE), envir = parent.frame())
 
-  #test pull, expect files will look newer than boxtracker because copied -> test for local files newer
-  msg <- capture_messages(pull_repo_blfs(tmp))
-  expect_equal(msg[2], "v Large files have been synced with Box.\n")
-  expect_equal(msg[1],"v Large files are now backed up in Box.\n" )
+    with_mocked_bindings(
+      get_box_drive = function() box_tmp,
+      {
+        #test pull, expect files will look newer than boxtracker because copied -> test for local files newer
+          msg_match <- expect_cli_msg(code=pull_repo_blfs(tmp),
+                                      msg = c("Large files are now backed up",
+                                              "Large files have been synced with Box"))
+          expect_true(msg_match)
 
-  #test pull, files should be updated and not give message
-  msg <- capture_messages(pull_repo_blfs(tmp))
-  expect_equal(msg,"v Large files have been synced with Box.\n" )
+        #test pull, with an updated local file -> prompts upload
+          name <- "example-files/large-file2.txt"
+          create_updated_file(name, tmp)
 
-  })
+          msg_match <- expect_cli_msg(code=pull_repo_blfs(tmp),
+                                      msg = c("Large files are now backed up",
+                                              "Large files have been synced with Box"))
+          expect_true(msg_match)
 
-test_that("updated files are prompted to upload", {
-  #create repo without tracked files
-  tmp <- withr::local_tempdir()
-  data_path <- c(file.path(test_path(), "testdata/box-lfs"),
-                 file.path(test_path(), "testdata/example-files"),
-                 file.path(test_path(), "testdata/box-lfs-zip.zip"))
-  file.copy(file.path(test_path(), "testdata/test.gitignore"), file.path(tmp, ".gitignore"))
-
-
-  #copy files to repo
-  file.copy(data_path, tmp, recursive = TRUE)
-
-  #test pull, expect files will look newer than boxtracker because copied -> test for local files newer
-  msg <- capture_messages(pull_repo_blfs(tmp))
-  expect_equal(msg[2], "v Large files have been synced with Box.\n")
-  expect_equal(msg[1],"v Large files are now backed up in Box.\n" )
-
-  #test pull, with an updated local file -> prompts upload
-  name <- get_tracker_name("example-files/large-file2.txt")
-  tracker <- read.boxtracker(name, dir=tmp)
-  tracker$last_modified <- Sys.time() - 6000
-  write.csv(tracker, file.path(tmp, "box-lfs", get_tracker_name("example-files/large-file2.txt")), row.names=FALSE, quote=FALSE)
-  msg <- capture_messages(pull_repo_blfs(tmp))
-  expect_equal(msg[2], "v Large files have been synced with Box.\n")
-  expect_equal(msg[1],"v Large files are now backed up in Box.\n" )
+      })
 
 })
 
-test_that("new files are box are downloaded", {
-  #create repo without tracked files
-  tmp <- withr::local_tempdir()
-  data_path <- c(file.path(test_path(), "testdata/box-lfs"),
-                 file.path(test_path(), "testdata/example-files"),
-                 file.path(test_path(), "testdata/box-lfs-zip.zip"))
+test_that("updated files are prompted to upload manually", {
+  #create temp dir to modify files cleanly
+  tmp <- create_test_repo(box_lfs=TRUE)
+  withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
 
-  #set up box repo
-  box_tmp <- withr::local_tempdir()
-  box_files <- list.files(file.path(test_path(), "testdata/box-lfs/upload"), full.names = TRUE)
+  with_mocked_bindings(
+    get_box_drive = function() FALSE,
+    {
+      #test pull, expect files will look newer than boxtracker because copied -> test for local files newer
+      msg_match <- expect_cli_msg(code=pull_repo_blfs(tmp),
+                                  msg = c("Please upload files from",
+                                          "Large files are now backed up",
+                                          "Large files have been synced with Box"))
+      expect_true(msg_match)
 
-  #copy files to repo
-  file.copy(data_path, tmp, recursive = TRUE)
-  file.copy(file.path(test_path(), "testdata/test.gitignore"), file.path(tmp, ".gitignore"))
-  file.copy(box_files, file.path(box_tmp))
+      #test pull, with an updated local file -> prompts upload
+      name <- "example-files/large-file2.txt"
+      create_updated_file(name, tmp)
 
-  #test pull, expect files will look newer than boxtracker because copied -> test for local files newer
-  msg <- capture_messages(pull_repo_blfs(tmp))
-  expect_equal(msg[2], "v Large files have been synced with Box.\n")
-  expect_equal(msg[1],"v Large files are now backed up in Box.\n" )
+      msg_match <- expect_cli_msg(code=pull_repo_blfs(tmp),
+                                  msg = c("Please upload files from",
+                                          "Large files are now backed up",
+                                          "Large files have been synced with Box"))
+      expect_true(msg_match)
 
-  #test pull, with an updated box file (boxtracker shows newer)
-  name <- get_tracker_name("example-files/large-file2.txt")
-  tracker <- read.boxtracker(name, dir=tmp)
-  tracker$last_modified <- Sys.time() + 6000
-  write.csv(tracker, file.path(tmp, "box-lfs", get_tracker_name("example-files/large-file2.txt")), row.names=FALSE, quote=FALSE)
-
-  #put in new file path to "box"
-  add_box_loc(box_tmp, dir=tmp, type="path")
-
-  msg <- capture_messages(pull_repo_blfs(tmp))
-  expect_equal(msg[2], "v Large files have been synced with Box.\n")
-  expect_equal(msg[1],"v Large files have been fetched from Box and put in repository.\n" )
+    })
 
 })
+
+test_that("new files are box are downloaded automatically", {
+
+  #create temp dir to modify files cleanly
+  tmp <- create_test_repo(box_lfs=TRUE)
+  withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
+
+  box_tmp <- create_test_boxdrive(files=FALSE)
+  withr::defer(unlink(box_tmp, recursive = TRUE), envir = parent.frame())
+
+  with_mocked_bindings(
+    get_box_drive = function() box_tmp,
+    {
+      #test pull, expect files will look newer than boxtracker because copied -> test for local files newer
+      msg_match <- expect_cli_msg(code=pull_repo_blfs(tmp),
+                                  msg = c("Large files are now backed up",
+                                          "Large files have been synced with Box"))
+      expect_true(msg_match)
+
+      #test pull, with an updated local file -> prompts upload
+      name <- "example-files/large-file2.txt"
+      create_download_file(name, tmp)
+
+      #put in new file path to "box"
+      add_box_loc(box_tmp, dir=tmp, type="path")
+
+      msg_match <- expect_cli_msg(code=pull_repo_blfs(tmp),
+                                  msg = c("Large files have been fetched from Box",
+                                          "Large files have been synced with Box"))
+      expect_true(msg_match)
+
+    })
+
+})
+
+test_that("updated files are downloaded manually", {
+  #create temp dir to modify files cleanly
+  tmp <- create_test_repo(box_lfs=TRUE)
+  withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
+
+  with_mocked_bindings(
+    get_box_drive = function() FALSE,
+    {
+      #test pull, expect files will look newer than boxtracker because copied -> test for local files newer
+      msg_match <- expect_cli_msg(code=pull_repo_blfs(tmp),
+                                  msg = c("Please upload files from",
+                                          "Large files are now backed up",
+                                          "Large files have been synced with Box"))
+      expect_true(msg_match)
+
+      #test pull, with an updated local file -> prompts upload
+      name <- "example-files/large-file2.txt"
+      create_download_file(name, tmp)
+
+      msg_match <- expect_cli_msg(code=pull_repo_blfs(tmp),
+                                  msg = c("Please download files from Box here",
+                                          "Large files have been fetched from Box",
+                                          "Large files have been synced with Box"))
+      expect_true(msg_match)
+
+    })
+
+})
+
