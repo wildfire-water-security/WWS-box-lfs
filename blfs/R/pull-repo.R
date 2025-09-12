@@ -17,13 +17,19 @@
 #' @export
 #' @md
 #' @examples
-#' tmp <- tempdir()
+#'  #create temp dir to modify files cleanly
+#'   tmp <- blfs:::create_test_repo(box_lfs=TRUE, examples = FALSE,
+#'   source_dir = system.file("extdata", package = "blfs"))
 #'
-#' #move just sample repo files in
-#' file.copy(fs::path_package("extdata/", package = "blfs"), tmp, recursive=TRUE)
-#' download <- fs::path_package("extdata", package = "blfs") #example zip is here
+#'   box_tmp <- blfs:::create_test_boxdrive(source_dir = system.file("extdata", package = "blfs"))
 #'
-#' pull_repo_blfs(dir=tmp, download=download)
+#'   #put in new file path to "box"
+#'    blfs:::add_box_loc(box_tmp, dir=tmp, type="path")
+#'
+#' pull_repo_blfs(dir=tmp, download=box_tmp)
+#'
+#'  unlink(box_tmp, recursive = TRUE)
+#'  unlink(tmp, recursive = TRUE)
 pull_repo_blfs <- function(dir=NULL, download=NULL){
   dir <- dir_check(dir)
   if(is.null(download)){download <- file.path(fs::path_home(), "Downloads")}

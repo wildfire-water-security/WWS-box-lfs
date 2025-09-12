@@ -10,10 +10,13 @@
 #' @importFrom git2r index_remove_bypath
 #' @importFrom git2r init
 #' @importFrom rlang is_interactive
+#' @importFrom testthat capture_messages
+#' @importFrom testthat test_path
 #' @importFrom tools file_path_sans_ext
 #' @importFrom utils read.csv
 #' @importFrom utils unzip
 #' @importFrom utils write.csv
+#' @importFrom utils zip
 #' @importFrom withr local_tempdir
 ## usethis namespace: end
 NULL

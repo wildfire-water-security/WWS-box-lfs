@@ -17,7 +17,7 @@ test_that("cloning works automatically", {
       })
 
   #make sure files are there
-    expect_equal(list.files(file.path(tmp, "example-files")), c("large-file1.txt", "large-file2.txt"))
+    expect_equal(list.files(file.path(tmp, "example-files")), c(paste0("example-shp.", c("cpg", "dbf", "shp", "shx")), "large-file1.txt", "large-file2.txt"))
 
 })
 
@@ -43,6 +43,6 @@ test_that("cloning works manually", {
   )
 
   #make sure files are there
-  expect_equal(list.files(file.path(tmp, "example-files")), c("large-file1.txt", "large-file2.txt"))
+  expect_equal(list.files(file.path(tmp, "example-files")), c(paste0("example-shp.", c("cpg", "dbf", "shp", "shx")), "large-file1.txt", "large-file2.txt"))
 
 })

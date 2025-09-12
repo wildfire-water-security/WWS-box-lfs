@@ -7,21 +7,21 @@ test_that("files are identified", {
   init_blfs(tmp)
 
   expect_length(check_files_blfs(dir=tmp), 0) #expect no large files
-  expect_equal(check_files_blfs(dir=tmp, size=0.0002), c("example-files/large-file1.txt", "example-files/large-file2.txt"))
-  expect_equal(check_files_blfs(dir=tmp, size=0.0002, new=TRUE), c("example-files/large-file1.txt", "example-files/large-file2.txt"))
+  expect_equal(check_files_blfs(dir=tmp, size=0.0002), c("example-files/example-shp", "example-files/large-file1.txt", "example-files/large-file2.txt"))
+  expect_equal(check_files_blfs(dir=tmp, size=0.0002, new=TRUE), c("example-files/example-shp", "example-files/large-file1.txt", "example-files/large-file2.txt"))
 
   #start tracking
   track_blfs("example-files/large-file1.txt", dir=tmp)
 
   #recheck
-  expect_equal(check_files_blfs(dir=tmp, size=0.0002), c("example-files/large-file1.txt", "example-files/large-file2.txt"))
-  expect_equal(check_files_blfs(dir=tmp, size=0.0002, new=TRUE),"example-files/large-file2.txt")
+  expect_equal(check_files_blfs(dir=tmp, size=0.0002), c("example-files/example-shp", "example-files/large-file1.txt", "example-files/large-file2.txt"))
+  expect_equal(check_files_blfs(dir=tmp, size=0.0002, new=TRUE),c("example-files/example-shp","example-files/large-file2.txt"))
 
 })
 
 test_that("files are moved", {
   #create temp dir to modify files cleanly
-  tmp <- create_test_repo(box_lfs=TRUE)
+  tmp <- create_test_repo(box_lfs=TRUE, examples = FALSE)
   withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
 
   #create boxdrive to move file from
@@ -32,10 +32,18 @@ test_that("files are moved", {
   init_blfs(tmp)
 
   #try copying over files
-  file <- "1678f723cb201eb3f9996c01a481dd0e.txt"
-  expect_true(move_file_blfs(file,
+  file <- "example-files/large-file1.txt"
+  expect_true(move_file_blfs(get_tracker_name(file, ext=TRUE),
                              dir=tmp,
                              download=drive))
+  expect_true(file.exists(file.path(tmp, file)))
+
+  file <- "example-files/example-shp.shp"
+  hash <- "3f80f3c380f48192c6fcd63a08813c49.zip"
+  expect_true(all(move_file_blfs(hash,
+                             dir=tmp,
+                             download=drive)))
+  expect_true(file.exists(file.path(tmp, file)))
 
 })
 

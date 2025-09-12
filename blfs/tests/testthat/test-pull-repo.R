@@ -76,7 +76,8 @@ test_that("new files are box are downloaded automatically", {
       expect_true(msg_match)
 
       #test pull, with an updated local file -> prompts upload
-      name <- "example-files/large-file2.txt"
+      name <- "example-files/example-shp"
+      hash <- "3f80f3c380f48192c6fcd63a08813c49.zip"
       create_download_file(name, tmp)
 
       #put in new file path to "box"
@@ -86,6 +87,9 @@ test_that("new files are box are downloaded automatically", {
                                   msg = c("Large files have been fetched from Box",
                                           "Large files have been synced with Box"))
       expect_true(msg_match)
+
+      #make sure all files are there
+      expect_length(list.files(file.path(tmp, "example-files"), "example-shp"), 4)
 
     })
 

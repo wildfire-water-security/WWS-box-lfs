@@ -1,6 +1,6 @@
 test_that("repo gets set up with box drive", {
   #create temp dir to modify files cleanly
-    tmp <- create_test_repo(box_lfs=TRUE)
+    tmp <- create_test_repo(box_lfs=FALSE)
     withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
 
     box_tmp <- create_test_boxdrive(files=FALSE)
@@ -21,14 +21,14 @@ test_that("repo gets set up with box drive", {
           expect_true(msg_match)
 
         #check it does as expected
-          hashes <- c("1678f723cb201eb3f9996c01a481dd0e", "4fa7622e82d068a0a994eafb564e4f5d")
+          hashes <- c("1678f723cb201eb3f9996c01a481dd0e", "3f80f3c380f48192c6fcd63a08813c49", "4fa7622e82d068a0a994eafb564e4f5d" )
           expect_true(setequal(list.files(tmp), c("README.md", "box-lfs", "example-files")))
           expect_equal(list.files(file.path(tmp, "box-lfs")), c(paste0(hashes, ".boxtracker"),
                                                                 "path-hash.csv", "upload"))
-          expect_equal(list.files(file.path(tmp, "box-lfs/upload")), paste0(hashes, ".txt"))
+          expect_equal(list.files(file.path(tmp, "box-lfs/upload")), paste0(hashes, c(".txt", ".zip", ".txt")))
 
           #ensure files get copied to box
-          expect_equal(list.files(file.path(box_tmp, "box-lfs")), paste0(hashes, ".txt"))
+          expect_equal(list.files(file.path(box_tmp, "box-lfs")), paste0(hashes,c(".txt", ".zip", ".txt")))
 
       })
 
@@ -37,7 +37,7 @@ test_that("repo gets set up with box drive", {
 
 test_that("repo gets set up manually", {
   #create temp dir to modify files cleanly
-  tmp <- create_test_repo(box_lfs=TRUE)
+  tmp <- create_test_repo(box_lfs=FALSE)
   withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
 
   #run looking for large files (expect file structure but that's it)
@@ -55,11 +55,11 @@ test_that("repo gets set up manually", {
       expect_true(msg_match)
 
       #check it does as expected
-      hashes <- c("1678f723cb201eb3f9996c01a481dd0e", "4fa7622e82d068a0a994eafb564e4f5d")
+      hashes <- c("1678f723cb201eb3f9996c01a481dd0e", "3f80f3c380f48192c6fcd63a08813c49", "4fa7622e82d068a0a994eafb564e4f5d" )
       expect_true(setequal(list.files(tmp), c("README.md", "box-lfs", "example-files")))
       expect_equal(list.files(file.path(tmp, "box-lfs")), c(paste0(hashes, ".boxtracker"),
                                                             "path-hash.csv", "upload"))
-      expect_equal(list.files(file.path(tmp, "box-lfs/upload")), paste0(hashes, ".txt"))
+      expect_equal(list.files(file.path(tmp, "box-lfs/upload")), paste0(hashes, c(".txt", ".zip", ".txt")))
 
 
     })

@@ -23,5 +23,11 @@ above the size threshold. If they are already tracked, they will be checked for 
 will be tracked and the user prompted to upload to Box.
 }
 \examples{
-push_repo_blfs(fs::path_package("extdata", package = "blfs"))
+#create temp dir to modify files cleanly
+  tmp <- blfs:::create_test_repo(box_lfs=TRUE, examples = FALSE,
+  source_dir = system.file("extdata", package = "blfs"))
+
+push_repo_blfs(tmp)
+
+unlink(tmp, recursive = TRUE)
 }

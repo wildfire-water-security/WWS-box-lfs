@@ -56,15 +56,16 @@ test_that("modifying a files works automatically", {
         expect_message(push_repo_blfs(tmp, size=0.0002), "Large files have been synced with Box")
 
         #modify file
-        name <- "example-files/large-file2.txt"
+        name <- "example-files/example-shp"
+        hash <- "3f80f3c380f48192c6fcd63a08813c49.zip"
         create_updated_file(name, tmp)
 
-        old <- file.info(file.path(tmp, "box-lfs/upload/4fa7622e82d068a0a994eafb564e4f5d.txt"))
+        old <- file.info(file.path(tmp, "box-lfs/upload/", hash))
 
         #see if it gets flagged
         expect_message(push_repo_blfs(tmp, size=0.0002), "Large files have been synced with Box")
 
-        new <- file.info(file.path(tmp, "box-lfs/upload/4fa7622e82d068a0a994eafb564e4f5d.txt"))
+        new <- file.info(file.path(tmp, "box-lfs/upload/", hash))
 
         #check if new file has been added to upload
         expect_true(new$mtime > old$mtime)

@@ -23,8 +23,21 @@ Moved downloaded files to the correct file path in the project
 If download is not supplied function assumes it is \code{file.path(fs::path_home(), "Downloads")}
 }
 \examples{
-#returns false because file doesn't exist in downloads folder
-move_file_blfs("1678f723cb201eb3f9996c01a481dd0e.txt",
-fs::path_package("extdata", package = "blfs"))
+#create temp dir to modify files cleanly
+  tmp <- blfs:::create_test_repo(box_lfs=TRUE, examples = FALSE,
+  source_dir = system.file("extdata", package = "blfs"))
+  withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
 
+  download <- blfs:::create_test_boxdrive(source_dir = system.file("extdata", package = "blfs"))
+  withr::defer(unlink(download, recursive = TRUE), envir = parent.frame())
+
+#move file from download
+  move_file_blfs("1678f723cb201eb3f9996c01a481dd0e.txt",
+  dir=tmp, download=download)
+
+  move_file_blfs("3f80f3c380f48192c6fcd63a08813c49.zip",
+  dir=tmp, download=download)
+
+  unlink(download, recursive = TRUE)
+  unlink(tmp, recursive = TRUE)
 }

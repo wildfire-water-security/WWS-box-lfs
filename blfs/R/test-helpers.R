@@ -1,52 +1,62 @@
 #functions to make my test files cleaner
 
-#' Creates a fake project repo with optional files for testing
+#' Creates a fake project repo with optional files for testing/examples
 #'
 #' @param git logical, should project be a git repo?
 #' @param examples logical, should examples from /example-files be copied into project?
+#' @param box_lfs logical, should box-lfs example files be copied?
+#' @param source_dir character, base dir containing example files
+#'        (defaults to system.file("extdata", package = "yourpackage"))
 #'
 #' @returns the file path to the fake project repo
 #' @noRd
-create_test_repo <- function(git=TRUE, examples=TRUE, box_lfs = FALSE){
-  #create temp repo that persists for test
+create_test_repo <- function(git = TRUE, examples = TRUE, box_lfs = FALSE,
+                                source_dir = file.path(testthat::test_path(), "testdata")) {
+  # temp repo
   tmp <- tempfile("repo-")
   dir.create(tmp)
 
-  #turn into git repo
-  if(git){git2r::init(tmp)}
+  # turn into git repo
+  if (git) git2r::init(tmp)
 
-  #put gitignore in repo
-  file.copy(file.path(test_path(), "testdata/test.gitignore"), file.path(tmp, ".gitignore"))
+  # copy .gitignore
+  file.copy(file.path(source_dir, "test.gitignore"), file.path(tmp, ".gitignore"))
 
-  #put example files in repo
-  if(examples){
-    data_path <- file.path(test_path(), "testdata/example-files")
-    file.copy(data_path, tmp, recursive = TRUE)}
+  # copy example files
+  if (examples) {
+    data_path <- file.path(source_dir, "example-files")
+    file.copy(data_path, tmp, recursive = TRUE)
+  }
 
-  #put existing box_lfs into repo
-  if(box_lfs){
-    data_path <- file.path(test_path(), "testdata/box-lfs")
-    file.copy(data_path, tmp, recursive = TRUE)}
+  # copy box-lfs
+  if (box_lfs) {
+    data_path <- file.path(source_dir, "box-lfs")
+    file.copy(data_path, tmp, recursive = TRUE)
+  }
 
-  return(tmp)
+  tmp
 }
 
-#' Creates a fake boxdrive with the files for testing
+#' Creates a fake boxdrive for testing/examples
+#'
 #' @param files logical, should example files be added?
+#' @param source_dir character, base dir containing example files
+#'        (defaults to system.file("extdata", package = "yourpackage"))
+#'
 #' @returns the file path to the fake boxdrive
 #' @noRd
-create_test_boxdrive <- function(files = TRUE){
+create_test_boxdrive <- function(files = TRUE,
+                                    source_dir = file.path(testthat::test_path(), "testdata")) {
   box_tmp <- tempfile("boxdrive-")
   dir.create(box_tmp)
 
-  if(files){
-    box_files <- list.files(file.path(test_path(), "testdata/box-lfs/upload"), full.names = TRUE)
-    file.copy(box_files, file.path(box_tmp))
+  if (files) {
+    box_files <- list.files(file.path(source_dir, "box-lfs", "upload"), full.names = TRUE)
+    file.copy(box_files, box_tmp)
   }
 
-  return(box_tmp)
+  box_tmp
 }
-
 #' Creates a fake download folder with the files for testing
 #'
 #' @returns the file path to the fake download folder
@@ -55,7 +65,7 @@ create_test_download <- function(){
   tmp <- tempfile("download-")
   dir.create(tmp)
 
-  data_path <- file.path(test_path(), "testdata/box-lfs-zip.zip")
+  data_path <- file.path(testthat::test_path(), "testdata/box-lfs-zip.zip")
   file.copy(data_path, tmp, recursive = TRUE)
   return(tmp)
 }
@@ -69,6 +79,7 @@ create_updated_file <- function(name, dir){
   hashname <- get_tracker_name(name)
   tracker <- read.boxtracker(hashname, dir)
   tracker$last_modified <- Sys.time() - 6000
+  tracker$size_MB <- tracker$size_MB -0.000001
   write.csv(tracker, file.path(dir, "box-lfs", get_tracker_name(name)), row.names=FALSE, quote=FALSE)
 
 }
@@ -83,6 +94,7 @@ create_download_file <- function(name, dir){
   hashname <- get_tracker_name(name)
   tracker <- read.boxtracker(hashname, dir)
   tracker$last_modified <- Sys.time() + 6000
+  tracker$size_MB <- tracker$size_MB -0.000001
   write.csv(tracker, file.path(dir, "box-lfs", get_tracker_name(name)), row.names=FALSE, quote=FALSE)
 
 }
@@ -99,7 +111,7 @@ create_download_file <- function(name, dir){
 #' @noRd
 expect_cli_msg <- function(code, msg){
   #browser()
-  output <- capture_messages(code)
+  output <- testthat::capture_messages(code)
 
   #check all outputs
   same <- vector()
@@ -116,3 +128,5 @@ expect_cli_msg <- function(code, msg){
   }
 
 }
+
+

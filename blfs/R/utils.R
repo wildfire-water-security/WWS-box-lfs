@@ -9,7 +9,7 @@
 #' @returns Modifies all the .boxtracker files to include the supplied link
 #' @noRd
 #' @examples
-#' add_box_loc("https://oregonstate.box.com/s/h9g8q6n8lj3u2bwhaalepb0lc28te4n5",
+#' blfs:::add_box_loc("https://oregonstate.box.com/s/h9g8q6n8lj3u2bwhaalepb0lc28te4n5",
 #' fs::path_package("extdata", package = "blfs"), type="link")
 add_box_loc <- function(link, dir=NULL, type="path"){
   dir <- dir_check(dir)
@@ -42,7 +42,7 @@ add_box_loc <- function(link, dir=NULL, type="path"){
 #' @returns the file path to the working directory
 #'
 #' @examples
-#' dir_check(fs::path_package("extdata", package = "blfs"))
+#' blfs:::dir_check(fs::path_package("extdata", package = "blfs"))
 dir_check <- function(dir=NULL){
   #guess on dir if not supplied
   if(is.null(dir)){dir <- getwd()}
@@ -57,7 +57,7 @@ dir_check <- function(dir=NULL){
 #' @noRd
 #' @returns A value of TRUE if Box LFS is being used or FALSE if it is not
 #' @examples
-#' check_blfs(fs::path_package("extdata", package = "blfs"))
+#' blfs:::check_blfs(fs::path_package("extdata", package = "blfs"))
 check_blfs <- function(dir=NULL){
   dir <- dir_check(dir)
 
@@ -75,7 +75,7 @@ check_blfs <- function(dir=NULL){
 #' @noRd
 #' @returns A message prompting user to upload data
 #' @examples
-#' upld_message(fs::path_package("extdata", package = "blfs"))
+#' blfs:::upld_message(fs::path_package("extdata", package = "blfs"))
 upld_message <- function(dir=NULL){
   dir <- dir_check(dir)
 
@@ -103,7 +103,7 @@ upld_message <- function(dir=NULL){
 #' @noRd
 #' @returns a character giving the project name based on a GitHub repository name
 #' @examples
-#' prj_name("~/Documents/WWS-TEST-example-repo")
+#' blfs:::prj_name("~/Documents/WWS-TEST-example-repo")
 
 prj_name <- function(dir){
   name <- gsub("WWS-Node[1-9]-|WWS-", "", basename(dir))
@@ -118,7 +118,7 @@ prj_name <- function(dir){
 #' @noRd
 #' @returns A message prompting user to download data
 #' @examples
-#' dwld_message(fs::path_package("extdata", package = "blfs"))
+#' blfs:::dwld_message(fs::path_package("extdata", package = "blfs"))
 dwld_message <- function(dir=NULL){
   dir <- dir_check(dir)
 
@@ -149,8 +149,8 @@ dwld_message <- function(dir=NULL){
 #' @returns the tracker name as a unique hash based on the file name with the extension ".boxtracker"
 #'
 #' @examples
-#' get_tracker_name("test-file1.txt")
-#' get_tracker_name("another-folder/another_file.txt")
+#' blfs:::get_tracker_name("test-file1.txt")
+#' blfs:::get_tracker_name("another-folder/another_file.txt")
 get_tracker_name <- function(file, ext=FALSE){
   clean_path <- fs::path_norm(file)
   hash <- digest::digest(clean_path)
@@ -172,7 +172,7 @@ get_tracker_name <- function(file, ext=FALSE){
 #' @returns the file path associated with a hash based .boxtracker file.
 #' @noRd
 #' @examples
-#' get_file_name("1678f723cb201eb3f9996c01a481dd0e.boxtracker",
+#' blfs:::get_file_name("1678f723cb201eb3f9996c01a481dd0e.boxtracker",
 #' dir=fs::path_package("extdata", package = "blfs"))
 get_file_name <- function(dir=NULL, tracker){
   dir <- dir_check(dir)
@@ -191,8 +191,6 @@ get_file_name <- function(dir=NULL, tracker){
 #' @returns
 #' Lines to add to the readme file informing user that Box LFS is being used
 #' @noRd
-#' @examples
-#' readme_msg()
 readme_msg <- function(){
   msg <- c("\n## Box LFS\n",
            "This repository is using Box large file storage (LFS) to maintain large files.",
@@ -242,4 +240,35 @@ get_box_path <- function(dir){
   }
   return(box_path)
 
+}
+
+
+#' Moves a file to the upload folder
+#'
+#' If the file is a multifile, it will zip it and place the zip into the upload instead. The name of the zip will be the file without the extension
+#' converted to a hash.
+#'
+#' @param file the relative path to the file to track
+#' @param dir the file path to the file directory
+#' @noRd
+#'
+move_to_upload <- function(file, dir) {
+  upload_dir <- file.path(dir, "box-lfs", "upload")
+  dir.create(upload_dir, showWarnings = FALSE, recursive = TRUE)
+
+  path <- file.path(dir, file)
+
+  if(is.multifile(path)) {
+    # multifile zip and rename
+    file_path <- zip_multifile(path)
+    base <- tools::file_path_sans_ext(file)
+    save_name <- paste0(get_tracker_name(base, ext = TRUE), "zip")
+  }else{
+    # single file just rename
+    file_path <- path
+    base <- file
+    save_name <- get_tracker_name(base, ext = TRUE)
+  }
+
+  file.copy(file_path, file.path(upload_dir, save_name), overwrite = TRUE)
 }

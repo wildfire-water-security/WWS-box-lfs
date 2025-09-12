@@ -36,3 +36,14 @@ test_that("boxtracker data is grabbed",{
   expect_true(as.numeric(Sys.time()-info$mtime) < 1)
 
 })
+
+
+test_that("path for multifile is done without extension",{
+  file <- "example-files/example-shp"
+  dir <- file.path(test_path(), "testdata")
+  expect_no_failure(write.boxtracker(file, dir=dir))
+
+  tracker <- read.boxtracker(get_tracker_name(file), dir=dir)
+  expect_equal(tools::file_ext(tracker$file_path), "")
+
+})

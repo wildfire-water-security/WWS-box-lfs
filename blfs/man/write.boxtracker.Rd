@@ -20,4 +20,5 @@ it will create a new line in the path-hash.csv file which links the hash names t
 }
 \examples{
 write.boxtracker("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
+write.boxtracker("example-files/example-shp.shp", fs::path_package("extdata", package = "blfs"))
 }

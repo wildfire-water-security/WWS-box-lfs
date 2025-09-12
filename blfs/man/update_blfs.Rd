@@ -19,8 +19,9 @@ update_blfs(file, dir = NULL)
 }
 }
 \description{
-Checks for differences in the time modified between the boxtracker and the file.
+Checks for differences in the time modified between the boxtracker and the file. If it's a multifile, it will check for differences across any of the files.
 }
 \examples{
 update_blfs("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
+update_blfs("example-files/example-shp.shp", fs::path_package("extdata", package = "blfs"))
 }

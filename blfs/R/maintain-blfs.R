@@ -28,6 +28,19 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
   rm <- c("^box-lfs/upload/", "box-lfs/path-hash.csv", "boxtracker$", "README.md$", "Rproj$")
   large_files <- large_files[!grepl(paste(rm,collapse="|"),large_files)]
 
+
+  #return only one of multifiles
+  unique_files <- vector()
+  for(x in large_files){
+    multi <- is.multifile(file.path(dir, x))
+    if(multi){
+      base <- tools::file_path_sans_ext(x)
+      unique_files <- c(unique_files, base)
+    }else{unique_files <- c(unique_files, x)}
+  }
+
+  large_files <- unique(unique_files)
+
   #built in to only get new large files
   if(new & dir.exists(file.path(dir, "box-lfs"))){
     #get all tracked files
@@ -37,7 +50,9 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
     #check for new files
     curr_track <- sapply(tracked, read.boxtracker, dir=dir, return="file_path")
     large_files <- setdiff(large_files,curr_track)
+
   }
+
 
   return(large_files)
 }
@@ -55,10 +70,23 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
 #' Copies files from the download folder to the project directory in the correct subfolder location based on the .boxtracker file.
 #'
 #' @examples
-#' #returns false because file doesn't exist in downloads folder
-#' move_file_blfs("1678f723cb201eb3f9996c01a481dd0e.txt",
-#' fs::path_package("extdata", package = "blfs"))
+#' #create temp dir to modify files cleanly
+#'   tmp <- blfs:::create_test_repo(box_lfs=TRUE, examples = FALSE,
+#'   source_dir = system.file("extdata", package = "blfs"))
+#'   withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
 #'
+#'   download <- blfs:::create_test_boxdrive(source_dir = system.file("extdata", package = "blfs"))
+#'   withr::defer(unlink(download, recursive = TRUE), envir = parent.frame())
+#'
+#' #move file from download
+#'   move_file_blfs("1678f723cb201eb3f9996c01a481dd0e.txt",
+#'   dir=tmp, download=download)
+#'
+#'   move_file_blfs("3f80f3c380f48192c6fcd63a08813c49.zip",
+#'   dir=tmp, download=download)
+#'
+#'   unlink(download, recursive = TRUE)
+#'   unlink(tmp, recursive = TRUE)
 move_file_blfs <- function(hash_file, dir=NULL, download=NULL){
   if(is.null(download)){download <- file.path(fs::path_home(), "Downloads")}
   if(is.null(dir)){dir <- getwd()}
@@ -69,21 +97,35 @@ move_file_blfs <- function(hash_file, dir=NULL, download=NULL){
   tracker_name <- tools::file_path_sans_ext(basename(hash_file))
   location <- read.boxtracker(tracker_name, dir=dir, return="file_path")
 
-  destination_dir <- dirname(file.path(dir,location))
+  #if multifile unzip and put those in the right spot
+  if(tools::file_ext(location) == ""){
+    contents <- unzip(file.path(download, hash_file), list = TRUE, exdir=tempdir())$Name
+    stems <- tools::file_path_sans_ext(basename(contents))
+    is_multifile <- any(duplicated(stems))   # check for duplicates (multifile if TRUE)
+
+    if(is_multifile){
+      start_loc <- fs::fs_path(unzip(file.path(download, hash_file), exdir=file.path(tempdir(), stems[1])))
+      destination_dir <- fs::fs_path(dirname(file.path(dir,location)))
+    }
+  }else{
+    start_loc <- fs::fs_path(file.path(download, hash_file))
+    destination_dir <- fs::fs_path(file.path(dirname(file.path(dir,location)), basename(location)))
+
+  }
 
   # Create the directory if it doesn't exist, including parent directories
-  if (!dir.exists(destination_dir)) {
-    dir.create(destination_dir, recursive = TRUE, showWarnings = FALSE)
+  if (!dir.exists(dirname(destination_dir))) {
+    dir.create(dirname(destination_dir), recursive = TRUE, showWarnings = FALSE)
   }
 
   #copy file to correct location
-  file.copy(file.path(download, hash_file), file.path(dir,location), overwrite = TRUE)
+  file.copy(start_loc, destination_dir, overwrite = TRUE)
 }
 
 ## update file tracked by blfs (check for differences return TRUE if it needs to be updated) [going from local to repo/box]
 #' Update files that are tracked by Box LFS
 #'
-#' Checks for differences in the time modified between the boxtracker and the file.
+#' Checks for differences in the time modified between the boxtracker and the file. If it's a multifile, it will check for differences across any of the files.
 #'
 #' @param file the relative path to the file to track
 #' @param dir the file path to the file directory
@@ -95,11 +137,22 @@ move_file_blfs <- function(hash_file, dir=NULL, download=NULL){
 #' @export
 #' @examples
 #' update_blfs("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
+#' update_blfs("example-files/example-shp.shp", fs::path_package("extdata", package = "blfs"))
+
 update_blfs <- function(file, dir=NULL){
   dir <- dir_check(dir)
 
-  #get file info
-  tracker_name <- get_tracker_name(file)
+  #see if multifile
+  multi <- is.multifile(file.path(dir, file))
+
+  if(multi){
+    #get file info
+    tracker_name <- get_tracker_name(tools::file_path_sans_ext(file))
+  }else{
+    #get file info
+    tracker_name <- get_tracker_name(file)
+  }
+
 
   boxtracker <- read.boxtracker(tracker_name, dir)
   file_tracker <- get.boxtracker(file, dir)
@@ -115,11 +168,8 @@ update_blfs <- function(file, dir=NULL){
     if(box_mtime < file_mtime){
       #file has been changed since last upload to box, need to upload
 
-      #create upload folder if needed
-      dir.create("box-lfs/upload", showWarnings = FALSE)
-
-      #copy to upload folder for easy upload
-      file.copy(file.path(dir, file), file.path(dir, "box-lfs/upload/", get_tracker_name(file, ext=TRUE)), overwrite = TRUE)
+      #move to upload folder for upload, use hash name
+      move_to_upload(file, dir)
 
       #update boxtracker
       write.boxtracker(file, dir)

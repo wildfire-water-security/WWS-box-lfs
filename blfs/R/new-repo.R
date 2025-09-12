@@ -39,7 +39,7 @@ new_repo_blfs <- function(dir=NULL, size=10, box_dir=NULL){
   files <- check_files_blfs(dir, size=size)
 
   if(length(files) > 0){
-    file_names <- unname(sapply(files, track_blfs, dir))
+    file_names <- unname(sapply(files, track_blfs, dir)) #gets list of files to track and moves to upload folder (zips multifiles)
 
     cli::cli_alert_info(paste0("the following files will no longer be tracked by git:\n", paste(file_names, collapse="\n")))
 

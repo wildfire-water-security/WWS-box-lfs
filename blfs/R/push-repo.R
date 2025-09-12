@@ -14,7 +14,13 @@
 #' @export
 #'
 #' @examples
-#' push_repo_blfs(fs::path_package("extdata", package = "blfs"))
+#' #create temp dir to modify files cleanly
+#'   tmp <- blfs:::create_test_repo(box_lfs=TRUE, examples = FALSE,
+#'   source_dir = system.file("extdata", package = "blfs"))
+#'
+#' push_repo_blfs(tmp)
+#'
+#' unlink(tmp, recursive = TRUE)
 push_repo_blfs <- function(dir=NULL, size=10){
   #guess on dir if not supplied
   dir <- dir_check(dir)

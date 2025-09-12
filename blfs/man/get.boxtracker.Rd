@@ -14,7 +14,7 @@ get.boxtracker(file, dir = NULL)
 \value{
 a data.frame with 1 row and 5 columns:
 \itemize{
-\item file_path: the relative path to the file being tracked
+\item file_path: the relative path to the file being tracked, if it's a multifile it will no include an extension
 \item box_link: the web link to the folder containing the file
 \item box_path: the box drive path to the folder containing the file
 \item size_MB: the size of the file in megabytes
@@ -27,4 +27,6 @@ Pulls and formats the data from a file for the boxtracker file, but does not wri
 }
 \examples{
 get.boxtracker("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
+get.boxtracker("example-files/example-shp.shp", fs::path_package("extdata", package = "blfs"))
+get.boxtracker("fake-file", fs::path_package("extdata", package = "blfs"))
 }
