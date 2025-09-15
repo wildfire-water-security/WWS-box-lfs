@@ -29,6 +29,14 @@ init_blfs <- function(dir=NULL){
     ignore <- file.path(dir, ".gitignore")
     if(!file.exists(ignore)){file.create(ignore)} #create .gitignore if it doesn't exist
 
+  #create a .blfsignore with things we don't want to flag
+    ignore <- file.path(dir, ".blfsignore")
+    file.create(ignore)
+    notrack <- c("^box-lfs/upload/", "box-lfs/path-hash.csv", "boxtracker$", "README.md$", "Rproj$", "renv/.*")
+
+    cat(paste(notrack, collapse = "\n"), file=ignore, append = T)
+
+
   #check if already in gitignore
     added <- any(grepl("^box-lfs/upload$", readLines(ignore, warn=FALSE)))
     if(!added){cat("\nbox-lfs/upload", file=ignore, append = T)} #only add if not already there

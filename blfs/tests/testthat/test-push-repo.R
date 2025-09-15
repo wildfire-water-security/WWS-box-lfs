@@ -52,15 +52,16 @@ test_that("modifying a files works automatically", {
     with_mocked_bindings(
       get_box_drive = function() box_tmp,
       {
+        name <- "example-files/example-shp"
+        hash <- "3f80f3c380f48192c6fcd63a08813c49.zip"
+
+        old <- file.info(file.path(tmp, "box-lfs/upload/", hash))
+
         #check push repo (the first time we do see the files are "modified")
         expect_message(push_repo_blfs(tmp, size=0.0002), "Large files have been synced with Box")
 
         #modify file
-        name <- "example-files/example-shp"
-        hash <- "3f80f3c380f48192c6fcd63a08813c49.zip"
         create_updated_file(name, tmp)
-
-        old <- file.info(file.path(tmp, "box-lfs/upload/", hash))
 
         #see if it gets flagged
         expect_message(push_repo_blfs(tmp, size=0.0002), "Large files have been synced with Box")

@@ -21,6 +21,7 @@ create_test_repo <- function(git = TRUE, examples = TRUE, box_lfs = FALSE,
 
   # copy .gitignore
   file.copy(file.path(source_dir, "test.gitignore"), file.path(tmp, ".gitignore"))
+  file.copy(file.path(source_dir, "test.blfsignore"), file.path(tmp, ".blfsignore"))
 
   # copy example files
   if (examples) {

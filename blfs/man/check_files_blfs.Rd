@@ -20,12 +20,17 @@ A vector of relative file paths to the large files
 Identify large files that should be tracked with Box LFS
 }
 \examples{
+tmp <- blfs:::create_test_repo(box_lfs=TRUE, examples = FALSE,
+  source_dir = system.file("extdata", package = "blfs"))
+
 #testing files are quite small and don't show up
-check_files_blfs(fs::path_package("extdata", package = "blfs"))
+check_files_blfs(tmp)
 
 #but they do if we change the size
-check_files_blfs(fs::path_package("extdata", package = "blfs"), size=0.0002)
+check_files_blfs(tmp, size=0.0002)
 
 #they're already tracked, so if we set new to TRUE we don't see them
-check_files_blfs(fs::path_package("extdata", package = "blfs"), size=0.0002, new=TRUE)
+check_files_blfs(tmp, size=0.0002, new=TRUE)
+
+unlink(tmp, recursive = TRUE)
 }

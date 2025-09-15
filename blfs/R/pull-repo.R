@@ -34,10 +34,14 @@ pull_repo_blfs <- function(dir=NULL, download=NULL){
   dir <- dir_check(dir)
   if(is.null(download)){download <- file.path(fs::path_home(), "Downloads")}
 
+  #clear upload folder so we only upload new files
+    upld_files <- list.files(file.path(dir, "box-lfs/upload"), full.names = TRUE)
+    unlink(upld_files)
+
   #check if file need to be updated
-  trackers <- list.files(file.path(dir, "box-lfs"), pattern = ".boxtracker")
-  files <- unlist(sapply(trackers, read.boxtracker, dir=dir, return="file_path"))
-  updated <- unlist(sapply(files, update_blfs, dir=dir)) #files to upload are moved to /upload
+    trackers <- list.files(file.path(dir, "box-lfs"), pattern = ".boxtracker")
+    files <- unlist(sapply(trackers, read.boxtracker, dir=dir, return="file_path"))
+    updated <- unlist(sapply(files, update_blfs, dir=dir)) #files to upload are moved to /upload
 
   #see what files need to be uploaded/downloaded
     down <- names(updated[updated == "download"])

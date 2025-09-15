@@ -7,14 +7,19 @@
 #' @returns A vector of relative file paths to the large files
 #'
 #' @examples
+#' tmp <- blfs:::create_test_repo(box_lfs=TRUE, examples = FALSE,
+#'   source_dir = system.file("extdata", package = "blfs"))
+#'
 #' #testing files are quite small and don't show up
-#' check_files_blfs(fs::path_package("extdata", package = "blfs"))
+#' check_files_blfs(tmp)
 #'
 #' #but they do if we change the size
-#' check_files_blfs(fs::path_package("extdata", package = "blfs"), size=0.0002)
+#' check_files_blfs(tmp, size=0.0002)
 #'
 #' #they're already tracked, so if we set new to TRUE we don't see them
-#' check_files_blfs(fs::path_package("extdata", package = "blfs"), size=0.0002, new=TRUE)
+#' check_files_blfs(tmp, size=0.0002, new=TRUE)
+#'
+#' unlink(tmp, recursive = TRUE)
 
 check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
   dir <- dir_check(dir)
@@ -24,10 +29,10 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
   sizes <- file.size(file.path(dir, files)) / 10^6 #in MB
   large_files <- files[sizes > size]
 
-  #remove files we know we don't want to track with boxlfs (mainly for examples, these likely won't be above 10 MB)
-  rm <- c("^box-lfs/upload/", "box-lfs/path-hash.csv", "boxtracker$", "README.md$", "Rproj$")
-  large_files <- large_files[!grepl(paste(rm,collapse="|"),large_files)]
-
+  #remove files we know we don't want to track with box-lfs (mainly for examples, these likely won't be above 10 MB)
+    #read .blfsignore
+      ignore <- readLines(file.path(dir, ".blfsignore"), warn=FALSE)
+      large_files <- large_files[!grepl(paste(ignore,collapse="|"),large_files)]
 
   #return only one of multifiles
   unique_files <- vector()
@@ -73,10 +78,7 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
 #' #create temp dir to modify files cleanly
 #'   tmp <- blfs:::create_test_repo(box_lfs=TRUE, examples = FALSE,
 #'   source_dir = system.file("extdata", package = "blfs"))
-#'   withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
-#'
 #'   download <- blfs:::create_test_boxdrive(source_dir = system.file("extdata", package = "blfs"))
-#'   withr::defer(unlink(download, recursive = TRUE), envir = parent.frame())
 #'
 #' #move file from download
 #'   move_file_blfs("1678f723cb201eb3f9996c01a481dd0e.txt",
