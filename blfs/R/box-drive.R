@@ -25,6 +25,11 @@ upload_box_drive <- function(dir, box_dir=NULL){
     }
 
   #ensure path exists
+    exist <- dir.exists(box_dir)
+    if(!exist){
+      stopifnot(dir.exists(dirname(box_dir)))
+      dir.create(box_dir, showWarnings = FALSE)
+    }
     stopifnot(dir.exists(box_dir))
 
   #add box-lfs to directory
