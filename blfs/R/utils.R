@@ -238,7 +238,7 @@ get_box_path <- function(dir){
   if(length(box_path) > 1){
     stop("More than one Box Path found in .boxtrackers, please check")
   }
-  return(box_path)
+  return(file.path(get_box_drive(),box_path))
 
 }
 

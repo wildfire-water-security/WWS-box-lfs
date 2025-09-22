@@ -11,7 +11,7 @@
 #' - a upload folder nested inside.
 #' - a .gitignore file (if it doesn't already exist) and adds the upload folder to it
 #' - a file called path-hash.csv which links the tracker names to the file paths
-#' @export
+#' @noRd
 #' @examples
 #' init_blfs(fs::path_package("extdata", package = "blfs"))
 init_blfs <- function(dir=NULL){
@@ -57,7 +57,7 @@ init_blfs <- function(dir=NULL){
 #' @param dir the file path to the file directory
 #'
 #' @returns the name of the file being tracked to use in a warning message
-#' @export
+#' @noRd
 #' @examples
 #' track_blfs("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
 #' track_blfs("example-files/example-shp", fs::path_package("extdata", package = "blfs"))

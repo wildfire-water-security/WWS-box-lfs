@@ -47,10 +47,10 @@ test_that("modifying a files works automatically", {
     withr::defer(unlink(box_tmp, recursive = TRUE), envir = parent.frame())
 
   #put in new file path to "box"
-    add_box_loc(box_tmp, dir=tmp, type="path")
+    add_box_loc(basename(box_tmp), dir=tmp, type="path")
 
     with_mocked_bindings(
-      get_box_drive = function() box_tmp,
+      get_box_drive = function() dirname(box_tmp),
       {
         name <- "example-files/example-shp"
         hash <- "3f80f3c380f48192c6fcd63a08813c49.zip"
@@ -62,6 +62,7 @@ test_that("modifying a files works automatically", {
 
         #modify file
         create_updated_file(name, tmp)
+        add_box_loc(basename(box_tmp), dir=tmp, type="path") #make basename path
 
         #see if it gets flagged
         expect_message(push_repo_blfs(tmp, size=0.0002), "Large files have been synced with Box")

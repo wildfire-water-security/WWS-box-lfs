@@ -3,7 +3,7 @@
 #' @param dir the file path to the file directory
 #' @param size the minimum file size in megabytes to track
 #' @param new logical, if TRUE will only return untracked files, if FALSE will return all files above the size limit
-#' @export
+#' @noRd
 #' @returns A vector of relative file paths to the large files
 #'
 #' @examples
@@ -68,7 +68,7 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
 #' @param hash_file the file to track, should match the same hash name as the tracker associated with the file
 #' @param dir the file path to the file directory
 #' @param download the file path to the download directory
-#' @export
+#' @noRd
 #' @note
 #' If download is not supplied function assumes it is \code{file.path(fs::path_home(), "Downloads")}
 #' @returns
@@ -136,7 +136,7 @@ move_file_blfs <- function(hash_file, dir=NULL, download=NULL){
 #' - If the boxtracker shows a newer file, it returns "download"
 #' - If the file shows a newer file, it returns "upload"
 #' - If the boxtracker and file are up to date with each other it will return nothing
-#' @export
+#' @noRd
 #' @examples
 #' update_blfs("example-files/large-file1.txt", fs::path_package("extdata", package = "blfs"))
 #' update_blfs("example-files/example-shp.shp", fs::path_package("extdata", package = "blfs"))

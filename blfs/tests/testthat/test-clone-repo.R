@@ -7,10 +7,10 @@ test_that("cloning works automatically", {
     withr::defer(unlink(box_tmp, recursive = TRUE), envir = parent.frame())
 
   #put in new file path to "box"
-    add_box_loc(box_tmp, dir=tmp, type="path")
+    add_box_loc(basename(box_tmp), dir=tmp, type="path")
 
     with_mocked_bindings(
-      get_box_drive = function() box_tmp,
+      get_box_drive = function() dirname(box_tmp),
       {
         #test cloning repo
         expect_message(clone_repo_blfs(tmp), "Large files have been fetched from Box and put in repository")
