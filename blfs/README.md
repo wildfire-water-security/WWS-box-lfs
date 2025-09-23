@@ -62,8 +62,6 @@ Drive](https://www.box.com/resources/downloads) from Box.
 **Without** Box Drive, you will be prompted to **manually** upload and
 download files from Box.
 
-------------------------------------------------------------------------
-
 ## Basic Usage
 
 ### Creating a new Git repository with Box LFS
@@ -152,8 +150,6 @@ pull_repo_blfs(dir=clone_dir)
 **Any new or updated files stored on Box will be copied from Box into
 your local project directory**
 
-------------------------------------------------------------------------
-
 ## Best Practices
 
 In any Git project, it’s good practice to:
@@ -188,8 +184,6 @@ In Box LFS projects, this usually means the `.boxtracker` files for that
 large file are different between your commit and theirs.
 
 The safest way to avoid this? **Pull first, push often.**
-
-------------------------------------------------------------------------
 
 ## What to do if you get a merge conflict
 
