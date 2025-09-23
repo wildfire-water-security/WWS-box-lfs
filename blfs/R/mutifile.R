@@ -62,7 +62,7 @@ zip_multifile <- function(file){
   files <- is.multifile(file, names=TRUE)
   name <- tools::file_path_sans_ext(basename(file))
   zip_file <- file.path(tempdir(), paste0(name, ".zip"))
-  zip(zip_file, files, flags="-j")
+  zip(zip_file, files, flags="-jq")
 
   #return path of zip for moving to upload
   return(zip_file)

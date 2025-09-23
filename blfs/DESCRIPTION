@@ -33,3 +33,4 @@ Imports:
     withr
 Remotes: 
     r-box/boxrdrive
+Config/Needs/website: rmarkdown

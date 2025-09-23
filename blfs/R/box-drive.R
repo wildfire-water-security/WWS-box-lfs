@@ -13,7 +13,7 @@ upload_box_drive <- function(dir, box_dir=NULL){
       if(!rlang::is_interactive()){
         box_dir <- NA
       }else{
-        box_dir <- readline("what is the Box path to the project folder?")
+        box_dir <- readline("what is the Box path to the project folder? ")
       }}
 
   #remove box-lfs if added (need to make folder exists first)
