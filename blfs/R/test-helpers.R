@@ -5,8 +5,7 @@
 #' @param git logical, should project be a git repo?
 #' @param examples logical, should examples from /example-files be copied into project?
 #' @param box_lfs logical, should box-lfs example files be copied?
-#' @param source_dir character, base dir containing example files
-#'        (defaults to system.file("extdata", package = "yourpackage"))
+#' @param source_dir character, base dir containing example files (defaults to test directory)
 #'
 #' @returns the file path to the fake project repo
 #' @noRd
@@ -41,8 +40,7 @@ create_test_repo <- function(git = TRUE, examples = TRUE, box_lfs = FALSE,
 #' Creates a fake boxdrive for testing/examples
 #'
 #' @param files logical, should example files be added?
-#' @param source_dir character, base dir containing example files
-#'        (defaults to system.file("extdata", package = "yourpackage"))
+#' @param source_dir character, base dir containing example files (defaults to test directory)
 #'
 #' @returns the file path to the fake boxdrive
 #' @noRd
@@ -61,12 +59,13 @@ create_test_boxdrive <- function(files = TRUE,
 #' Creates a fake download folder with the files for testing
 #'
 #' @returns the file path to the fake download folder
+#' @param source_dir character, base dir containing example files (defaults to test directory)
 #' @noRd
-create_test_download <- function(){
+create_test_download <- function(source_dir = file.path(testthat::test_path(), "testdata")){
   tmp <- tempfile("download-")
   dir.create(tmp)
 
-  data_path <- file.path(testthat::test_path(), "testdata/box-lfs-zip.zip")
+  data_path <- file.path(source_dir, "box-lfs-zip.zip")
   file.copy(data_path, tmp, recursive = TRUE)
   return(tmp)
 }
@@ -74,7 +73,7 @@ create_test_download <- function(){
 #'
 #' @param name the relative file path to the file to fake update
 #' @param dir the fake project repository
-#'
+#' @noRd
 #' @returns saves the updated box tracker file in the fake project
 create_updated_file <- function(name, dir){
   hashname <- get_tracker_name(name)
@@ -89,7 +88,7 @@ create_updated_file <- function(name, dir){
 #'
 #' @param name the relative file path to the file to fake download
 #' @param dir the fake project repository
-#'
+#' @noRd
 #' @returns saves the updated box tracker file in the fake project
 create_download_file <- function(name, dir){
   hashname <- get_tracker_name(name)

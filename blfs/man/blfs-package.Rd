@@ -8,6 +8,14 @@
 \description{
 Provides tools to manage large files in GitHub repositories by storing them externally on Box. Uses Git LFS-style pointer files to track large files without exceeding GitHub storage limits. Designed for projects with institutional Box storage, such as the Wildfire and Water Security project, to streamline file tracking while maintaining Git version control.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/wildfire-water-security/WWS-box-lfs/tree/main/blfs}
+  \item Report bugs at \url{https://github.com/wildfire-water-security/WWS-box-lfs/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Katie Wampler \email{katie.wampler@oregonstate.edu} (\href{https://orcid.org/0000-0002-5584-7554}{ORCID})
 

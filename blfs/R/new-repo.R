@@ -14,6 +14,7 @@
 #' @param dir the file path to the file directory
 #' @param size the minimum file size in megabytes to track
 #' @param box_dir the file path to the project within Box
+#' @param boxdrive logical, should Box drive be used?
 #' @md
 #' @returns
 #' Creates the following files in \code{dir}:
@@ -28,7 +29,7 @@
 #' @examples
 #' tmp <- withr::local_tempdir()
 #' new_repo_blfs(tmp)
-new_repo_blfs <- function(dir=NULL, size=10, box_dir=NULL){
+new_repo_blfs <- function(dir=NULL, size=10, box_dir=NULL, boxdrive=TRUE){
   #guess on dir if not supplied
   dir <- dir_check(dir)
 
@@ -47,7 +48,7 @@ new_repo_blfs <- function(dir=NULL, size=10, box_dir=NULL){
     box_path <- get_box_drive()
 
     #if no, keep manual method
-    if(box_path == FALSE){
+    if(box_path == FALSE | boxdrive == FALSE){
       upld_message(dir)
 
       #attach box link to the files

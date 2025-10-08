@@ -7,7 +7,8 @@
 #' repository and determine if there are any files that uploaded or downloaded to maintain the current version.
 #'
 #' @param dir the file path to the file directory
-#' @param download the file path to the download directory
+#' @param download the file path to the download directory (if NULL will default to the Box Drive path)
+#' @param boxdrive logical, should Box drive be used?
 #'
 #' @returns
 #' Checks for:
@@ -30,7 +31,7 @@
 #'
 #'  unlink(box_tmp, recursive = TRUE)
 #'  unlink(tmp, recursive = TRUE)
-pull_repo_blfs <- function(dir=NULL, download=NULL){
+pull_repo_blfs <- function(dir=NULL, download=NULL, boxdrive=TRUE){
   dir <- dir_check(dir)
   if(is.null(download)){download <- file.path(fs::path_home(), "Downloads")}
 
@@ -65,7 +66,7 @@ pull_repo_blfs <- function(dir=NULL, download=NULL){
 
   #download any files
   if(length(down[!is.na(down)]) >0){
-    if(box_path == FALSE){
+    if(box_path == FALSE | boxdrive == FALSE){
       dwld_message(dir)
 
       #only do if interactive to prevent errors
@@ -96,7 +97,15 @@ pull_repo_blfs <- function(dir=NULL, download=NULL){
 
       file_loc <- temp_dir
     }else{
-      file_loc <- get_box_path(dir)
+      loc <- get_box_path(dir)
+
+      if(is.null(download)){
+        #get box path and set location of download folder
+        file_loc <- file.path(get_box_drive(), loc)
+      }else{
+        file_loc <- file.path(download, loc)
+      }
+
     }
 
     #get files that need to be moved (only copy changed files)

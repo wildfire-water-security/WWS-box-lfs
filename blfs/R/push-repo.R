@@ -8,6 +8,7 @@
 #'
 #' @param dir the file path to the file directory
 #' @param size the minimum file size in megabytes to track
+#' @param boxdrive logical, should Box drive be used?
 #'
 #' @returns
 #' Identifies any new or modified files, updates the .boxtracker file and prompts user to upload to Box
@@ -21,7 +22,7 @@
 #' push_repo_blfs(tmp)
 #'
 #' unlink(tmp, recursive = TRUE)
-push_repo_blfs <- function(dir=NULL, size=10){
+push_repo_blfs <- function(dir=NULL, size=10, boxdrive=TRUE){
   #guess on dir if not supplied
   dir <- dir_check(dir)
 
@@ -58,7 +59,7 @@ push_repo_blfs <- function(dir=NULL, size=10){
     #see if we can copy files automatically
     box_path <- get_box_drive()
 
-    if(box_path == FALSE){
+    if(box_path == FALSE | boxdrive == FALSE){
       upld_message(dir)
     }else{
       #get box_path

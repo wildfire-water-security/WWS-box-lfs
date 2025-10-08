@@ -4,12 +4,14 @@
 \alias{pull_repo_blfs}
 \title{Check for updated Box LFS files when pulling a GitHub repository}
 \usage{
-pull_repo_blfs(dir = NULL, download = NULL)
+pull_repo_blfs(dir = NULL, download = NULL, boxdrive = TRUE)
 }
 \arguments{
 \item{dir}{the file path to the file directory}
 
-\item{download}{the file path to the download directory}
+\item{download}{the file path to the download directory (if NULL will default to the Box Drive path)}
+
+\item{boxdrive}{logical, should Box drive be used?}
 }
 \value{
 Checks for:

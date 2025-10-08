@@ -2,3 +2,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^vignettes/articles$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$

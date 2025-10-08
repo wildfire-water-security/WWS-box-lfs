@@ -70,7 +70,7 @@ If you already have a folder you want to turn into a GitHub repository
 (repo) that uses Box for large files, start with:
 
 ``` r
-  new_repo_blfs(dir = new_dir, size = 0.0001) 
+  new_repo_blfs(dir = new_dir, size = 0.0001, box_dir = box_tmp) 
 #> ℹ the following files will no longer be tracked by git:
 #> example-files/example-shp.*
 #> example-files/large-file1.txt
@@ -189,7 +189,11 @@ The safest way to avoid this? **Pull first, push often.**
 
 If you try to pull or push changes and Git shows something like:
 
-<img src="images/merge-conflict.png" width="399" />
+<figure>
+<img src="man/figures/merge-conflict.png" width="399"
+alt="Example of merge conflict" />
+<figcaption aria-hidden="true">Example of merge conflict</figcaption>
+</figure>
 
 Don’t worry, it just means your version of the file and the version on
 GitHub are different, and Git wants you to choose which one to keep.

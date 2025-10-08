@@ -84,7 +84,7 @@ library(git2r)
 If you already have a folder you want to turn into a GitHub repository (repo) that uses Box for large files, start with:
 
 ```{r message=TRUE, warning=TRUE}
-  new_repo_blfs(dir = new_dir, size = 0.0001) 
+  new_repo_blfs(dir = new_dir, size = 0.0001, box_dir = box_tmp) 
 ```
 
 -   `dir` is the folder you want to set up.
@@ -175,7 +175,7 @@ The safest way to avoid this? **Pull first, push often.**
 
 If you try to pull or push changes and Git shows something like:
 
-![](images/merge-conflict.png){width="399"}
+![Example of merge conflict](man/figures/merge-conflict.png){width="399"}
 
 Don’t worry, it just means your version of the file and the version on GitHub are different, and Git wants you to choose which one to keep.
 

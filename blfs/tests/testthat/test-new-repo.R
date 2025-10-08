@@ -41,14 +41,14 @@ test_that("repo gets set up manually", {
   withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
 
   #run looking for large files (expect file structure but that's it)
-  expect_message(new_repo_blfs(dir = tmp), "No large files found.")
+  expect_message(new_repo_blfs(dir = tmp, boxdrive=FALSE), "No large files found.")
   expect_true(setequal(list.files(tmp), c("README.md", "box-lfs", "example-files")))
 
   with_mocked_bindings(
     get_box_drive = function() FALSE,
     {
       #run looking for example files
-      msg_match <- expect_cli_msg(code=new_repo_blfs(dir = tmp, size=0.0002,box_dir=box_tmp),
+      msg_match <- expect_cli_msg(code=new_repo_blfs(dir = tmp, size=0.0002,boxdrive=FALSE),
                                   msg = c("the following files will no longer be tracked",
                                           "Please upload files from",
                                           "Large files are now backed up"))

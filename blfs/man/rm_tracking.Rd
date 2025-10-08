@@ -2,7 +2,7 @@
 % Please edit documentation in R/untrack-files.R
 \name{rm_tracking}
 \alias{rm_tracking}
-\title{Stop tracking a file with Box-LFS}
+\title{Stop tracking a file with Box LFS}
 \usage{
 rm_tracking(dir, file, git = TRUE)
 }

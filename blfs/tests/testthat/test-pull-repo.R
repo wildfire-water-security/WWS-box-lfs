@@ -89,7 +89,7 @@ test_that("new files are box are downloaded automatically", {
       expect_true(msg_match)
 
       #make sure all files are there
-      expect_length(list.files(file.path(tmp, "example-files"), "example-shp"), 4)
+      expect_length(list.files(file.path(tmp, "example-files"), "example-shp"), 5)
 
     })
 

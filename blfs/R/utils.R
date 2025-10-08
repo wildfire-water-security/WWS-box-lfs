@@ -54,10 +54,10 @@ dir_check <- function(dir=NULL){
 #' Check if Box LFS is being used on the project directory
 #'
 #' @param dir the file path to the file directory
-#' @noRd
+#' @export
 #' @returns A value of TRUE if Box LFS is being used or FALSE if it is not
 #' @examples
-#' blfs:::check_blfs(fs::path_package("extdata", package = "blfs"))
+#' check_blfs(fs::path_package("extdata", package = "blfs"))
 check_blfs <- function(dir=NULL){
   dir <- dir_check(dir)
 
@@ -238,7 +238,7 @@ get_box_path <- function(dir){
   if(length(box_path) > 1){
     stop("More than one Box Path found in .boxtrackers, please check")
   }
-  return(file.path(get_box_drive(),box_path))
+  return(file.path(box_path))
 
 }
 

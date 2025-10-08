@@ -4,12 +4,14 @@
 \alias{push_repo_blfs}
 \title{Check for large files before pushing a Git repository}
 \usage{
-push_repo_blfs(dir = NULL, size = 10)
+push_repo_blfs(dir = NULL, size = 10, boxdrive = TRUE)
 }
 \arguments{
 \item{dir}{the file path to the file directory}
 
 \item{size}{the minimum file size in megabytes to track}
+
+\item{boxdrive}{logical, should Box drive be used?}
 }
 \value{
 Identifies any new or modified files, updates the .boxtracker file and prompts user to upload to Box

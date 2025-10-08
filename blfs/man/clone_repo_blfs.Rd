@@ -4,12 +4,14 @@
 \alias{clone_repo_blfs}
 \title{Get files after cloning a repo that uses Box LFS}
 \usage{
-clone_repo_blfs(dir = NULL, download = NULL)
+clone_repo_blfs(dir = NULL, download = NULL, boxdrive = TRUE)
 }
 \arguments{
 \item{dir}{the file path to the file directory}
 
-\item{download}{the file path to the download directory}
+\item{download}{the file path to the download directory (if NULL will default to the Box Drive path)}
+
+\item{boxdrive}{logical, should Box drive be used?}
 }
 \value{
 Prompts user to download the files from Box and then places them in the correct location in the \code{dir} folder

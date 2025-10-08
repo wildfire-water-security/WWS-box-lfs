@@ -1,4 +1,4 @@
-#' Stop tracking a file with Box-LFS
+#' Stop tracking a file with Box LFS
 #'
 #' Removes the boxtracker file, adds to .blfsignore, and optionally removes it from
 #' .gitignore so that git will start tracking it again.

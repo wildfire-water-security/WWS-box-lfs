@@ -1,17 +1,78 @@
 ---
-title: "blfs-standard"
+title: "Main Box LFS Functions (with Box Drive)"
 ---
 
 ```{r, include = FALSE}
+library(blfs)
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
 ```
 
-```{r setup}
-library(blfs)
+```{css style settings, echo = FALSE}
+blockquote {
+    padding: 10px 20px;
+    margin: 0 0 20px;
+    font-size: 14px;
+    border-left: 5px solid;
+}
+
+hr {
+      border: none; 
+      border-top: 1px solid; 
+      margin-top: 2em; 
+      margin-bottom: 2em; 
+    }
+    
+    /* Add spacing between list items */
+li {
+  margin-bottom: 0.6em;   /* adjust as needed */
+}
+
+/* Extra spacing before new numbered list items */
+ol > li {
+  margin-top: 0.8em;      /* adjust as needed */
+}
+
 ```
+
+```{r include=FALSE}
+library(git2r)
+
+#setting up clean structure for running examples 
+  new_dir <- blfs:::create_test_repo(box_lfs=FALSE, examples = TRUE, source_dir = system.file("extdata", package = "blfs"))
+  clone_dir <- blfs:::create_test_repo(box_lfs=TRUE, examples = FALSE,source_dir = system.file("extdata", package = "blfs"))
+  box_tmp_upld <- blfs:::create_test_boxdrive(files=FALSE, source_dir = system.file("extdata", package = "blfs"))
+  box_tmp_dwd <- blfs:::create_test_boxdrive(source_dir = system.file("extdata", package = "blfs"))
+
+  blfs:::add_box_loc(basename(box_tmp_dwd), dir=clone_dir, type="path")
+
+```
+
+If you have [Box Drive](https://www.box.com/resources/downloads) installed on your computer, **Box LFS** can automatically move files between your local project repository and Box. This is highly recommended as it will simplify the management of your large files.
+
+**Not sure if you've got Box Drive installed?**
+
+```{r eval=FALSE, include=TRUE}
+#remotes::install_github("r-box/boxrdrive")
+library(boxrdrive)
+dr_box_drive()
+```
+
+```{r echo=FALSE}
+cat("✔ Box Drive installation found.\n")
+cat("✔ Box Drive directory available at 'C:/Users/jsmith/Box'.")
+```
+
+> If it's installed but not available, try running the Box Drive app from your start bar.
+
+Below we'll explore the main `blfs` functions that you will use to maintain versioning and backups of your large files.
+
+------------------------------------------------------------------------
+
+## Start Tracking Large Files
 
 If you already have a folder you want to turn into a GitHub repository (repo) that uses Box for large files, start with:
 
@@ -23,14 +84,47 @@ tree_output[1] <- "~/new_dir"
 ```
 
 ```{r message=FALSE, warning=FALSE}
-  new_repo_blfs(dir = new_dir, size = 0.0001) 
+  new_repo_blfs(dir = new_dir, size = 0.0001, box_dir = box_tmp_upld, boxdrive = TRUE) 
 ```
 
 -   `dir` is the folder you want to set up.
 
 -   `size` is the minimum size (in MB) that counts as a “large” file. Default is **10 MB**, but here we use a small number so our example files are included.
 
-------------------------------------------------------------------------
+-   If you don't specify `box_dir`, you'll be prompted for the **Box path** to the project folder this is the file path to the folder where you want your files stored.
+
+<br>
+
+### What you’ll see when you run `new_repo_blfs()`
+
+1.  **Warning about large files**
+
+    ```{r echo=FALSE}
+      #making nicer formatted messages and warnings:  
+      cat("ℹ the following files will no longer be tracked by git:\n")
+      cat("example-files/example-shp.*\n") 
+      cat("example-files/large-file1.txt\n") 
+      cat("example-files/large-file2.txt\n")
+    ```
+
+    This is **expected** — these files are now tracked by Box, not GitHub.
+
+2.  **Prompt asking for the Box file path**
+
+    ```{r echo=FALSE}
+      #making nicer formatted messages and warnings:  
+      cat("what is the Box path to the project folder?")
+    ```
+
+    This will tell Box LFS where to upload your files to.
+
+3.  **Message telling you your files are now backed up**
+
+    ```{r echo=FALSE}
+      cat("✔ Large files are now backed up in Box.")
+    ```
+
+<br>
 
 ### File structure before running `new_repo_blfs()`
 
@@ -38,7 +132,7 @@ tree_output[1] <- "~/new_dir"
 cat(tree_output, sep = "\n")
 ```
 
-------------------------------------------------------------------------
+<br>
 
 ### File structure after running `new_repo_blfs()`
 
@@ -65,59 +159,9 @@ cat(tree_output, sep = "\n")
 
 ------------------------------------------------------------------------
 
-### What you’ll see when you run `new_repo_blfs()`
-
-1.  **Warning about large files**
-
-    ```{r echo=FALSE}
-     #making nicer formatted messages and warnings: 
-    cat("ℹ the following files will no longer be tracked by git:\n")
-    cat("example-files/example-shp.*\n")
-    cat("example-files/large-file1.txt\n")
-    cat("example-files/large-file2.txt\n")
-
-    ```
-
-    This is **expected** — these files are now tracked by Box, not GitHub.
-
-2.  **Message telling you to upload files to Box (if Box Drive isn't installed)**
-
-    ```{r echo=FALSE}
-     #making nicer formatted messages and warnings: 
-    cat("Please upload files from 'example-repo-abc123/box-lfs/upload' to Box here:\n")
-    cat("'Wildfire_Water_Security/02_Nodes/your node/Projects/example-repo-abc123/box-lfs'\n")
-
-    ```
-
-    **Do this next:**
-
-    -   Go to the correct folder in Box for your project.
-
-    -   Inside that project’s folder, create a `box-lfs` folder if it doesn’t exist.
-
-    -   Upload everything from your local `upload` folder into Box.
-
-3.  **Prompt asking for the Box link or file path**
-
-    -   If **Box Drive** is installed you'll see a message prompting you to paste the file path on Box to the folder where you want your large files backed up.
-
-    ```{r echo=FALSE}
-     #making nicer formatted messages and warnings: 
-    cat("what is the Box path to the project folder? ")
-    ```
-
-    -   If **Box Drive** isn't installed you'll see a message prompting the Box share link to the folder where the large files are backed up (should be in a box-lfs subfolder).
-
-    ```{r echo=FALSE}
-     #making nicer formatted messages and warnings: 
-    cat("what is the Box link to the folder where the data is now backed up? ")
-    ```
-
-------------------------------------------------------------------------
-
 ## Cloning a GitHub repository using Box LFS
 
-When you clone a GitHub repo that uses Box LFS, you get the code and .boxtracker pointer files — but not the big files themselves. To download those files and put them in the right place, run:
+When you clone a GitHub repo that uses **Box LFS**, you get the code and `.boxtracker` pointer files — but not the big files themselves. To download those files and put them in the right place, run:
 
 ```{r echo=FALSE}
 #get intitial file tree 
@@ -127,13 +171,26 @@ tree_output[1] <- "~/clone_dir"
 ```
 
 ```{r message=FALSE, warning=FALSE}
-clone_repo_blfs(dir=clone_dir, download=dwd)
+clone_repo_blfs(dir=clone_dir, download=tempdir())
 ```
 
 -   `dir` is the folder with the cloned repository.
--   `download` is the folder with the downloaded `.zip` file.
 
-------------------------------------------------------------------------
+<br>
+
+### What you’ll see when you run `clone_repo_blfs()`
+
+1.  **Message telling you your large files have been fetched:**
+
+    ```{r echo=FALSE}
+     #making nicer formatted messages and warnings: 
+    cat("✔ Large files have been fetched from Box and put in repository.")
+
+    ```
+
+**With this, your cloned repo will have the correct large files in the right locations.**
+
+<br>
 
 ### Check if a repo uses Box LFS
 
@@ -143,9 +200,9 @@ You can check by running:
 check_blfs(clone_dir)
 ```
 
-If it says `TRUE`, the repo uses Box LFS.
+If it says `TRUE`, the repo uses **Box LFS**.
 
-------------------------------------------------------------------------
+<br>
 
 ### File structure before running `clone_repo_blfs()`
 
@@ -153,7 +210,7 @@ If it says `TRUE`, the repo uses Box LFS.
 cat(tree_output, sep = "\n")
 ```
 
-------------------------------------------------------------------------
+<br>
 
 ### File structure after running `clone_repo_blfs()`
 
@@ -163,49 +220,6 @@ tree_output[1] <- "~/clone_dir"
 
 cat(tree_output, sep = "\n")
 ```
-
-------------------------------------------------------------------------
-
-### What you’ll see when you run `clone_repo_blfs()`
-
-1.  **Message telling you where to get the files from Box**
-
-    ```{r echo=FALSE}
-     #making nicer formatted messages and warnings: 
-    cat("Please download files from Box here:\n")
-    cat("'Wildfire_Water_Security/02_Nodes/your node/Projects/example-repo-abc123/box-lfs'\n")
-    cat("they will be automatically moved to the correct locations from your downloads folder")
-
-    ```
-
-    **Do this next:**
-
-    -   Go to the provided Box link or Box path.
-
-    -   Download the folder (Box will give it to you as a .zip file).
-
-2.  **Prompt to continue**
-
-    ```{r echo=FALSE}
-     #making nicer formatted messages and warnings: 
-    cat("hit any key once files have been downloaded to continue setting up the repo")
-
-    ```
-
-    Press Enter when your download is ready.
-
-3.  **Prompt to confirm the zip file location**
-
-    ```{r echo=FALSE}
-     #making nicer formatted messages and warnings: 
-    cat(paste0("Zip file for downloaded data appears to be: ", file.path("~/Downloads/box-lfs-zip.zip"), "\n"))
-    cat("Press enter to use this file or provide a different file path.")
-
-    ```
-
-    If this is correct, press Enter. If not, type the correct file path and press Enter.
-
-**With this, your cloned repo will have the correct large files in the right locations.**
 
 ------------------------------------------------------------------------
 
@@ -227,23 +241,23 @@ push_repo_blfs(dir=clone_dir, size=0.0001)
 -   `size` is the minimum file size (in MB) that counts as a “large” file. Default is **10 MB**.
 -   Here we use a smaller number so our example files are included.
 
+<br>
+
 ### What you'll see when you run `push_repo_blfs()`:
 
-1.  **Message telling you to upload files to Box**
-
-    You'll only see this message if there are **new or updated files** that need to be uploaded to Box. If there are no changes, the function will finish without printing anything.
+1.  **Message telling you files have been synced**
 
     ```{r echo=FALSE}
      #making nicer formatted messages and warnings: 
-    cat("Please upload files from 'example-repo-abc123/box-lfs/upload' to Box here:\n")
-    cat("'Wildfire_Water_Security/02_Nodes/your node/Projects/example-repo-abc123/box-lfs'\n")
+    cat("✔ Large files have been synced with Box.")
     ```
 
-    **Do this next:**
+    > If **new** files have been added since the last push, you'll also see a warning message similar to `new_repo_blfs()` about files no longer being tracked with **Git**.
 
-    -   Go to the correct folder in Box for your project.
-    -   Inside that project’s folder, go to the `box-lfs` folder.
-    -   Upload everything from your **local** `upload` folder into Box.
+2.  **Do this next:**
+
+    -   Push your Git repository as normal.
+        -   The updated `.boxtracker` files will tell other users that there's new files to grab from Box.
 
 ------------------------------------------------------------------------
 
@@ -258,46 +272,32 @@ push_repo_blfs(dir=clone_dir, size=0.0001)
 You can do both with:
 
 ```{r message=FALSE, warning=FALSE}
-pull_repo_blfs(dir=clone_dir, download=dwd)
+pull_repo_blfs(dir=clone_dir, download=tempdir())
 ```
 
 -   `dir` is your local repository folder.
 -   `download` is the folder with the downloaded `.zip` file.
 
+<br>
+
 ### What you'll see when you run `pull_repo_blfs()`:
 
-1.  **Message telling you to upload files to Box**
-
-    You'll only see this message if there are **new or updated files** that need to be **uploaded** to Box. We run this check to make sure that any local changes to the tracked files are
+1.  **Message telling you your large files have been fetched:**
 
     ```{r echo=FALSE}
      #making nicer formatted messages and warnings: 
-    cat("Please upload files from 'example-repo-abc123/box-lfs/upload' to Box here:\n")
-    cat("'Wildfire_Water_Security/02_Nodes/your node/Projects/example-repo-abc123/box-lfs'\n")
+    cat("✔ Large files have been fetched from Box and put in repository.\n")
+    cat("✔ Large files have been synced with Box.\n")
     ```
 
-    **Do this next:**
+> This function is uploading any new versions of tracked files to make sure you don't lose your work, and then it will get the newest version of any files.
 
-    -   Go to the correct folder in Box for your project.
+```{r include=FALSE}
 
-    -   Inside that project’s folder, go to the `box-lfs` folder.
+#remove temp
+  unlink(new_dir)
+  unlink(clone_dir)
+  unlink(box_tmp_dwd)
+  unlink(box_tmp_upld)
 
-    -   Upload everything from your **local** `upload` folder into Box.
-
-2.  **Message telling you where to get the files from Box**
-
-    You'll only see this message if there are **new or updated files** that need to be **downloaded** from Box.
-
-    ```{r echo=FALSE}
-     #making nicer formatted messages and warnings: 
-    cat("Please download files from Box here:\n")
-    cat("'Wildfire_Water_Security/02_Nodes/your node/Projects/example-repo-abc123/box-lfs'\n")
-    cat("they will be automatically moved to the correct locations from your downloads folder")
-
-    ```
-
-    **Do this next:**
-
-    -   Go to the provided Box link or Box path.
-
-    -   Download the folder (Box will give it to you as a .zip file).
+```

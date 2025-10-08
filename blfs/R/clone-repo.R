@@ -5,7 +5,8 @@
 #' in your repository using the .boxtracker files.
 #'
 #' @param dir the file path to the file directory
-#' @param download the file path to the download directory
+#' @param download the file path to the download directory (if NULL will default to the Box Drive path)
+#' @param boxdrive logical, should Box drive be used?
 #'
 #' @returns
 #' Prompts user to download the files from Box and then places them in the correct location in the \code{dir} folder
@@ -26,16 +27,15 @@
 #'   #remove temp dirs
 #'   unlink(box_tmp, recursive = TRUE)
 #'   unlink(tmp, recursive = TRUE)
-clone_repo_blfs <- function(dir=NULL, download=NULL){
+clone_repo_blfs <- function(dir=NULL, download=NULL, boxdrive=TRUE){
   dir <- dir_check(dir)
 
   #check if lfs is needed
   if(check_blfs(dir)){
-
     #see if box drive is working
     box_path <- get_box_drive()
 
-    if(box_path == FALSE){
+    if(box_path == FALSE | boxdrive == FALSE){
       dwld_message(dir)
 
       #only do if interactive to prevent errors
@@ -67,8 +67,14 @@ clone_repo_blfs <- function(dir=NULL, download=NULL){
       #set download path
       file_loc <- file.path(temp_dir)
     }else{
-      #get box path and set location of download folder
-      file_loc <- get_box_path(dir)
+      loc <- get_box_path(dir) #extract box path from .boxtracker
+
+      if(is.null(download)){
+        #get box path and set location of download folder
+        file_loc <- file.path(get_box_drive(), loc)
+      }else{
+        file_loc <- file.path(download, loc)
+      }
 
     }
 
