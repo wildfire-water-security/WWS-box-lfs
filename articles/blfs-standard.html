@@ -116,14 +116,7 @@ will use to maintain versioning and backups of your large files.</p>
 <p>If you already have a folder you want to turn into a GitHub
 repository (repo) that uses Box for large files, start with:</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span>  <span class="fu"><a href="../reference/new_repo_blfs.html">new_repo_blfs</a></span><span class="op">(</span>dir <span class="op">=</span> <span class="va">new_dir</span>, size <span class="op">=</span> <span class="fl">0.0001</span>, box_dir <span class="op">=</span> <span class="va">box_tmp_upld</span>, boxdrive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span>
-<span><span class="co">#&gt; <span style="color: #00BBBB;">ℹ</span> the following files will no longer be tracked by git:</span></span>
-<span><span class="co">#&gt; example-files/example-shp.*</span></span>
-<span><span class="co">#&gt; example-files/large-file1.txt</span></span>
-<span><span class="co">#&gt; example-files/large-file2.txt</span></span>
-<span><span class="co">#&gt; initial box_dir is/tmp/Rtmppsv1li/boxdrive-20263618ad28</span></span>
-<span><span class="co">#&gt; after potential adding of path_home box_dir is/tmp/Rtmppsv1li/boxdrive-20263618ad28</span></span>
-<span><span class="co">#&gt; <span style="color: #00BB00;">✔</span> Large files are now backed up in Box.</span></span></code></pre></div>
+<code class="sourceCode R"><span>  <span class="fu"><a href="../reference/new_repo_blfs.html">new_repo_blfs</a></span><span class="op">(</span>dir <span class="op">=</span> <span class="va">new_dir</span>, size <span class="op">=</span> <span class="fl">0.0001</span>, box_dir <span class="op">=</span> <span class="va">box_tmp_upld</span>, boxdrive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> </span></code></pre></div>
 <ul>
 <li><p><code>dir</code> is the folder you want to set up.</p></li>
 <li><p><code>size</code> is the minimum size (in MB) that counts as a
