@@ -1,0 +1,10 @@
+pandoc: 3.1.11
+pkgdown: 2.1.3
+pkgdown_sha: ~
+articles:
+  articles/blfs-manual: blfs-manual.html
+  articles/blfs-standard: blfs-standard.html
+last_built: 2025-10-09T20:32Z
+urls:
+  reference: https://wildfire-water-security.github.io/WWS-box-lfs/reference
+  article: https://wildfire-water-security.github.io/WWS-box-lfs/articles
