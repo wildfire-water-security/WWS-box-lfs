@@ -83,7 +83,7 @@ tree_output[1] <- "~/new_dir"
 
 ```
 
-```{r}
+```{r warning=FALSE, message=FALSE}
   new_repo_blfs(dir = new_dir, size = 0.0001, box_dir = box_tmp_upld, boxdrive = TRUE) 
 ```
 

@@ -13,7 +13,7 @@ test_that("updated files are prompted to upload automatically", {
           msg_match <- expect_cli_msg(code=pull_repo_blfs(tmp),
                                       msg = c("Large files are now backed up",
                                               "Large files have been synced with Box"))
-          #expect_true(msg_match)
+          expect_true(msg_match)
 
         #test pull, with an updated local file -> prompts upload
           name <- "example-files/large-file2.txt"
@@ -22,7 +22,7 @@ test_that("updated files are prompted to upload automatically", {
           msg_match <- expect_cli_msg(code=pull_repo_blfs(tmp),
                                       msg = c("Large files are now backed up",
                                               "Large files have been synced with Box"))
-          #expect_true(msg_match)
+          expect_true(msg_match)
 
       })
 

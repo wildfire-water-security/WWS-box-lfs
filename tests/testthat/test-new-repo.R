@@ -18,7 +18,7 @@ test_that("repo gets set up with box drive", {
           msg_match <- expect_cli_msg(code=new_repo_blfs(dir = tmp, size=0.0002,box_dir=box_tmp),
                                       msg = c("the following files will no longer be tracked",
                                               "Large files are now backed up"))
-          #expect_true(msg_match)
+          expect_true(msg_match)
 
         #check it does as expected
           hashes <- c("1678f723cb201eb3f9996c01a481dd0e", "3f80f3c380f48192c6fcd63a08813c49", "4fa7622e82d068a0a994eafb564e4f5d" )
