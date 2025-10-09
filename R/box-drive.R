@@ -15,28 +15,31 @@ upload_box_drive <- function(dir, box_dir=NULL){
       }else{
         box_dir <- readline("what is the Box path to the project folder? ")
       }}
+  
+  message("initial box_dir is", box_dir)
 
   #remove box-lfs if added (need to make folder exists first)
     box_dir <- gsub("*/box-lfs$", "", box_dir)
 
   #see if front box path is added, if not add [skip in pkgdown or non interactive]
-    if(identical(Sys.getenv("IN_PKGDOWN"), "true")|!rlang::is_interactive()){
+    if(!identical(Sys.getenv("IN_PKGDOWN"), "true")|rlang::is_interactive()){
       if(!grepl(fs::path_home(), fs::fs_path(box_dir))){
         box_dir <- file.path(get_box_drive(), box_dir)
       }
     }
-   
+    message("after potential adding of path_home box_dir is", box_dir)
+    
 
   #ensure path exists
     exist <- dir.exists(box_dir)
     if(!exist){
       if(!dir.exists(dirname(box_dir))){
-        stop("directory not found", dirname(box_dir))
+        stop("step 1 directory not found", dirname(box_dir))
       }
       dir.create(box_dir, showWarnings = FALSE)
     }
     if(!dir.exists(dirname(box_dir))){
-      stop("directory not found", dirname(box_dir))
+      stop("step 2 directory not found", dirname(box_dir))
     }
   #add box-lfs to directory
     box_dir <- file.path(box_dir,"box-lfs")
