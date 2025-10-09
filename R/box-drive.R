@@ -20,7 +20,7 @@ upload_box_drive <- function(dir, box_dir=NULL){
     box_dir <- gsub("*/box-lfs$", "", box_dir)
 
   #see if front box path is added, if not add [skip in pkgdown or non interactive]
-    if(!identical(Sys.getenv("IN_PKGDOWN"), "true")|!rlang::is_interactive()){
+    if(identical(Sys.getenv("IN_PKGDOWN"), "true")|!rlang::is_interactive()){
       if(!grepl(fs::path_home(), fs::fs_path(box_dir))){
         box_dir <- file.path(get_box_drive(), box_dir)
       }
