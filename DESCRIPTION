@@ -15,7 +15,7 @@ Description: Provides tools to manage large files in GitHub repositories by stor
   exceeding GitHub storage limits. Designed for projects with institutional Box storage, 
   such as the Wildfire and Water Security project, to streamline file tracking while 
   maintaining Git version control.
-URL: https://github.com/wildfire-water-security/WWS-box-lfs/tree/main/blfs
+URL: https://github.com/wildfire-water-security/WWS-box-lfs/main
 BugReports: https://github.com/wildfire-water-security/WWS-box-lfs/issues
 License: AGPL (>= 3)
 Encoding: UTF-8
