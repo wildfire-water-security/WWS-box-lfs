@@ -2,29 +2,27 @@ url: https://wildfire-water-security.github.io/WWS-box-lfs/
 template:
   bootstrap: 5
   bootswatch: minty
-
 reference:
-  - title: "Main Functions"
-    desc: >
-      Main functions for maintaing large files with Box LFS.
-    contents:
-      - new_repo_blfs
-      - clone_repo_blfs
-      - pull_repo_blfs
-      - push_repo_blfs
+- title: Main Functions
+  desc: |
+    Main functions for maintaing large files with Box LFS.
+  contents:
+  - new_repo_blfs
+  - clone_repo_blfs
+  - pull_repo_blfs
+  - push_repo_blfs
+- title: Working with .boxtracker files
+  desc: |
+    Functions to access, write, and read .boxtracker files.
+  contents:
+  - read.boxtracker
+  - write.boxtracker
+  - get.boxtracker
+- title: Utilities
+  desc: |
+    Helper functions and internal utilities.
+  contents:
+  - check_blfs
+  - rm_tracking
+  - is.multifile
 
-  - title: "Working with .boxtracker files"
-    desc: >
-      Functions to access, write, and read .boxtracker files.
-    contents:
-      - read.boxtracker
-      - write.boxtracker
-      - get.boxtracker
-
-  - title: "Utilities"
-    desc: >
-      Helper functions and internal utilities.
-    contents:
-      - check_blfs
-      - rm_tracking
-      - is.multifile

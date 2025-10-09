@@ -19,10 +19,13 @@ upload_box_drive <- function(dir, box_dir=NULL){
   #remove box-lfs if added (need to make folder exists first)
     box_dir <- gsub("*/box-lfs$", "", box_dir)
 
-  #see if front box path is added, if not add
-    if(!grepl(fs::path_home(), fs::fs_path(box_dir))){
-      box_dir <- file.path(get_box_drive(), box_dir)
+  #see if front box path is added, if not add [skip in pkgdown or non interactive]
+    if(!identical(Sys.getenv("IN_PKGDOWN"), "true")|!rlang::is_interactive()){
+      if(!grepl(fs::path_home(), fs::fs_path(box_dir))){
+        box_dir <- file.path(get_box_drive(), box_dir)
+      }
     }
+   
 
   #ensure path exists
     exist <- dir.exists(box_dir)
