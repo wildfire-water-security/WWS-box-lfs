@@ -6,7 +6,7 @@
 #' @param box_dir the file path to the project within Box
 #' @md
 #' @returns Copies any files in upload to the path specified by `box_dir`
-#' @noRd
+#' @noRd 
 upload_box_drive <- function(dir, box_dir=NULL){
   #if box dir isn't supplied and it's using box drive ask
     if(is.null(box_dir)){
@@ -21,7 +21,7 @@ upload_box_drive <- function(dir, box_dir=NULL){
 
   #see if front box path is added, if not add
     if(!grepl(fs::path_home(), fs::fs_path(box_dir))){
-      box_dir <- file.path(boxrdrive::box_drive(), box_dir)
+      box_dir <- file.path(get_box_drive(), box_dir)
     }
 
   #ensure path exists

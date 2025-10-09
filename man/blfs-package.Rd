@@ -11,7 +11,8 @@ Provides tools to manage large files in GitHub repositories by storing them exte
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/wildfire-water-security/WWS-box-lfs/tree/main/blfs}
+  \item \url{https://github.com/wildfire-water-security/WWS-box-lfs/main}
+  \item \url{https://wildfire-water-security.github.io/WWS-box-lfs/}
   \item Report bugs at \url{https://github.com/wildfire-water-security/WWS-box-lfs/issues}
 }
 

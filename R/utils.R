@@ -19,7 +19,7 @@ add_box_loc <- function(link, dir=NULL, type="path"){
 
     if(type == "path"){
       #remove head with username, start after Box
-      link <- gsub(boxrdrive::box_drive(), "", fs::fs_path(link))
+      link <- gsub(get_box_drive(), "", fs::fs_path(link))
       tracker$box_path <- link
     }
 
@@ -207,11 +207,17 @@ readme_msg <- function(){
 #' @noRd
 #'
 get_box_drive <- function(){
-  box_path <- tryCatch(boxrdrive::box_drive(),
-                       error=function(e){return(FALSE)})
+  #if in pkgdown -> make tempdir
+    if(identical(Sys.getenv("IN_PKGDOWN"), "true")){
+     box_path <- tempdir()
+    }else{
+      #else try to get and return false if not installed
+      box_path <- tryCatch(boxrdrive::box_drive(),
+                           error=function(e){return(FALSE)})
+    }
 
   if(box_path == FALSE){
-    warning("Box Drive not installed, files will need to be manually moved until Box Drive is installed")
+    cli::cli_alert_warning("Box Drive not installed, files will need to be manually moved until Box Drive is installed")
   }
 
   return(box_path)

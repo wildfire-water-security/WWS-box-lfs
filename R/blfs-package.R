@@ -4,6 +4,7 @@
 ## usethis namespace: start
 #' @importFrom boxrdrive box_drive
 #' @importFrom cli cli_alert_success
+#' @importFrom cli cli_alert_warning
 #' @importFrom digest digest
 #' @importFrom fs fs_path
 #' @importFrom fs path_home
