@@ -28,6 +28,10 @@ init_blfs <- function(dir=NULL){
   #set up .gitignore with upload folder
     ignore <- file.path(dir, ".gitignore")
     if(!file.exists(ignore)){file.create(ignore)} #create .gitignore if it doesn't exist
+    
+    #check if already in gitignore
+    added <- any(grepl("^box-lfs/upload$", readLines(ignore, warn=FALSE)))
+    if(!added){cat("\nbox-lfs/upload", file=ignore, append = T)} #only add if not already there
 
   #create a .blfsignore with things we don't want to flag
     ignore <- file.path(dir, ".blfsignore")
@@ -37,13 +41,13 @@ init_blfs <- function(dir=NULL){
     cat(paste(notrack, collapse = "\n"), file=ignore, append = T)
 
 
-  #check if already in gitignore
-    added <- any(grepl("^box-lfs/upload$", readLines(ignore, warn=FALSE)))
-    if(!added){cat("\nbox-lfs/upload", file=ignore, append = T)} #only add if not already there
-
   #add to readme
     readme <- file.path(dir, "README.md")
-    cat(readme_msg(), file=readme, append=TRUE)
+    exists <- grepl(readme_msg(), paste(readLines(readme), collapse = "\n"), fixed = TRUE)
+    
+    if(!exists){
+      cat(readme_msg(), file=readme, append=TRUE)
+    }
 }
 
 
