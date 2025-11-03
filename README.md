@@ -47,7 +47,7 @@ Install the package from [GitHub](https://github.com/):
 
 ``` r
 # install.packages("remotes")
-remotes::install_github("wildfire-water-security/WWS-box-lfs", subdir="blfs")
+remotes::install_github("wildfire-water-security/WWS-box-lfs")
 ```
 
 ## Box Drive
