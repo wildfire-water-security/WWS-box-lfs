@@ -29,6 +29,7 @@ Imports:
     fs,
     git2r,
     rlang,
+    stats,
     testthat,
     tools,
     utils,

@@ -45,5 +45,7 @@ test_that("path for multifile is done without extension",{
 
   tracker <- read.boxtracker(get_tracker_name(file), dir=dir)
   expect_equal(tools::file_ext(tracker$file_path), "")
+  
+  #ensure path-hash is written
 
 })

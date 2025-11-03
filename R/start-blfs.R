@@ -23,7 +23,7 @@ init_blfs <- function(dir=NULL){
     dir.create(file.path(dir, "box-lfs/upload"), showWarnings = FALSE)
 
   #create csv to track the hash vs file paths
-    write.csv(data.frame(path="", hash=""), file.path(dir, "box-lfs/path-hash.csv"), quote = FALSE, row.names=FALSE)
+    write.csv(data.frame(path=NA, hash=NA), file.path(dir, "box-lfs/path-hash.csv"), quote = FALSE, row.names=FALSE)
 
   #set up .gitignore with upload folder
     ignore <- file.path(dir, ".gitignore")
@@ -43,11 +43,14 @@ init_blfs <- function(dir=NULL){
 
   #add to readme
     readme <- file.path(dir, "README.md")
-    exists <- grepl(readme_msg(), paste(readLines(readme), collapse = "\n"), fixed = TRUE)
-    
-    if(!exists){
-      cat(readme_msg(), file=readme, append=TRUE)
+    if(file.exists(readme)){
+      exists <- grepl(readme_msg(), paste(readLines(readme), collapse = "\n"), fixed = TRUE)
+      
+      if(!exists){
+        cat(readme_msg(), file=readme, append=TRUE)
+      }
     }
+   
 }
 
 

@@ -121,14 +121,29 @@ write.boxtracker <- function(file, dir=NULL){
     file <- path_san_ext
   }
 
+  #safely read path-hash
+    if(file.exists(file.path(dir, "box-lfs/path-hash.csv"))){
+      path_hash <- na.omit(read.csv(file.path(dir, "box-lfs/path-hash.csv")))
+    }else{
+      path_hash <- data.frame(path=NA, hash=NA)
+    }
+  
   # Get link and path if it exists in previous version, if not write to tracker file
   if(file.exists(file.path(dir, "box-lfs", tracker_name))){
     link <- read.boxtracker(tracker_name, dir=dir, return="box_link")
     path <- read.boxtracker(tracker_name, dir=dir, return="box_path")
     tracker$box_link <- link
     tracker$box_path <- path
+    
+    #make sure it's in the tracker file 
+    if(!any(grepl(tracker$file_path, path_hash$path)) | !any(grepl(tracker_name, path_hash$hash))){
+      path_hash <- rbind(path_hash, data.frame(path=file, hash=tracker_name))
+      write.csv(path_hash, file.path(dir, "box-lfs/path-hash.csv"), row.names = FALSE)
+    }
+    
   }else{
-    cat(paste0("\n", paste(file, tracker_name, sep = ",")), file=file.path(dir, "box-lfs/path-hash.csv"), append=TRUE)
+    path_hash <- rbind(path_hash, data.frame(path=file, hash=tracker_name))
+    write.csv(path_hash, file.path(dir, "box-lfs/path-hash.csv"), row.names = FALSE)    
   }
 
 

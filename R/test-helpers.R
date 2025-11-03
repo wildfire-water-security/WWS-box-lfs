@@ -14,7 +14,10 @@ create_test_repo <- function(git = TRUE, examples = TRUE, box_lfs = FALSE,
   # temp repo
   tmp <- tempfile("repo-")
   dir.create(tmp)
-
+  
+  #create readme
+  cat("", file=file.path(tmp, "README.md"))
+  
   # turn into git repo
   if (git) git2r::init(tmp)
 

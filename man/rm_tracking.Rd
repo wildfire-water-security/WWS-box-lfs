@@ -4,7 +4,7 @@
 \alias{rm_tracking}
 \title{Stop tracking a file with Box LFS}
 \usage{
-rm_tracking(dir, file, git = TRUE)
+rm_tracking(dir, file, git = TRUE, box = FALSE)
 }
 \arguments{
 \item{dir}{the file path to the file directory}
@@ -12,6 +12,8 @@ rm_tracking(dir, file, git = TRUE)
 \item{file}{the relative file path to the file to stop tracking}
 
 \item{git}{logical, should the file be tracked by git again?}
+
+\item{box}{logical, should the file be removed from Box?}
 }
 \value{
 a message indicating that the file has been successfully untracked

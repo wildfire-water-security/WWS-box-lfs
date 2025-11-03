@@ -6,6 +6,7 @@
 #' @param dir the file path to the file directory
 #' @param file the relative file path to the file to stop tracking
 #' @param git logical, should the file be tracked by git again?
+#' @param box logical, should the file be removed from Box?
 #'
 #' @returns a message indicating that the file has been successfully untracked
 #' @export
@@ -20,7 +21,7 @@
 #'
 #'   #remove temp dirs
 #'   unlink(tmp, recursive = TRUE)
-rm_tracking <- function(dir, file, git=TRUE){
+rm_tracking <- function(dir, file, git=TRUE, box=FALSE){
   #check if multifile
     multi <- is.multifile(file.path(dir, file))
     if(multi){
@@ -32,7 +33,14 @@ rm_tracking <- function(dir, file, git=TRUE){
 
   #get file hash
     hash <- get_tracker_name(file)
-
+    loc <- read.boxtracker(hash, dir=dir)
+    
+  #remove from box 
+    if(box){
+      file.remove(file.path(get_box_drive(), loc$box_path, get_tracker_name(file, ext=TRUE)))
+      
+    }
+  
   #remove box tracker
     unlink(file.path(dir, "box-lfs", hash))
 
