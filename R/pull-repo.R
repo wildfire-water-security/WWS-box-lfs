@@ -33,7 +33,6 @@
 #'  unlink(tmp, recursive = TRUE)
 pull_repo_blfs <- function(dir=NULL, download=NULL, boxdrive=TRUE){
   dir <- dir_check(dir)
-  if(is.null(download)){download <- file.path(fs::path_home(), "Downloads")}
 
   #clear upload folder so we only upload new files
     upld_files <- list.files(file.path(dir, "box-lfs/upload"), full.names = TRUE)
@@ -103,6 +102,7 @@ pull_repo_blfs <- function(dir=NULL, download=NULL, boxdrive=TRUE){
         #get box path and set location of download folder
         file_loc <- file.path(get_box_drive(), loc)
       }else{
+        download <- file.path(fs::path_home(), "Downloads")
         file_loc <- file.path(download, loc)
       }
 
