@@ -142,6 +142,7 @@ move_file_blfs <- function(hash_file, dir=NULL, download=NULL){
 #' update_blfs("example-files/example-shp.shp", fs::path_package("extdata", package = "blfs"))
 
 update_blfs <- function(file, dir=NULL){
+  #browser()
   dir <- dir_check(dir)
 
   #see if multifile
@@ -164,7 +165,7 @@ update_blfs <- function(file, dir=NULL){
   file_size <- file_tracker$size_MB
 
   #first checks to see if the size is different, if yes then see's if it should be uploaded or downloaded
-  if(file_size != box_size){
+  if(!isTRUE(all.equal(file_size, box_size))){
     box_mtime <- as.POSIXct(boxtracker$last_modified)
     file_mtime <- as.POSIXct(file_tracker$last_modified)
     if(box_mtime < file_mtime){

@@ -7,14 +7,7 @@ test_that("adding a new file works manually", {
     with_mocked_bindings(
       get_box_drive = function() FALSE,
       {
-        #run first time, modified files, expect message to upload
-          msg_match <- expect_cli_msg(code=push_repo_blfs(tmp, size=0.0002),
-                                      msg = c("Please upload files from",
-                                              "Large files have been synced with Box."))
-          expect_true(msg_match)
-
-
-        #second time, no new files, expect just message everything is up to date
+        #run first time, files are exactly the same size, so shouldn't provide message
           expect_message(push_repo_blfs(tmp, size=0.0002), "Large files have been synced with Box.")
 
         #add a file

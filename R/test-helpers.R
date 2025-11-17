@@ -113,7 +113,6 @@ create_download_file <- function(name, dir){
 #' @returns if msg match the outputs from code, TRUE, otherwise returns the messages that don't match
 #' @noRd
 expect_cli_msg <- function(code, msg){
-  #browser()
   output <- testthat::capture_messages(code)
 
   #check all outputs

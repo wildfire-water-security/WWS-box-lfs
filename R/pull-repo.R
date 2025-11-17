@@ -32,6 +32,7 @@
 #'  unlink(box_tmp, recursive = TRUE)
 #'  unlink(tmp, recursive = TRUE)
 pull_repo_blfs <- function(dir=NULL, download=NULL, boxdrive=TRUE){
+  #browser()
   dir <- dir_check(dir)
 
   #clear upload folder so we only upload new files
