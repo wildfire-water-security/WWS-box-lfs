@@ -13,7 +13,9 @@ test_that("cloning works automatically", {
       get_box_drive = function() dirname(box_tmp),
       {
         #test cloning repo
-        expect_message(clone_repo_blfs(tmp), "Large files have been fetched from Box and put in repository")
+        msg_match <- expect_cli_msg(code =clone_repo_blfs(tmp), 
+                                    msg=c("Copying files from Box to the", "Large files have been fetched from Box and put in repository"))
+        
       })
 
   #make sure files are there
@@ -36,6 +38,7 @@ test_that("cloning works manually", {
       #run looking for example files
       msg_match <- expect_cli_msg(clone_repo_blfs(tmp, download = dwd_tmp),
                                   msg = c("Please download files from Box",
+                                          "Copying files from Box to the", 
                                           "Large files have been fetched from Box and put in repository"))
       expect_true(msg_match)
 

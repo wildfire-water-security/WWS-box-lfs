@@ -37,10 +37,11 @@ new_repo_blfs <- function(dir=NULL, size=10, box_dir=NULL, boxdrive=TRUE){
   init_blfs(dir)
 
   #identify large files and track
+  cli::cli_alert_info("Checking for large files that need to be tracked by Box-LFS...")
   files <- check_files_blfs(dir, size=size)
 
   if(length(files) > 0){
-    file_names <- unname(sapply(files, track_blfs, dir)) #gets list of files to track and moves to upload folder (zips multifiles)
+    file_names <- unname(pbapply::pbsapply(files, track_blfs, dir)) #gets list of files to track and moves to upload folder (zips multifiles)
 
     cli::cli_alert_info(paste0("the following files will no longer be tracked by git:\n", paste(file_names, collapse="\n")))
 

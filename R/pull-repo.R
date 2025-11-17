@@ -39,9 +39,11 @@ pull_repo_blfs <- function(dir=NULL, download=NULL, boxdrive=TRUE){
     unlink(upld_files)
 
   #check if file need to be updated
+    cli::cli_alert_info("Checking for large files that need to be updated by Box-LFS...")
+    
     trackers <- list.files(file.path(dir, "box-lfs"), pattern = ".boxtracker")
     files <- unlist(sapply(trackers, read.boxtracker, dir=dir, return="file_path"))
-    updated <- unlist(sapply(files, update_blfs, dir=dir)) #files to upload are moved to /upload
+    updated <- unlist(pbsapply(files, update_blfs, dir=dir)) #files to upload are moved to /upload
 
   #see what files need to be uploaded/downloaded
     down <- na.omit(names(updated[updated == "download"]))
@@ -56,6 +58,8 @@ pull_repo_blfs <- function(dir=NULL, download=NULL, boxdrive=TRUE){
     if(box_path == FALSE){
       upld_message(dir)
     }else{
+      cli::cli_alert_info("Copying updated files to Box...")
+      
       upload_box_drive(dir=dir, box_dir=box_path)
     }
 
@@ -116,7 +120,9 @@ pull_repo_blfs <- function(dir=NULL, download=NULL, boxdrive=TRUE){
     copy_files <- zip_files[grepl(paste0("^(", paste(hashes, collapse = "|"), ")"), basename(zip_files))]
 
     #move files to correct location
-    place <- sapply(copy_files, move_file_blfs, dir=dir, download=file.path(file_loc))
+    cli::cli_alert_info("Downloading files from Box...")
+    
+    place <- pbapply::pbsapply(copy_files, move_file_blfs, dir=dir, download=file.path(file_loc))
 
     cli::cli_alert_success("Large files have been fetched from Box and put in repository.")
 

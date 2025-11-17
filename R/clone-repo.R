@@ -82,7 +82,8 @@ clone_repo_blfs <- function(dir=NULL, download=NULL, boxdrive=TRUE){
       files <- list.files(file.path(file_loc), recursive = TRUE)
 
     #move files to correct location
-      place <- sapply(files, move_file_blfs, dir=dir, download=file_loc)
+      cli::cli_alert_info("Copying files from Box to the correct file locations...")
+      place <- pbsapply(files, move_file_blfs, dir=dir, download=file_loc)
 
   }
 

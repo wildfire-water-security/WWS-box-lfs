@@ -26,7 +26,9 @@ push_repo_blfs <- function(dir=NULL, size=10, boxdrive=TRUE){
   #guess on dir if not supplied
   dir <- dir_check(dir)
 
+  #browser()
   #identify large files (new and existing)
+  cli::cli_alert_info("Checking for large files that need to be updated by Box-LFS...")
   lg_files <- check_files_blfs(dir, size=size)
   new_files <- check_files_blfs(dir, size=size, new=TRUE)
 
@@ -40,14 +42,14 @@ push_repo_blfs <- function(dir=NULL, size=10, boxdrive=TRUE){
       upld_files <- list.files(file.path(dir, "box-lfs/upload"), full.names = TRUE)
       unlink(upld_files)
 
-    updated <- unlist(sapply(tk_files, update_blfs, dir=dir))
+    updated <- unlist(pbsapply(tk_files, update_blfs, dir=dir))
     updated <- updated[!is.na(updated)]
     print_upload_message <- ifelse(length(updated) > 0, TRUE, FALSE)
   }
 
   #if there are new files to track [or modified]
   if(length(new_files) > 0){
-    file_names <- unname(sapply(new_files, track_blfs, dir))
+    file_names <- unname(pbsapply(new_files, track_blfs, dir))
 
     cli::cli_alert_info(paste0("the following files will no longer be tracked by git:\n", paste(file_names, collapse="\n")))
 
@@ -56,12 +58,15 @@ push_repo_blfs <- function(dir=NULL, size=10, boxdrive=TRUE){
 
   #print upload message
   if(print_upload_message){
+    
     #see if we can copy files automatically
     box_path <- get_box_drive()
 
     if(box_path == FALSE | boxdrive == FALSE){
       upld_message(dir)
     }else{
+      cli::cli_alert_info("Copying files to Box...")
+      
       #get box_path
       box_path <- get_box_path(dir)
 

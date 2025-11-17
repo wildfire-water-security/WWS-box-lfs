@@ -28,6 +28,7 @@ Imports:
     digest,
     fs,
     git2r,
+    pbapply,
     rlang,
     stats,
     stringr,

@@ -8,8 +8,11 @@ test_that("adding a new file works manually", {
       get_box_drive = function() FALSE,
       {
         #run first time, files are exactly the same size, so shouldn't provide message
-          expect_message(push_repo_blfs(tmp, size=0.0002), "Large files have been synced with Box.")
-
+          msg_match <- expect_cli_msg(code=push_repo_blfs(tmp, size=0.0002),
+                                      msg = c("Checking for large files that need",
+                                              "Large files have been synced with Box."))
+          expect_true(msg_match)
+        
         #add a file
           new_file <- "example-files/large-file3.txt"
           file_txt <- paste0(sample(1:10000, size=1000), collapse = "")
@@ -17,7 +20,7 @@ test_that("adding a new file works manually", {
 
         #see if it gets flagged
           msg_match <- expect_cli_msg(code=push_repo_blfs(tmp, size=0.0002),
-                                      msg = c("large-file3",
+                                      msg = c("Checking for large files", "large-file3",
                                               "Please upload files from",
                                               "Large files have been synced with Box."))
           expect_true(msg_match)
@@ -50,16 +53,23 @@ test_that("modifying a files works automatically", {
 
         old <- file.info(file.path(tmp, "box-lfs/upload/", hash))
 
-        #check push repo (the first time we do see the files are "modified")
-        expect_message(push_repo_blfs(tmp, size=0.0002), "Large files have been synced with Box")
-
+        #check push repo, should check but not see any differences
+          msg_match <- expect_cli_msg(code=push_repo_blfs(tmp, size=0.0002),
+                                      msg = c("Checking for large files that need",
+                                              "Large files have been synced with Box."))
+          expect_true(msg_match)
+        
         #modify file
         create_updated_file(name, tmp)
         add_box_loc(basename(box_tmp), dir=tmp, type="path") #make basename path
 
         #see if it gets flagged
-        expect_message(push_repo_blfs(tmp, size=0.0002), "Large files have been synced with Box")
-
+        msg_match <- expect_cli_msg(code=push_repo_blfs(tmp, size=0.0002),
+                                    msg = c("Checking for large files that need",
+                                            "Copying files to Box",
+                                            "Large files have been synced with Box."))
+        expect_true(msg_match)
+        
         new <- file.info(file.path(tmp, "box-lfs/upload/", hash))
 
         #check if new file has been added to upload
