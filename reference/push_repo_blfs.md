@@ -42,6 +42,7 @@ new files they will be tracked and the user prompted to upload to Box.
   source_dir = system.file("extdata", package = "blfs"))
 
 push_repo_blfs(tmp)
+#> ℹ Checking for large files that need to be updated by Box-LFS...
 #> ✔ Large files have been synced with Box.
 
 unlink(tmp, recursive = TRUE)

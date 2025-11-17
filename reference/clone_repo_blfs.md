@@ -45,6 +45,7 @@ correct location in the `dir` folder
    blfs:::add_box_loc(box_tmp, dir=tmp, type="path")
 
   clone_repo_blfs(dir=tmp, download=box_tmp)
+#> ℹ Copying files from Box to the correct file locations...
 #> ✔ Large files have been fetched from Box and put in repository.
 
   #remove temp dirs

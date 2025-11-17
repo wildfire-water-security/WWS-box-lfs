@@ -211,7 +211,9 @@ If it says `TRUE`, the repo uses **Box LFS**.
     #>     ├── example-shp.shp
     #>     ├── example-shp.shx
     #>     ├── large-file1.txt
+    #>     │   └── 1678f723cb201eb3f9996c01a481dd0e.txt
     #>     └── large-file2.txt
+    #>         └── 4fa7622e82d068a0a994eafb564e4f5d.txt
 
 ------------------------------------------------------------------------
 

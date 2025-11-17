@@ -69,6 +69,10 @@
 <span class="r-in"><span><span class="fu">blfs</span><span class="fu">:::</span><span class="fu">is.multifile</span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
 <span class="r-in"><span></span></span>
+<span class="r-in"><span><span class="va">file</span> <span class="op">&lt;-</span> <span class="st">"inst/extdata/example-files/example-shp.shp"</span></span></span>
+<span class="r-in"><span><span class="fu">blfs</span><span class="fu">:::</span><span class="fu">is.multifile</span><span class="op">(</span><span class="va">file</span>, names<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>
+<span class="r-in"><span></span></span>
 <span class="r-in"><span><span class="va">file</span> <span class="op">&lt;-</span> <span class="st">"inst/extdata/example-files/large-file1.txt"</span></span></span>
 <span class="r-in"><span><span class="fu">blfs</span><span class="fu">:::</span><span class="fu">is.multifile</span><span class="op">(</span><span class="va">file</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [1] FALSE</span>

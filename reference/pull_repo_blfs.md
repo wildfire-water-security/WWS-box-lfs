@@ -54,6 +54,8 @@ downloaded to maintain the current version.
    blfs:::add_box_loc(box_tmp, dir=tmp, type="path")
 
 pull_repo_blfs(dir=tmp, download=box_tmp)
+#> ℹ Checking for large files that need to be updated by Box-LFS...
+#> ℹ Downloading files from Box...
 #> ✔ Large files have been fetched from Box and put in repository.
 #> ✔ Large files have been synced with Box.
 

@@ -29,6 +29,10 @@ file <- "inst/extdata/example-files/example-shp.shp"
 blfs:::is.multifile(file)
 #> [1] FALSE
 
+file <- "inst/extdata/example-files/example-shp.shp"
+blfs:::is.multifile(file, names=TRUE)
+#> [1] FALSE
+
 file <- "inst/extdata/example-files/large-file1.txt"
 blfs:::is.multifile(file)
 #> [1] FALSE

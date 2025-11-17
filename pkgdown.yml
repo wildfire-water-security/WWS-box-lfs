@@ -4,7 +4,7 @@ pkgdown_sha: ~
 articles:
   articles/blfs-manual: blfs-manual.html
   articles/blfs-standard: blfs-standard.html
-last_built: 2025-11-17T18:41Z
+last_built: 2025-11-17T22:38Z
 urls:
   reference: https://wildfire-water-security.github.io/WWS-box-lfs/reference
   article: https://wildfire-water-security.github.io/WWS-box-lfs/articles
