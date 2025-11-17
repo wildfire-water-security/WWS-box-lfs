@@ -32,7 +32,6 @@
 #'  unlink(box_tmp, recursive = TRUE)
 #'  unlink(tmp, recursive = TRUE)
 pull_repo_blfs <- function(dir=NULL, download=NULL, boxdrive=TRUE){
-  #browser()
   dir <- dir_check(dir)
 
   #clear upload folder so we only upload new files
@@ -45,8 +44,8 @@ pull_repo_blfs <- function(dir=NULL, download=NULL, boxdrive=TRUE){
     updated <- unlist(sapply(files, update_blfs, dir=dir)) #files to upload are moved to /upload
 
   #see what files need to be uploaded/downloaded
-    down <- names(updated[updated == "download"])
-    up <- names(updated[updated == "upload"])
+    down <- na.omit(names(updated[updated == "download"]))
+    up <- na.omit(names(updated[updated == "upload"]))
 
   #check if we can run automatically
     box_path <- get_box_drive()

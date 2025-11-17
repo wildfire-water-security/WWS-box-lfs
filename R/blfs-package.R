@@ -12,6 +12,7 @@
 #' @importFrom git2r init
 #' @importFrom rlang is_interactive
 #' @importFrom stats na.omit
+#' @importFrom stringr str_split_i
 #' @importFrom testthat capture_messages
 #' @importFrom testthat test_path
 #' @importFrom tools file_path_sans_ext

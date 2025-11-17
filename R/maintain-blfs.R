@@ -102,13 +102,12 @@ move_file_blfs <- function(hash_file, dir=NULL, download=NULL){
   #if multifile unzip and put those in the right spot
   if(tools::file_ext(location) == ""){
     contents <- unzip(file.path(download, hash_file), list = TRUE, exdir=tempdir())$Name
-    stems <- tools::file_path_sans_ext(basename(contents))
+    stems <- stringr::str_split_i(basename(contents), "[.]", i=1)
     is_multifile <- any(duplicated(stems))   # check for duplicates (multifile if TRUE)
 
-    if(is_multifile){
-      start_loc <- fs::fs_path(unzip(file.path(download, hash_file), exdir=file.path(tempdir(), stems[1])))
-      destination_dir <- fs::fs_path(dirname(file.path(dir,location)))
-    }
+    start_loc <- fs::fs_path(unzip(file.path(download, hash_file), exdir=file.path(tempdir(), stems[1])))
+    destination_dir <- fs::fs_path(dirname(file.path(dir,location)))
+    
   }else{
     start_loc <- fs::fs_path(file.path(download, hash_file))
     destination_dir <- fs::fs_path(file.path(dirname(file.path(dir,location)), basename(location)))
@@ -116,8 +115,8 @@ move_file_blfs <- function(hash_file, dir=NULL, download=NULL){
   }
 
   # Create the directory if it doesn't exist, including parent directories
-  if (!dir.exists(dirname(destination_dir))) {
-    dir.create(dirname(destination_dir), recursive = TRUE, showWarnings = FALSE)
+  if (!dir.exists(destination_dir)) {
+    dir.create(destination_dir, recursive = TRUE, showWarnings = FALSE)
   }
 
   #copy file to correct location

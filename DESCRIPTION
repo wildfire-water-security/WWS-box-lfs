@@ -30,6 +30,7 @@ Imports:
     git2r,
     rlang,
     stats,
+    stringr,
     testthat,
     tools,
     utils,
