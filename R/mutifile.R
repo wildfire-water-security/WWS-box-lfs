@@ -8,6 +8,9 @@
 #' file <- "inst/extdata/example-files/example-shp.shp"
 #' blfs:::is.multifile(file)
 #'
+#' file <- "inst/extdata/example-files/example-shp.shp"
+#' blfs:::is.multifile(file, names=TRUE)
+#'
 #' file <- "inst/extdata/example-files/large-file1.txt"
 #' blfs:::is.multifile(file)
 #'

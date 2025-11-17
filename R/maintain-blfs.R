@@ -29,6 +29,34 @@ check_files_blfs <- function(dir=NULL, size=10, new=FALSE){
   sizes <- file.size(file.path(dir, files)) / 10^6 #in MB
   large_files <- files[sizes > size]
 
+  #identify truely large files and provide a warning, add to .blfsignore 
+    massive_files <- files[sizes > 4000]
+    if(length(massive_files) > 0){
+      cli_alert_warning(paste0("the following file(s) are very large (>5 GB):\n", paste0(massive_files, collapse="\n"), 
+                              "\nthese will not be tracked by Box-LFS. Please subset the dataset to use with Box-LFS."))
+      
+      #remove from files to track
+      large_files <- files[sizes > size & sizes <= 4000]
+      
+      #add to .blfsignore 
+        ignore <- readLines(file.path(dir, ".blfsignore"), warn=FALSE)
+        
+        #get name if multifile
+        add <- sapply(massive_files, function(x){
+          if(is.multifile(file.path(dir, x))){
+            name <- file_path_sans_ext(x)
+          }else{name <- x}
+          
+          #only add if not already there 
+          if(!any(grepl(name, ignore))){
+            cat(paste0("\n", name), file=file.path(dir, ".blfsignore"), append = TRUE)
+          }
+        })
+        
+        
+    
+    }
+  
   #remove files we know we don't want to track with box-lfs (mainly for examples, these likely won't be above 10 MB)
     #read .blfsignore
       ignore <- readLines(file.path(dir, ".blfsignore"), warn=FALSE)
