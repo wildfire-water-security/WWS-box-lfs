@@ -1,8 +1,10 @@
 #' @keywords internal
 "_PACKAGE"
+readline <- NULL
 
 ## usethis namespace: start
 #' @importFrom boxrdrive box_drive
+#' @importFrom cli cli_alert_danger
 #' @importFrom cli cli_alert_success
 #' @importFrom cli cli_alert_warning
 #' @importFrom cli cli_progress_bar

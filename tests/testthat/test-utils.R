@@ -45,3 +45,43 @@ test_that("hashes work", {
   hash2 <- get_tracker_name("test2")
   expect_false(hash1 == hash2)
 })
+
+test_that("a missing path gets asked for", {
+  #create temp dir to modify files cleanly
+  tmp <- create_test_repo(box_lfs=FALSE)
+  withr::defer(unlink(tmp, recursive = TRUE), envir = parent.frame())
+  
+  box_tmp <- create_test_boxdrive(files=FALSE)
+  withr::defer(unlink(box_tmp, recursive = TRUE), envir = parent.frame())
+  
+  #manually set up repo (no path)
+    with_mocked_bindings(
+      get_box_drive = function() FALSE,
+      {
+        silent <- testthat::capture_messages(new_repo_blfs(dir = tmp, size=0.0002,boxdrive=FALSE))
+        
+        
+      })
+    
+  #try pushing automatically 
+    with_mocked_bindings(
+      get_box_drive = function() dirname(box_tmp),
+      {
+        name <- "example-files/example-shp"
+      
+        #modify file
+        create_updated_file(name, tmp)
+
+        with_mocked_bindings(
+          readline = function(msg) box_tmp,
+          {
+            silent <- testthat::capture_messages(push_repo_blfs(tmp, size=0.0002))      
+      })  }) 
+    
+  #check to make sure path is added and correct 
+   path <- read.boxtracker("3f80f3c380f48192c6fcd63a08813c49", tmp, return="box_path")
+   
+   path <- gsub("^/", "", path)
+   expect_equal(path, file.path(basename(box_tmp), "box-lfs"))
+})
+

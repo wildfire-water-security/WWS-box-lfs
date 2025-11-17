@@ -240,6 +240,18 @@ get_box_path <- function(dir){
   box_path <- unique(sapply(hash, read.boxtracker, dir=dir, return="box_path"))
   box_path <- box_path[!is.na(box_path)]
 
+  #if non specified, ask and add for future
+  if(length(box_path) == 0){
+    # if(!rlang::is_interactive()){
+    #   stop("Missing Box path in .boxtracker files, please add manually with blfs::add_box_loc()")
+    # }else{
+      box_path <- readline("what is the Box path to the project folder? ")
+      add_box_loc(box_path, dir, type="path")
+    #}
+    
+  }
+   
+    
   #ensure there's only one
   if(length(box_path) > 1){
     stop("More than one Box Path found in .boxtrackers, please check")
