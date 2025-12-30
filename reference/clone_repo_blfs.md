@@ -46,7 +46,7 @@ correct location in the `dir` folder
 
   clone_repo_blfs(dir=tmp, download=box_tmp)
 #> ℹ Copying files from Box to the correct file locations...
-#> ✔ Large files have been fetched from Box and put in repository.
+#> ℹ No large files were found to move to repository.
 
   #remove temp dirs
   unlink(box_tmp, recursive = TRUE)

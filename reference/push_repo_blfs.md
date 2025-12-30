@@ -43,7 +43,7 @@ new files they will be tracked and the user prompted to upload to Box.
 
 push_repo_blfs(tmp)
 #> ℹ Checking for large files that need to be updated by Box-LFS...
-#> ✔ Large files have been synced with Box.
+#> ✔ Large files are already synced with Box.
 
 unlink(tmp, recursive = TRUE)
 ```
