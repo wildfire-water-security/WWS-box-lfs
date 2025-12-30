@@ -143,8 +143,8 @@ move_file_blfs <- function(hash_file, dir=NULL, download=NULL){
   }
 
   # Create the directory if it doesn't exist, including parent directories
-  if (!dir.exists(destination_dir)) {
-    dir.create(destination_dir, recursive = TRUE, showWarnings = FALSE)
+  if (!dir.exists(dirname(destination_dir))) {
+    dir.create(dirname(destination_dir), recursive = TRUE, showWarnings = FALSE)
   }
 
   #copy file to correct location

@@ -12,7 +12,7 @@ test_that("updated files are prompted to upload automatically", {
         #test pull, expect files will look the same because they're exactly the same size
           msg_match <- expect_cli_msg(code=pull_repo_blfs(tmp),
                                       msg = c("Checking for large files that need",
-                                              "Large files have been synced with Box"))
+                                              "Large files are already synced with Box"))
           expect_true(msg_match)
 
         #test pull, with an updated local file -> prompts upload
@@ -41,7 +41,7 @@ test_that("updated files are prompted to upload manually", {
       #test pull, expect files will look the same because they're exactly the same size
       msg_match <- expect_cli_msg(code=pull_repo_blfs(tmp),
                                   msg = c("Checking for large files that need",
-                                          "Large files have been synced with Box"))
+                                          "Large files are already synced with Box"))
       expect_true(msg_match)
 
       #test pull, with an updated local file -> prompts upload
@@ -110,7 +110,7 @@ test_that("updated files are downloaded manually", {
       #test pull, expect files will look the same because they're exactly the same size
       msg_match <- expect_cli_msg(code=pull_repo_blfs(tmp),
                                   msg = c("Checking for large files that need",
-                                          "Large files have been synced with Box"))
+                                          "Large files are already synced with Box"))
       expect_true(msg_match)
 
       #test pull, with an updated local file -> prompts upload

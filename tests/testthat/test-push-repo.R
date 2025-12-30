@@ -10,7 +10,7 @@ test_that("adding a new file works manually", {
         #run first time, files are exactly the same size, so shouldn't provide message
           msg_match <- expect_cli_msg(code=push_repo_blfs(tmp, size=0.0002),
                                       msg = c("Checking for large files that need",
-                                              "Large files have been synced with Box."))
+                                              "Large files are already synced with Box"))
           expect_true(msg_match)
         
         #add a file
@@ -56,7 +56,7 @@ test_that("modifying a files works automatically", {
         #check push repo, should check but not see any differences
           msg_match <- expect_cli_msg(code=push_repo_blfs(tmp, size=0.0002),
                                       msg = c("Checking for large files that need",
-                                              "Large files have been synced with Box."))
+                                              "Large files are already synced with Box"))
           expect_true(msg_match)
         
         #modify file

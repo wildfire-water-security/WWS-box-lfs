@@ -45,6 +45,8 @@ push_repo_blfs <- function(dir=NULL, size=10, boxdrive=TRUE){
     updated <- unlist(pbsapply(tk_files, update_blfs, dir=dir))
     updated <- updated[!is.na(updated)]
     print_upload_message <- ifelse(length(updated) > 0, TRUE, FALSE)
+  }else{
+    updated <- character()
   }
 
   #if there are new files to track [or modified]
@@ -76,6 +78,10 @@ push_repo_blfs <- function(dir=NULL, size=10, boxdrive=TRUE){
 
   }
 
-  cli::cli_alert_success("Large files have been synced with Box.")
-
+  #only print this if we have files that changed
+  if(length(c(updated, new_files)) > 0){
+    cli::cli_alert_success("Large files have been synced with Box.")
+  }else{
+    cli::cli_alert_success("Large files are already synced with Box.")
+  }
 }

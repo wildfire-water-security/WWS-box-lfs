@@ -128,6 +128,11 @@ pull_repo_blfs <- function(dir=NULL, download=NULL, boxdrive=TRUE){
 
   }
 
-  cli::cli_alert_success("Large files have been synced with Box.")
+  #only print this if we have files that changed
+  if(length(c(up, down)) > 0){
+    cli::cli_alert_success("Large files have been synced with Box.")
+  }else{
+    cli::cli_alert_success("Large files are already synced with Box.")
+  }
 
 }

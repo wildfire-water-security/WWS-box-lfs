@@ -85,8 +85,11 @@ clone_repo_blfs <- function(dir=NULL, download=NULL, boxdrive=TRUE){
       cli::cli_alert_info("Copying files from Box to the correct file locations...")
       place <- pbsapply(files, move_file_blfs, dir=dir, download=file_loc)
 
+    
   }
-
-  cli::cli_alert_success("Large files have been fetched from Box and put in repository.")
-
+  
+  #provide success or message depending on files
+  if(exists("files") && length(files) > 0){
+    cli::cli_alert_success("Large files have been fetched from Box and put in repository.")
+  }else{cli::cli_alert_info("No large files were found to move to repository.")}
   }
