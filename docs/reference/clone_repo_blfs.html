@@ -11,7 +11,7 @@ in your repository using the .boxtracker files."></head><body>
 
     <a class="navbar-brand me-2" href="../index.html">blfs</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.2.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,7 +85,8 @@ in your repository using the .boxtracker files.</p>
 <span class="r-in"><span>   <span class="fu">blfs</span><span class="fu">:::</span><span class="fu">add_box_loc</span><span class="op">(</span><span class="va">box_tmp</span>, dir<span class="op">=</span><span class="va">tmp</span>, type<span class="op">=</span><span class="st">"path"</span><span class="op">)</span></span></span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="fu">clone_repo_blfs</span><span class="op">(</span>dir<span class="op">=</span><span class="va">tmp</span>, download<span class="op">=</span><span class="va">box_tmp</span><span class="op">)</span></span></span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Large files have been fetched from Box and put in repository.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> Copying files from Box to the correct file locations...</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">ℹ</span> No large files were found to move to repository.</span>
 <span class="r-in"><span></span></span>
 <span class="r-in"><span>  <span class="co">#remove temp dirs</span></span></span>
 <span class="r-in"><span>  <span class="fu"><a href="https://rdrr.io/r/base/unlink.html" class="external-link">unlink</a></span><span class="op">(</span><span class="va">box_tmp</span>, recursive <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
